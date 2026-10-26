@@ -1,0 +1,637 @@
+---
+import '../styles/global.css'
+import '@orbex/sonar-tokens/tokens.css'
+import '@orbex/sonar-tokens/type.css'
+import '../styles/site.css'
+import '../styles/document.css'
+import '@fontsource/ibm-plex-sans/latin-400.css'
+import '@fontsource/ibm-plex-sans/latin-500.css'
+import '@fontsource/ibm-plex-sans/latin-600.css'
+import '@fontsource/ibm-plex-sans/greek-400.css' /* Δ in ΔE */
+import '@fontsource/ibm-plex-sans-condensed/latin-400.css'
+import '@fontsource/ibm-plex-sans-condensed/latin-600-italic.css'
+import '@fontsource/ibm-plex-sans-condensed/latin-600.css'
+import '@fontsource/ibm-plex-mono/latin-400.css'
+import '@fontsource/ibm-plex-mono/latin-500.css'
+/* The faces the first screen of every page uses (text, the wordmark, the version chip and code), preloaded so
+   they arrive with the stylesheets instead of after them: the same hashed files the @font-face rules point to.
+   Seven latin subsets, 15 to 24 KB each */
+import plexSans400 from '@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url'
+import plexSans500 from '@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-500-normal.woff2?url'
+import plexSans600 from '@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff2?url'
+import plexCondensed600 from '@fontsource/ibm-plex-sans-condensed/files/ibm-plex-sans-condensed-latin-600-normal.woff2?url'
+import plexCondensed600Italic from '@fontsource/ibm-plex-sans-condensed/files/ibm-plex-sans-condensed-latin-600-italic.woff2?url'
+import plexMono400 from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2?url'
+import plexMono500 from '@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2?url'
+import Navigation from '../components/Navigation.astro'
+import SiteFooter from '../components/SiteFooter.astro'
+import ThemeSwitch from '../components/ThemeSwitch.astro'
+import VersionChip from '../components/VersionChip.astro'
+import Wordmark from '../components/Wordmark.astro'
+import { readingOrder, sectionOf } from '../lib/navigation.ts'
+
+interface Props {
+  title: string
+  description: string
+}
+
+const { title, description } = Astro.props
+const path = Astro.url.pathname
+const section = sectionOf(path)
+const position = readingOrder.findIndex(({ href }) => href === path)
+const previous = position > 0 ? readingOrder[position - 1] : undefined
+const next = position >= 0 ? readingOrder[position + 1] : undefined
+/* The home page carries the system’s name alone; every other page leads with its own */
+const pageTitle = path === '/' ? 'Orbex Sonar-DB Design System' : `${title} · Orbex Sonar-DB Design System`
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- The order of the cascade layers, before any stylesheet: bundling may load the files in any order -->
+    <style is:inline>
+      @layer reset, base, sonar;
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!-- iOS would turn dates and figures into links, changing the elements React hydrates -->
+    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {[plexSans400, plexSans500, plexSans600, plexCondensed600, plexCondensed600Italic, plexMono400, plexMono500].map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem('sonar-ds-theme')
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {}
+
+      /* A page opened from a link starts at the top. Browsers do this already; some embedded viewers keep the previous
+         page’s scroll instead. Going back, reloading and links to a section are left to the browser, and the reset
+         stops as soon as the reader scrolls. */
+      try {
+        const navigation = performance.getEntriesByType('navigation')[0]
+        if (!location.hash && (!navigation || navigation.type === 'navigate')) {
+          const toTop = () => scrollTo(0, 0)
+          const stop = () => {
+            removeEventListener('DOMContentLoaded', toTop)
+            removeEventListener('load', toTop)
+          }
+          toTop()
+          addEventListener('DOMContentLoaded', toTop, { once: true })
+          addEventListener('load', toTop, { once: true })
+          for (const type of ['wheel', 'touchstart', 'keydown']) addEventListener(type, stop, { once: true, passive: true })
+        }
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to content</a>
+
+    <header class="masthead">
+      <div class="brand"><Wordmark /></div>
+      <button class="menu-button" type="button" popovertarget="sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation">
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </header>
+
+    <div class="shell">
+      <nav class="sidebar" id="sidebar" popover aria-label="Documentation">
+        {/* The logo and, after the rule, the version it documents; “Design system” heads the outline below (1.0.0-alpha.17), after a hairline (1.0.0-alpha.18) */}
+        <div class="sidebar-brand"><Wordmark system={false} /><span class="sidebar-version"><VersionChip /></span></div>
+        <div class="sidebar-scroll">
+          <p class="outline-title">Design system</p>
+          <Navigation />
+        </div>
+        <div class="sidebar-footer"><ThemeSwitch /></div>
+      </nav>
+
+      <main id="content" tabindex="-1">
+        {/* The page, then its end: Previous and Next and the signature sit at the foot of the window on a short page,
+            and the space left over opens above the rule of Previous and Next (1.0.0-alpha.21) */}
+        <div class="page-body">
+          {
+            section && (
+              <nav class="breadcrumb" aria-label="Breadcrumb">
+                <a href={section.href}>{section.label}</a>
+                <span aria-hidden="true">/</span>
+                <span aria-current="page">{title}</span>
+              </nav>
+            )
+          }
+          <slot />
+        </div>
+        <div class="page-end">
+          {
+            (previous || next) && (
+              <nav class="pager" aria-label="Previous and next pages">
+                {previous && (
+                  <a href={previous.href} rel="prev" class="previous">
+                    <span class="direction">Previous</span>
+                    {previous.label}
+                  </a>
+                )}
+                {next && (
+                  <a href={next.href} rel="next" class="next">
+                    <span class="direction">Next</span>
+                    {next.label}
+                  </a>
+                )}
+              </nav>
+            )
+          }
+          <SiteFooter />
+        </div>
+      </main>
+    </div>
+
+    <script>
+      import { lockScroll } from '@orbex/sonar-components/dialog'
+      import { smoothWheel } from '@orbex/sonar-components/scroll-area'
+      import { watchBlink } from '@orbex/sonar-patterns/patterns/blink.ts'
+
+      /* 1.1: a mouse wheel scrolls the pages, the navigation and every list smoothly on a desktop (never touch or a
+         trackpad; at once with reduced motion) */
+      smoothWheel()
+
+      /* The alert triangles in Deliveries share one beat from the first frame, also before their example has woken up
+         (1.1.3) and for marks drawn later: each gets a CSS animation-delay once (blink.ts). 1.1.4: no script writes the
+         animation's startTime any more, which on a real iPhone left the triangle dim and dropping out every 1.2 s.
+         An example holding a triangle is never skipped by content-visibility (below), so its animation never pauses
+         while out of view. Same animation and timing; with reduced motion it stays on */
+      const unskip = (mark: Element) => {
+        const block = mark.closest<HTMLElement>('[style*="content-visibility"]')
+        if (block) block.style.contentVisibility = block.style.containIntrinsicSize = ''
+      }
+      watchBlink(document, unskip)
+
+      /* The navigation drawer on phones and tablets: while it is open the page behind does not scroll, and it is where
+         it was when the drawer closes. The same lock as the dialogs and sheets */
+      const drawer = document.getElementById('sidebar')
+
+      /* Heavy pages (1.0.0-alpha.22): once the page has loaded, each example and figure that is out of view is skipped by
+         the browser's rendering until it comes near, at the height it had, so nothing moves. On Cards, Safari spent
+         0.3 s per touch updating examples nobody could see. Measured again when the window changes width.
+         Kept in 1.0.0-alpha.23 (without it a tap on Cards waited 280–350 ms again in WebKit 390). What it broke is fixed
+         where it happened: card lists no longer change height when they fit again, side panels and sheets sit against
+         the window, and the alert triangles keep the document's clock. 1.1.4: examples holding a blinking alert triangle
+         are left out (never skipped), so the triangle's animation is never paused out of view */
+      const examples = () => {
+        const selector = '#content figure, #content .optional-specimen'
+        const blocks = new Set<HTMLElement>([...document.querySelectorAll<HTMLElement>(selector)].filter((block) => !block.parentElement?.closest(selector)))
+        for (const island of document.querySelectorAll('#content astro-island')) {
+          if (island.closest(selector)) continue
+          const block = island.closest<HTMLElement>('figure.demo, .edit-card') ?? island.parentElement
+          if (block && block !== document.getElementById('content')) blocks.add(block)
+        }
+        return [...blocks]
+      }
+      const skip = () => {
+        if (!CSS.supports('content-visibility', 'auto')) return
+        const blocks = examples()
+        for (const block of blocks) block.style.contentVisibility = block.style.containIntrinsicSize = ''
+        const heights = blocks.map((block) => block.getBoundingClientRect().height)
+        blocks.forEach((block, index) => {
+          if (heights[index]! < 80 || block.querySelector('.cal-alert[data-blink]')) return
+          block.style.containIntrinsicSize = `none auto ${heights[index]}px`
+          block.style.contentVisibility = 'auto'
+        })
+      }
+      let lastWidth = innerWidth
+      let resizing = 0
+      if (document.readyState === 'complete') skip()
+      else addEventListener('load', skip, { once: true })
+      addEventListener('resize', () => {
+        if (innerWidth === lastWidth) return
+        lastWidth = innerWidth
+        clearTimeout(resizing)
+        resizing = window.setTimeout(skip, 300)
+      })
+      let releaseDrawer: (() => void) | undefined
+      drawer?.addEventListener('toggle', (event) => {
+        if ((event as ToggleEvent).newState === 'open') releaseDrawer ??= lockScroll(drawer)
+        else {
+          releaseDrawer?.()
+          releaseDrawer = undefined
+        }
+      })
+
+      /* While the drawer is open (1.0.0-alpha.20, accessibility audit #2): the ☰ button says so and names what it will
+         do, the page behind the scrim is inert, and Tab and Shift+Tab go round inside the drawer. Escape still closes it
+         and focus goes back to ☰ */
+      const menuButton = document.querySelector<HTMLButtonElement>('.menu-button')
+      const content = document.getElementById('content')
+      drawer?.addEventListener('toggle', (event) => {
+        const open = (event as ToggleEvent).newState === 'open'
+        menuButton?.setAttribute('aria-expanded', String(open))
+        menuButton?.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation')
+        if (content) content.inert = open
+      })
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Tab' || !drawer?.matches(':popover-open')) return
+        /* Of a group of radios, only the checked one takes a Tab stop (the theme switch) */
+        const stops = [...drawer.querySelectorAll<HTMLElement>('a[href], button, input, select, textarea, [tabindex]')].filter(
+          (element) => element.tabIndex >= 0 && !element.matches(':disabled, input[type="radio"]:not(:checked)') && element.getClientRects().length > 0,
+        )
+        const first = stops[0]
+        const last = stops[stops.length - 1]
+        const active = document.activeElement
+        if (!first || !last) return
+        if (!drawer.contains(active)) {
+          event.preventDefault()
+          first.focus()
+        } else if (event.shiftKey && active === first) {
+          event.preventDefault()
+          last.focus()
+        } else if (!event.shiftKey && active === last) {
+          event.preventDefault()
+          first.focus()
+        }
+      })
+
+      /* Previous and Next answer the first tap (1.0.0-alpha.21). They sit at the foot of the page, where a finger
+         arrives with the page still gliding or bouncing at its end; iOS then keeps the tap to stop the page and sends
+         no click, so the link wanted a second tap. A touch that goes down and up on the link without moving, and gets
+         no click of its own, follows the link. A mouse is left to the browser */
+      for (const link of document.querySelectorAll<HTMLAnchorElement>('nav.pager a')) {
+        let down: { x: number; y: number; t: number } | null = null
+        link.addEventListener('pointerdown', (event) => {
+          down = event.pointerType !== 'mouse' && event.isPrimary ? { x: event.clientX, y: event.clientY, t: event.timeStamp } : null
+        })
+        link.addEventListener('pointercancel', () => (down = null))
+        link.addEventListener('pointerup', (event) => {
+          const start = down
+          down = null
+          if (!start || event.pointerType === 'mouse') return
+          if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 10 || event.timeStamp - start.t > 700) return
+          let clicked = false
+          const onClick = () => (clicked = true)
+          link.addEventListener('click', onClick, { once: true })
+          setTimeout(() => {
+            link.removeEventListener('click', onClick)
+            if (!clicked && document.visibilityState === 'visible') link.click()
+          }, 450)
+        })
+      }
+
+      /* Where the site is served as files (…/cards/index.html) rather than from its root, a link that starts at the root
+         would miss. Links in the HTML are written relative when the site is packaged; links that examples draw later
+         are followed here, relative to the home page the wordmark leads to. */
+      if (location.pathname.endsWith('.html')) {
+        document.addEventListener('click', (event) => {
+          const link = (event.target as Element | null)?.closest?.('a[href^="/"]')
+          const home = document.querySelector('a.wordmark')?.getAttribute('href')
+          if (!link || !home || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return
+          const [path = '', hash] = link.getAttribute('href')!.slice(1).split('#')
+          const file = path === '' || path.endsWith('/') ? `${path}index.html` : path
+          event.preventDefault()
+          location.assign(new URL(`${file}${hash ? `#${hash}` : ''}`, new URL(home, location.href)).href)
+        })
+      }
+
+      /* A table or specimen wider than the page scrolls inside its own block. While it does, the block takes focus so
+         the keyboard can scroll it, and a table’s block becomes a named region; when it fits, it is left alone. */
+      for (const block of document.querySelectorAll<HTMLElement>('[data-scroll-region]')) {
+        const label = block.dataset.label
+        const update = () => {
+          const scrolls = block.scrollWidth > block.clientWidth + 1
+          block.toggleAttribute('tabindex', scrolls)
+          if (scrolls) block.tabIndex = 0
+          if (!label) return
+          if (scrolls) {
+            block.setAttribute('role', 'region')
+            block.setAttribute('aria-label', label)
+          } else {
+            block.removeAttribute('role')
+            block.removeAttribute('aria-label')
+          }
+        }
+        new ResizeObserver(update).observe(block)
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: fixed;
+    top: var(--sonar-space-8);
+    left: var(--sonar-space-8);
+    z-index: 10;
+    padding: var(--sonar-space-8) var(--sonar-space-16);
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-accent);
+    color: var(--sonar-color-on-accent);
+    font: var(--sonar-type-button);
+    letter-spacing: var(--sonar-type-button-tracking);
+    text-decoration: none;
+    translate: 0 -200%;
+  }
+
+  .skip-link:focus-visible {
+    translate: 0;
+  }
+
+  /* ---------- Compact: top bar and a drawer from the left ---------- */
+  /* Above everything the examples draw in the page (edit handles reach 7, the app frames' bars and assistant 29 to 31),
+     below the layers that cover the page on purpose: side panels and sheets (40), menus and search results (50),
+     tooltips (60) and toasts (70). At 2 the examples' handles and the app's top bar scrolled over it. */
+  .masthead {
+    position: sticky;
+    top: 0;
+    z-index: 35;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 56px;
+    padding: env(safe-area-inset-top) var(--sonar-space-8) 0 var(--sonar-space-16);
+    background: var(--sonar-color-surface-raised);
+    box-shadow: 0 1px 0 var(--sonar-color-divider);
+  }
+
+  .menu-button {
+    display: grid;
+    place-items: center;
+    width: var(--sonar-layout-touch-target);
+    height: var(--sonar-layout-touch-target);
+    border: 0;
+    border-radius: var(--sonar-shape-corner-full);
+    background: none;
+    color: var(--sonar-color-text-secondary);
+    cursor: pointer;
+  }
+
+  .menu-button:hover {
+    background: var(--sonar-color-state-hover);
+  }
+
+  .menu-button path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+
+  .sidebar {
+    inset: 0 auto 0 0;
+    flex-direction: column;
+    gap: var(--sonar-space-24);
+    width: min(var(--site-sidebar-width), 86vw);
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: var(--sonar-space-24) var(--sonar-space-16) calc(var(--sonar-space-16) + env(safe-area-inset-bottom));
+    border: 0;
+    /* The popover’s own overflow would scroll both ways; only the list inside scrolls, up and down */
+    overflow: hidden;
+    background: var(--sonar-color-surface-page);
+    color: inherit;
+  }
+
+  .sidebar:popover-open {
+    display: flex;
+    box-shadow: var(--sonar-elevation-panel);
+    animation: drawer-in var(--sonar-motion-spatial-default-duration) var(--sonar-motion-spatial-default-easing);
+  }
+
+  .sidebar::backdrop {
+    background: var(--sonar-color-scrim);
+  }
+
+  @keyframes drawer-in {
+    from {
+      translate: -100% 0;
+    }
+  }
+
+  /* The wordmark and the version it documents */
+  .brand,
+  .sidebar-brand {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sonar-space-8) var(--sonar-space-12);
+    align-items: center;
+    min-width: 0;
+  }
+
+  .sidebar-brand {
+    flex-wrap: nowrap;
+    gap: var(--sonar-space-12);
+    padding-left: var(--sonar-space-12);
+  }
+
+  /* The version sits where “Design system” sat: after the same rule, centred on the wordmark */
+  .sidebar-version {
+    display: flex;
+    align-items: center;
+    min-height: 26px;
+    padding-left: var(--sonar-space-12);
+    border-left: 1px solid var(--sonar-color-divider);
+  }
+
+  /* “Design system” heads the outline: the title of the index, above Get started, Foundations…; a hairline divides it
+     from the outline, the same rule as beside the version (1.0.0-alpha.18) */
+  /* Under the hairline, the same air as between one section of the outline and the next (1.0.0-alpha.19): 49 px of
+     clear space from the rule to the first letters of Get started, as from the last item of Get started to Foundations */
+  .outline-title {
+    margin: 0 var(--sonar-space-12) 45px;
+    padding-bottom: var(--sonar-space-12);
+    border-bottom: 1px solid var(--sonar-color-divider);
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+  }
+
+  /* The top bar carries the wordmark alone, on one line; the version is in the drawer, at the top of the home page
+     and at the foot of every page */
+  .brand {
+    flex-wrap: nowrap;
+  }
+
+  .brand :global(.wordmark-system) {
+    white-space: nowrap;
+  }
+
+  /* Its scrollbar runs at the very edge of the column, clear of the links (1.0.0-alpha.23; it lay over their ends) */
+  .sidebar-scroll {
+    flex: 1;
+    min-height: 0;
+    margin-right: calc(-1 * var(--sonar-space-16));
+    padding-right: var(--sonar-space-16);
+    /* One axis only: nothing scrolls sideways */
+    overflow: hidden auto;
+    /* At its top or bottom the outline stays still: no bounce of its own, and the page does not scroll on with it;
+       only the content bounces (1.0.0-alpha.22) */
+    overscroll-behavior: none;
+  }
+
+  /* The page fills at least the window under the top bar: on a short page Previous, Next and the signature sit at its
+     foot. Under the signature, as much air as between its rule and its line (1.0.0-alpha.21). The page is also the
+     container its examples measure: with the navigation beside it on tablets it is narrower than the window */
+  main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: calc(100dvh - 56px - env(safe-area-inset-top));
+    padding: var(--sonar-space-32) var(--sonar-space-16) calc(var(--sonar-space-20) + env(safe-area-inset-bottom));
+    container: page / inline-size;
+  }
+
+  .page-end {
+    margin-top: auto;
+  }
+
+  main:focus {
+    outline: none;
+  }
+
+  /* Where a page sits: its section, which leads back to the section’s index */
+  .breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sonar-space-6);
+    align-items: center;
+    max-width: var(--site-content-width);
+    margin-bottom: var(--sonar-space-12);
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  .breadcrumb a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    border-radius: var(--sonar-shape-corner-small);
+    color: var(--sonar-color-text-secondary);
+    text-decoration: underline;
+    text-decoration-color: var(--sonar-color-border-muted);
+    text-underline-offset: 3px;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--sonar-color-text-strong);
+    text-decoration-color: currentColor;
+  }
+
+  /* The pages before and after this one, in the order of the navigation */
+  .pager {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sonar-space-12);
+    max-width: var(--site-content-width);
+    margin-top: 96px;
+    padding-top: var(--sonar-space-24);
+    border-top: 1px solid var(--sonar-color-divider);
+  }
+
+  /* Under Previous and Next, the same room down to the signature's rule as from the rule above them to their first
+     line: 24 px + the link's 12 px on each side (1.0.0-alpha.22; it was 12 + 48 px below) */
+  .pager + :global(.site-footer) {
+    margin-top: var(--sonar-space-24);
+  }
+
+  .pager a {
+    display: grid;
+    gap: var(--sonar-space-2);
+    padding: var(--sonar-space-12) var(--sonar-space-16);
+    border-radius: var(--sonar-shape-corner-large);
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-title-sm);
+    letter-spacing: var(--sonar-type-title-sm-tracking);
+    text-decoration: none;
+    /* A tap is a tap: no double-tap zoom to wait for, and no hover state for the finger (1.0.0-alpha.21) */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .pager a:active {
+    background: var(--sonar-color-state-pressed, var(--sonar-color-state-hover));
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .pager a {
+      transition: background-color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);
+    }
+
+    .pager a:hover {
+      background: var(--sonar-color-state-hover);
+    }
+  }
+
+  .pager .next {
+    grid-column: 2;
+    text-align: right;
+  }
+
+  .direction {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  .breadcrumb a:focus-visible,
+  .pager a:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+  }
+
+  /* ---------- Tablet and wider: the navigation is always there (tablet since 1.0.0-alpha.21) ---------- */
+  @media (width >= 744px) {
+    .masthead {
+      display: none;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: var(--site-sidebar-width) minmax(0, 1fr);
+    }
+
+    /* Fixed to the window, a column of its own that scrolls on its own: when the page bounces at its top or bottom
+       (Safari), the navigation does not move with it (1.0.0-alpha.22; it was sticky and bounced with the content) */
+    /* Held by its top and its bottom to the window itself, with no viewport unit (1.0.0-alpha.24). Safari's bar sits at
+       the top of the window on a Mac, an iPad and an iPhone held sideways: when it grows or hides, the window's top
+       edge moves and its bottom edge, the bottom of the screen, does not. The theme switch hangs from that bottom edge
+       at a fixed 16 px, so it never moves on the screen, and it is level with the signature's line whenever the page
+       is scrolled to its end, the signature being the same fixed distance from the bottom of the page. A height of
+       100svh (alpha.23) hung it from the top instead: with the bar hidden it rose by the bar's height; 100dvh
+       (alpha.22) is updated only once the bar has settled, so it jumped. Under the column, its colour and rule run on
+       for a bounce at the bottom */
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      display: flex;
+      width: var(--site-sidebar-width);
+      height: auto;
+      overflow: visible;
+      box-shadow: 1px 0 0 var(--sonar-color-divider);
+    }
+
+    .sidebar::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      height: calc(100lvh - 100svh + 200px);
+      background: inherit;
+      box-shadow: inherit;
+      pointer-events: none;
+    }
+
+    .sidebar-footer {
+      flex: none;
+    }
+
+    .shell > main {
+      grid-column: 2;
+    }
+
+    /* The signature's line sits level with the theme switch at the foot of the navigation: the same 16 px from the
+       bottom, centred on the switch's 36 px */
+    main {
+      min-height: 100svh;
+      padding: var(--sonar-space-48) clamp(var(--sonar-space-32), 5vw, 80px) calc(var(--sonar-space-16) + (36px - 24px) / 2 + env(safe-area-inset-bottom));
+    }
+  }
+</style>

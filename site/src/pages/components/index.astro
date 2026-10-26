@@ -1,0 +1,83 @@
+---
+/* The site’s layer order first, so the components' layer comes after the reset */
+import '../../styles/global.css'
+import '@orbex/sonar-components/styles.css'
+import PageCards from '../../components/PageCards.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import Docs from '../../layouts/Docs.astro'
+import { componentEntries, formatWeight, packageWeight } from '../../lib/components.ts'
+
+/* Components that share an entry point share its weight: say so rather than count it twice */
+const metaOf = (entry: (typeof componentEntries)[number]) =>
+  `${entry.api.behavior === 'native' ? 'Native HTML' : 'Base UI'} · ${formatWeight(entry.weight)}${entry.siblings.length ? ` with ${entry.siblings.join(', ')}` : ''}`
+---
+
+<Docs title="Components" description="The React components of the Orbex Sonar-DB Design System: how they are built, installed and tested.">
+  <PageHeader
+    title="Components"
+    lead="React components built on native HTML wherever the platform already does the job, and on Base UI where it does not. They are styled only with the tokens, ship one entry point each, and are tested for behavior and accessibility on every build."
+  />
+
+  <Section title="All components" id="all">
+    <PageCards
+      items={componentEntries.map((entry) => ({
+        title: entry.title,
+        href: entry.href,
+        description: entry.summary,
+        meta: metaOf(entry),
+      }))}
+    />
+    <p class="prose more">
+      How they come together in the overview, its cards, charts and search, is in <a href="/patterns/">Patterns</a>.
+    </p>
+  </Section>
+
+  <Section title="How they are built" id="principles">
+    <ul class="prose">
+      <li>
+        <strong>Native HTML first.</strong> Buttons, switches, checkboxes, radios, fields, selects and dialogs are the
+        browser’s own elements. They work before any script loads, in forms, with every assistive technology, and they
+        cost almost nothing to ship.
+      </li>
+      <li>
+        <strong>Base UI for complex behavior.</strong> Menus and tooltips need positioning, focus management and
+        typeahead the platform does not offer everywhere yet. Base UI, maintained full-time by the MUI team, provides
+        that behavior unstyled.
+      </li>
+      <li>
+        <strong>Plain CSS on tokens.</strong> Each component has one stylesheet in the <code>sonar.components</code>{' '}
+        cascade layer. Variants are data attributes; values are tokens only. No CSS-in-JS, no utility framework, and an
+        app’s own styles always win without <code>!important</code>.
+      </li>
+      <li>
+        <strong>One entry point per component.</strong> An app imports <code>@orbex/sonar-components/button</code> and
+        its stylesheet and loads nothing else. All {componentEntries.length} weigh {formatWeight(packageWeight)} gzipped together, script and styles.
+      </li>
+    </ul>
+  </Section>
+
+  <Section title="Install" id="install">
+    <p class="prose">
+      Installing the packages, setting the cascade layers and importing the tokens are on one page:
+      <a href="/get-started/installation/">Installation</a>. Each component page ends with its own import and its API;
+      the props of every component are also published as data at <a href="/api.json">/api.json</a>.
+    </p>
+  </Section>
+
+  <Section title="Quality gates" id="quality">
+    <ul class="prose">
+      <li><strong>Types:</strong> strict TypeScript, and the declarations ship with the package.</li>
+      <li><strong>Behavior:</strong> every component is tested in a DOM with Testing Library: roles, names, keyboard and state.</li>
+      <li><strong>Accessibility:</strong> axe runs on every rendered component in the tests; contrast is enforced on the tokens, where it is decided.</li>
+      <li><strong>Weight:</strong> the build fails when a component’s script and styles pass 3 KB gzipped. Two entry points have a larger budget, named in the build with its reason: the trend chart and the card (Card, Card link, Card scroll and Unit menu), at 4 KB.</li>
+      <li><strong>Versions:</strong> tokens and components are released together with Changesets, so one version names one consistent system.</li>
+    </ul>
+  </Section>
+</Docs>
+
+<style>
+  .more {
+    margin-top: var(--sonar-space-16);
+  }
+</style>

@@ -1,0 +1,8 @@
+{
+  "focus": {
+    "$type": "dimension",
+    "$description": "The keyboard focus ring: drawn outside the element, in color.focus, on every interactive component.",
+    "width": { "$value": { "value": 2, "unit": "px" } },
+    "offset": { "$value": { "value": 2, "unit": "px" } }
+  }
+}

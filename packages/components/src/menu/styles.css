@@ -1,0 +1,137 @@
+/* Menu: a rounded popup on the menu surface, rows with a pill-shaped highlight. It grows from the trigger, from 90 %. */
+@layer sonar.components {
+  .sonar-menu-positioner {
+    z-index: 50;
+    outline: 0;
+  }
+
+  .sonar-menu {
+    box-sizing: border-box;
+    min-width: max(var(--anchor-width, 0px), 168px);
+    max-height: var(--available-height);
+    padding: var(--sonar-space-8);
+    /* One axis only: nothing scrolls sideways */
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    border-radius: var(--sonar-shape-corner-large);
+    background: var(--sonar-color-surface-menu);
+    box-shadow: var(--sonar-elevation-2);
+    outline: 0;
+    transform-origin: var(--transform-origin);
+    transition:
+      opacity var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing),
+      scale var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing);
+  }
+
+  /* Opens from 90 %, closes to 96 % in 110 ms, accelerating */
+  .sonar-menu[data-starting-style] {
+    opacity: 0;
+    scale: 0.9;
+  }
+
+  .sonar-menu[data-ending-style] {
+    opacity: 0;
+    scale: 0.96;
+    transition-duration: var(--sonar-motion-duration-menu-exit);
+    transition-timing-function: var(--sonar-motion-easing-exit);
+  }
+
+  .sonar-menu-item {
+    display: flex;
+    gap: var(--sonar-space-10);
+    align-items: center;
+    min-height: 32px;
+    padding-inline: var(--sonar-space-12);
+    border-radius: var(--sonar-shape-corner-medium);
+    color: var(--sonar-color-text-default);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    outline: 0;
+    cursor: default;
+    user-select: none;
+  }
+
+  .sonar-menu-item[data-tone='danger'] {
+    color: var(--sonar-color-text-danger);
+  }
+
+  .sonar-menu-item[data-highlighted] {
+    background: var(--sonar-color-state-hover);
+    color: var(--sonar-color-text-strong);
+  }
+
+  /* The highlight stays neutral: a red tint behind red text would fall below 4.5:1 */
+  .sonar-menu-item[data-tone='danger'][data-highlighted] {
+    color: var(--sonar-color-text-danger);
+  }
+
+  .sonar-menu-item[data-disabled] {
+    color: var(--sonar-color-text-disabled);
+  }
+
+  .sonar-menu-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--sonar-size-icon-small);
+    height: var(--sonar-size-icon-small);
+    color: var(--sonar-color-text-secondary);
+  }
+
+  .sonar-menu-item[data-tone='danger'] .sonar-menu-icon {
+    color: inherit;
+  }
+
+  .sonar-menu-icon > svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .sonar-menu-label {
+    flex: 1;
+  }
+
+  .sonar-menu-trailing {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-sm);
+    letter-spacing: var(--sonar-type-label-sm-tracking);
+  }
+
+  .sonar-menu-check {
+    display: grid;
+    place-items: center;
+    width: var(--sonar-size-icon-small);
+    height: var(--sonar-size-icon-small);
+    color: var(--sonar-color-text-accent);
+  }
+
+  .sonar-menu-check > svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .sonar-menu-separator {
+    height: 1px;
+    margin: var(--sonar-space-6) var(--sonar-space-4);
+    background: var(--sonar-color-divider);
+  }
+
+  .sonar-menu-group-label {
+    padding: var(--sonar-space-6) var(--sonar-space-12) var(--sonar-space-4);
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-sm);
+    letter-spacing: var(--sonar-type-label-sm-tracking);
+  }
+
+  @media (pointer: coarse) {
+    .sonar-menu-item {
+      min-height: var(--sonar-layout-touch-target);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sonar-menu {
+      transition-property: opacity;
+    }
+  }
+}

@@ -1,0 +1,30 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Basic from '../../demos/search/Basic.tsx'
+import basicCode from '../../demos/search/Basic.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+---
+
+<ComponentDoc
+  entry="search-field"
+  lead="A search box whose results open under it as people type. Base UI’s Autocomplete provides the behavior; the app does the searching and passes the results, with a status line that says how the text was read."
+  baseUi="https://base-ui.com/react/components/autocomplete"
+>
+  <Demo title="Deliveries and invoices, in plain words" code={basicCode}><Basic client:visible /></Demo>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>Always controlled: the app keeps the text and decides the results. Search after a short pause in typing, not on every key.</li>
+      <li>Return <code>true</code> from <code>onItemChoose</code> to keep the list open, as a suggestion that fills the field does.</li>
+      <li>Draw each result with <a href="/components/search-result/">Search result</a>. The whole pattern, with its rules, is in <a href="/patterns/search/">Patterns › Search</a>.</li>
+      <li>In the app’s top bar, use <code>variant="top-bar"</code>: no box of its own, it fills the bar’s 39 px search pill with a 22 px icon, 12 px text and an 18 px clear mark, as in the product. On touch screens its text is 16 px drawn at three quarters, so it looks the same and iOS does not zoom in when it takes focus. <code>icon</code> and <code>clearIcon</code> take the app’s own marks.</li>
+      <li>The first result is highlighted whenever the list opens or changes, so Enter takes it at once. Escape clears the text first and keeps the list (now the suggestions); a second Escape closes it.</li>
+      <li><code>statusIcon</code> draws a mark in the status line’s 28 px accent circle (the sparkle of a smart search). <code>popupClassName</code>, <code>align</code> and <code>popupWidth</code> place and size the results from the app, such as as wide as the pill on a desktop, or the window less 12 px each side on a phone.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>The input carries its name itself: while the list is open, the rest of the page is hidden from assistive technology.</li>
+  </ul>
+</ComponentDoc>

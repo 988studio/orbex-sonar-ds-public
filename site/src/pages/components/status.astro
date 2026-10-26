@@ -1,0 +1,33 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Chips from '../../demos/status/Chips.tsx'
+import chipsCode from '../../demos/status/Chips.tsx?raw'
+import Dots from '../../demos/status/Dots.tsx'
+import dotsCode from '../../demos/status/Dots.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import { StatusVariants } from '../../demos/status/Specimens.tsx'
+---
+
+<ComponentDoc
+  entry="status"
+  lead="The state of an order, a delivery or an invoice, in words with a colored mark. The hue sits in the dot and the tint; the text stays at a reading level, so it passes AA anywhere."
+>
+  <Demo title="Dots, for rows and lists" code={dotsCode}><Dots /></Demo>
+  <Demo title="Chips, for headers and containers" code={chipsCode}><Chips /></Demo>
+  <SpecimenFigure slot="specimens" title="Tones and appearances"><StatusVariants /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li><strong>Positive</strong>: done, paid, delivered. <strong>Warning</strong>: pending, on hold, due today. <strong>Danger</strong>: delayed, overdue, canceled. <strong>Neutral</strong>: scheduled, draft.</li>
+      <li>Use the chip where status text would sit on a container: colored text does not reach 4.5:1 there.</li>
+      <li>One word or two. The detail goes in the panel the row opens.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>Color never carries the state alone: the word always names it.</li>
+    <li>The mark is hidden from assistive technology.</li>
+  </ul>
+</ComponentDoc>

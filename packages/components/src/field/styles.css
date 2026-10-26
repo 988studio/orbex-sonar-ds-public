@@ -1,0 +1,171 @@
+/* Fields: a label above, the native control in a rounded box, help and errors below. The box draws a 1 px edge at
+   rest, 2 px in the focus color while focused, and the danger color when invalid. */
+@layer sonar.components {
+  .sonar-field {
+    --_height: var(--sonar-size-control-medium);
+    --_edge: var(--sonar-color-border-control);
+    --_edge-width: 1px;
+
+    display: grid;
+    gap: var(--sonar-space-6);
+    min-width: 0;
+  }
+
+  .sonar-field[data-size='small'] {
+    --_height: var(--sonar-size-control-small);
+  }
+
+  .sonar-field-label {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  .sonar-field-control {
+    position: relative;
+    display: flex;
+    gap: var(--sonar-space-8);
+    align-items: center;
+    min-width: 0;
+    height: var(--_height);
+    padding-inline: var(--sonar-space-12);
+    border-radius: var(--sonar-shape-corner-medium);
+    box-shadow: inset 0 0 0 var(--_edge-width) var(--_edge);
+    color: var(--sonar-color-text-strong);
+    transition: box-shadow var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);
+  }
+
+  @media (hover: hover) {
+    .sonar-field-control:hover:not(:has(:disabled)) {
+      --_edge: var(--sonar-color-border-strong);
+    }
+  }
+
+  /* The edge itself becomes the focus ring: inside the box, so fields in a row never overlap */
+  .sonar-field-control:has(.sonar-field-input:focus-visible) {
+    --_edge: var(--sonar-color-focus);
+    --_edge-width: 2px;
+  }
+
+  .sonar-field[data-invalid] .sonar-field-control {
+    --_edge: var(--sonar-color-danger);
+  }
+
+  .sonar-field[data-invalid] .sonar-field-control:has(.sonar-field-input:focus-visible) {
+    --_edge-width: 2px;
+  }
+
+  .sonar-field-input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: none;
+    color: inherit;
+    font: var(--sonar-type-body-lg);
+    letter-spacing: var(--sonar-type-body-lg-tracking);
+    appearance: none;
+  }
+
+  .sonar-field[data-size='small'] .sonar-field-input {
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  /* Placeholders are text: they read at the tertiary level, never lighter */
+  .sonar-field-input::placeholder {
+    color: var(--sonar-color-text-placeholder);
+    opacity: 1;
+  }
+
+  select.sonar-field-input {
+    padding-inline-end: var(--sonar-space-24);
+    cursor: pointer;
+  }
+
+  select.sonar-field-input option {
+    background: var(--sonar-color-surface-menu);
+    color: var(--sonar-color-text-strong);
+  }
+
+  .sonar-field-icon,
+  .sonar-field-chevron {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--sonar-size-icon-small);
+    height: var(--sonar-size-icon-small);
+    color: var(--sonar-color-text-tertiary);
+    pointer-events: none;
+  }
+
+  .sonar-field-icon > svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .sonar-field-chevron {
+    position: absolute;
+    right: var(--sonar-space-12);
+  }
+
+  .sonar-field-description {
+    margin: 0;
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-body-md);
+    letter-spacing: var(--sonar-type-body-md-tracking);
+  }
+
+  .sonar-field-error {
+    display: flex;
+    gap: var(--sonar-space-6);
+    align-items: flex-start;
+    margin: 0;
+    color: var(--sonar-color-text-danger);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  .sonar-field-error-icon {
+    flex: none;
+    width: 14px;
+    height: 14px;
+  }
+
+  .sonar-field:has(.sonar-field-input:disabled) .sonar-field-control {
+    --_edge: var(--sonar-color-border-muted);
+    color: var(--sonar-color-text-disabled);
+  }
+
+  .sonar-field:has(.sonar-field-input:disabled) .sonar-field-label {
+    color: var(--sonar-color-text-disabled);
+  }
+
+  .sonar-field-input:disabled {
+    cursor: default;
+  }
+
+  /* Touch screens: the box grows to the touch target and the text to 16 px, below which iOS zooms in on focus */
+  @media (pointer: coarse) {
+    .sonar-field,
+    .sonar-field[data-size='small'] {
+      --_height: var(--sonar-layout-touch-target);
+    }
+
+    .sonar-field .sonar-field-input {
+      font-size: 16px;
+    }
+  }
+
+  /* A unit after the value: lighter, at the end of the field */
+  .sonar-field-suffix {
+    flex: none;
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-body-md);
+    pointer-events: none;
+  }
+}

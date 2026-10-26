@@ -1,0 +1,70 @@
+/*
+ * Tokens that belong to this documentation site, not to the design system.
+ * The product never sets type larger than 26 px; long-form documentation needs headings and a reading size,
+ * so they are defined here, from the system's font families and weights.
+ */
+@layer base {
+  :root {
+    --site-display: var(--sonar-font-weight-semibold) clamp(44px, 7vw, 76px) / 0.95 var(--sonar-font-family-condensed);
+    --site-heading-1: var(--sonar-font-weight-semibold) clamp(34px, 5vw, 44px) / 1.05 var(--sonar-font-family-condensed);
+    --site-heading-2: var(--sonar-font-weight-semibold) 22px / 1.25 var(--sonar-font-family-sans);
+    --site-prose: var(--sonar-font-weight-regular) 15px / 1.6 var(--sonar-font-family-sans);
+    --site-lead: var(--sonar-font-weight-regular) 18px / 1.5 var(--sonar-font-family-sans);
+    --site-measure: 68ch;
+    --site-content-width: 1120px;
+    --site-sidebar-width: 264px;
+  }
+}
+
+@layer base {
+  /* Long-form text: a comfortable measure and rhythm. */
+  .prose {
+    max-width: var(--site-measure);
+    font: var(--site-prose);
+    color: var(--sonar-color-text-default);
+  }
+
+  .prose > * + * {
+    margin-top: var(--sonar-space-16);
+  }
+
+  .prose ul,
+  .prose ol {
+    padding-left: 1.25em;
+  }
+
+  .prose li + li {
+    margin-top: var(--sonar-space-6);
+  }
+
+  .prose strong {
+    color: var(--sonar-color-text-strong);
+    font-weight: var(--sonar-font-weight-semibold);
+  }
+
+  /* Content that only makes sense in the active theme (for example, which tones a theme uses).
+     Outside ThemePair only: the nearest data-theme cannot be told apart from an outer one in plain CSS.
+     !important lets these layered utilities win over unlayered component styles that set display. */
+  [data-theme='light'] .only-dark,
+  [data-theme='dark'] .only-light {
+    display: none !important;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme]) .only-dark {
+      display: none !important;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .only-light {
+      display: none !important;
+    }
+  }
+
+  /* A block that scrolls sideways takes focus while it does (Docs.astro); its ring is drawn inside so no corner clips it */
+  [data-scroll-region]:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: calc(-1 * var(--sonar-focus-width));
+  }
+}

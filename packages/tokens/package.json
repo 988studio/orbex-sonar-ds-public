@@ -1,0 +1,37 @@
+{
+  "name": "@orbex/sonar-tokens",
+  "version": "1.1.4",
+  "description": "Design tokens of the Orbex Sonar-DB Design System, in the W3C Design Tokens format.",
+  "author": "988©STUDIO",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./tokens.css": "./dist/tokens.css",
+    "./type.css": "./dist/type.css",
+    "./tokens.json": "./dist/tokens.json",
+    "./color": "./lib/color.ts",
+    "./accessibility": "./lib/accessibility.ts"
+  },
+  "files": [
+    "dist",
+    "src",
+    "lib"
+  ],
+  "scripts": {
+    "palette": "node scripts/palette.ts",
+    "build": "node scripts/build.ts",
+    "test": "node --test test/*.test.ts",
+    "typecheck": "tsc -p ."
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "typescript": "^5.9.3"
+  }
+}

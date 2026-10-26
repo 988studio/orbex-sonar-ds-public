@@ -1,0 +1,495 @@
+/* Customize overview: the sheet that hangs from the top bar, with a scrim over the content
+   Ported from the prototype’s CSS (Orbex · Prototype v38), rule by rule in its cascade order, scoped to .oxa.
+   The prototype’s custom properties resolve to the system’s tokens in app-tokens.css. */
+
+
+/* from overview.css */
+.oxa .cta {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  height:27px;
+  padding:0 10px 0 11px;
+  background:var(--accent);
+  color:var(--on-accent-fixed);
+  font-size:13px;
+  font-weight:600;
+}
+.oxa .cta .ms {
+  font-size:18px;
+}
+.oxa .cta {
+  transition:color .16s cubic-bezier(.23,1,.32,1),background-color .16s cubic-bezier(.23,1,.32,1),border-color .16s cubic-bezier(.23,1,.32,1),box-shadow .16s cubic-bezier(.23,1,.32,1),transform .16s cubic-bezier(.23,1,.32,1);
+}
+
+/* from screens.css */
+.oxa .scrim {
+  position:absolute;
+  left:0;
+  right:0;
+  top:var(--top-h);
+  bottom:0;
+  background:var(--scrim);
+  z-index:4;
+}
+.oxa .sheet {
+  position:absolute;
+  left:0;
+  right:0;
+  z-index:5;
+  background:var(--surface-card);
+  padding:26px 32px 30px var(--gutter);
+}
+.oxa .sheet {
+  clip-path:inset(0 0 -60px 0);
+}
+.oxa .sh-h {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--divider);
+}
+.oxa .sh-h h2 {
+  margin:0;
+  color:var(--text-strong);
+}
+.oxa .sh-g {
+  display:grid;
+  padding-top:20px;
+}
+.oxa .sh-g {
+  grid-template-columns:262px 1fr 262px;
+  gap:48px;
+}
+.oxa .sh-c .lb {
+  color:var(--text-strong);
+  letter-spacing:0;
+  height:16px;
+}
+.oxa .sh-c p {
+  margin:8px 0 14px;
+  letter-spacing:0;
+  line-height:16px;
+}
+.oxa .sh-c.w2 .lb {
+  margin-bottom:8px;
+}
+.oxa .cols2 {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  column-gap:40px;
+}
+.oxa .tr {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  height:38px;
+  border-top:1px solid var(--divider);
+  font-size:14px;
+  color:var(--text-strong);
+  position:relative;
+}
+.oxa .tr.set, .oxa .cols2>div>.tr:last-child {
+  border-bottom:1px solid var(--divider);
+}
+.oxa .tr.hov::before {
+  content:"";
+  position:absolute;
+  inset:0 -10px;
+  background:linear-gradient(90deg,transparent,var(--surface-hover) 10%,var(--surface-hover) 90%,transparent);
+  z-index:-1;
+}
+.oxa .sh-c {
+  position:relative;
+  z-index:0;
+}
+.oxa .tg {
+  position:relative;
+  flex:none;
+  cursor:pointer;
+}
+.oxa .tg::after {
+  content:"";
+  position:absolute;
+  border-radius:50%;
+}
+.oxa .field {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  height:36px;
+  padding:0 12px;
+  border:1px solid var(--border-subtle);
+  background:var(--surface-card);
+  color:var(--text-strong);
+  text-align:left;
+}
+.oxa .field:hover {
+  border-color:var(--border-meta);
+}
+.oxa .chev2 {
+  width:14px;
+  height:14px;
+  fill:none;
+  stroke:var(--border-contrast);
+  stroke-width:1.4;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.oxa .sh-a {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:18px;
+}
+.oxa .cta.o .ms {
+  font-size:17px;
+}
+.oxa .rst {
+  color:var(--text-soft);
+}
+.oxa .rst:hover {
+  color:var(--text-strong);
+}
+
+/* from modules.css */
+.oxa .xbtn {
+  display:grid;
+  place-items:center;
+  color:var(--text-strong);
+}
+.oxa .cta.off {
+  pointer-events:none;
+}
+.oxa .cta.o {
+  background:transparent;
+  color:var(--text-strong);
+  padding:0 14px;
+  box-shadow:inset 0 0 0 1px var(--border-contrast);
+}
+.oxa .cta.o.red {
+  color:var(--danger);
+  box-shadow:inset 0 0 0 1px var(--danger);
+}
+.oxa .cta.o.g {
+  color:var(--accent);
+  box-shadow:inset 0 0 0 1px var(--accent);
+}
+.oxa .card.confirm .buy .cta, .oxa .card.success .buy .cta {
+  flex:1;
+  justify-content:center;
+  padding:0 14px;
+  white-space:nowrap;
+}
+.oxa .banner .cta.sw {
+  flex:none;
+  padding:0 14px;
+}
+
+/* from app.css */
+.oxa .cta:disabled {
+  background:var(--fill-subtle);
+  color:var(--text-dim);
+  cursor:default;
+  filter:none;
+  transform:none;
+}
+.oxa .cta.off {
+  background:var(--cta-off-bg);
+  color:var(--cta-off-text);
+}
+.oxa .sheet {
+  outline:none;
+}
+.oxa .tr {
+  cursor:pointer;
+}
+.oxa .tr.soon {
+  cursor:default;
+  color:var(--text-disabled);
+}
+.oxa .tg:disabled {
+  opacity:.5;
+  cursor:default;
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .sheet, .oxa .scrim {
+    animation:none!important;
+  }
+}
+
+/* from m3e.css */
+.oxa .sheet {
+  border-radius:0 0 var(--r-panel) var(--r-panel);
+}
+.oxa .cta {
+  transition:border-radius var(--sp-fast-d) var(--sp-fast),background-color var(--fx-def-d) var(--fx-def),color var(--fx-def-d) var(--fx-def),box-shadow var(--fx-def-d) var(--fx-def),background-image var(--fx-def-d) var(--fx-def);
+}
+.oxa .cta:hover {
+  filter:none;
+  background-image:linear-gradient(var(--overlay-on-accent),var(--overlay-on-accent));
+}
+.oxa .cta:active {
+  transform:none;
+}
+.oxa .cta:active {
+  border-radius:var(--r-cta-press);
+}
+.oxa .cta {
+  border-radius:var(--r-cta);
+}
+.oxa .tg {
+  width:40px;
+  height:24px;
+  border-radius:12px;
+  background:var(--switch-track);
+  box-shadow:inset 0 0 0 2px var(--border-control);
+  transition:background-color var(--fx-def-d) var(--fx-def),box-shadow var(--fx-def-d) var(--fx-def);
+}
+.oxa .tg::after {
+  left:6px;
+  top:6px;
+  width:12px;
+  height:12px;
+  background:var(--fill-faint);
+  transform:none!important;
+  transition:left var(--sp-fast-d) var(--sp-fast),top var(--sp-fast-d) var(--sp-fast),width var(--sp-fast-d) var(--sp-fast),height var(--sp-fast-d) var(--sp-fast),background-color var(--fx-def-d) var(--fx-def);
+}
+.oxa .tg:active::after {
+  left:4px;
+  top:4px;
+  width:16px;
+  height:16px;
+}
+.oxa .tg[data-state="checked"] {
+  background:var(--accent);
+  box-shadow:none;
+}
+.oxa .tg[data-state="checked"]::after {
+  left:19px;
+  top:3px;
+  width:18px;
+  height:18px;
+  background:var(--on-accent);
+}
+.oxa .tg[data-state="checked"]:active::after {
+  left:17px;
+  top:1px;
+  width:22px;
+  height:22px;
+}
+.oxa .sheet[data-state="closed"] {
+  animation:m-sdout 200ms var(--emph-accel) forwards;
+}
+.oxa .scrim[data-state="open"] {
+  animation:m-fin var(--fx-def-d) var(--fx-def);
+}
+.oxa .scrim[data-state="closed"] {
+  animation:m-fin 150ms linear reverse forwards;
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .sheet[data-state="open"] {
+    animation:m-fin var(--fx-def-d) linear!important;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .sheet[data-state="closed"] {
+    animation:m-fin 100ms linear reverse forwards!important;
+  }
+}
+.oxa .xbtn {
+  border-radius:50%;
+}
+
+/* from cards/cards.css */
+.oxa .cta {
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+
+/* from polish.css */
+.oxa .cta {
+  text-transform:none;
+  letter-spacing:-.01em;
+}
+.oxa .field {
+  border-radius:var(--r-field);
+  border-color:var(--border-control);
+}
+.oxa .field:hover {
+  border-color:var(--border-contrast);
+}
+.oxa .field:focus-visible {
+  outline:0;
+  box-shadow:inset 0 0 0 2px var(--accent);
+  border-color:transparent;
+}
+.oxa .xbtn {
+  width:28px;
+  height:28px;
+  margin-right:-4px;
+}
+.oxa .xbtn .ms {
+  font-size:20px;
+}
+.oxa .xbtn:hover {
+  background:var(--state-hover);
+}
+.oxa .sheet[data-state="closed"] {
+  animation:m-sdy 150ms cubic-bezier(.4,0,1,1) forwards,m-fo 150ms linear forwards;
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .sheet[data-state="closed"] {
+    animation:m-fo 100ms linear forwards!important;
+  }
+}
+.oxa .sheet[data-state="open"] {
+  animation:m-sdin 420ms var(--sp-def),m-fin 420ms var(--fx-def);
+}
+.oxa .sheet {
+  top:70px;
+  box-shadow:var(--shadow-sheet-down);
+}
+.oxa .cta {
+  padding-top:1px!important;
+}
+.oxa .cta .ms {
+  margin-top:-1px;
+}
+.oxa .cta.o.g:hover {
+  background-image:linear-gradient(var(--state-hover),var(--state-hover));
+}
+.oxa .cta.o.g:active {
+  background-image:linear-gradient(var(--state-hover),var(--state-hover)),linear-gradient(var(--state-hover),var(--state-hover));
+}
+
+/* from tablet.css */
+.oxa.t-tab .sheet {
+  padding:22px var(--pad-r) 24px var(--gutter);
+  max-height:calc(100% - 86px);
+  overflow-y:auto;
+}
+@media (max-width:1099px) {
+  .oxa.t-tab .sh-g {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-template-areas:"basic pre" "mods mods";
+    gap:24px 40px;
+  }
+}
+@media (max-width:1099px) {
+  .oxa.t-tab .sh-c:first-child {
+    grid-area:basic;
+  }
+}
+@media (max-width:1099px) {
+  .oxa.t-tab .sh-c.w2 {
+    grid-area:mods;
+  }
+}
+@media (max-width:1099px) {
+  .oxa.t-tab .sh-c.last {
+    grid-area:pre;
+  }
+}
+
+/* from mobile.css */
+.oxa.m-mob .sheet {
+  left:0;
+  right:0;
+  top:auto;
+  bottom:0;
+  width:auto;
+  clip-path:none;
+  z-index:6;
+  border-radius:20px 20px 0 0;
+  box-shadow:0 -12px 32px -8px rgba(0,0,0,.25);
+  padding:30px 16px calc(16px + env(safe-area-inset-bottom,0px));
+}
+.oxa.m-mob .sheet {
+  max-height:calc(100% - 44px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+.oxa.m-mob .sheet::before {
+  content:"";
+  position:absolute;
+  top:10px;
+  left:50%;
+  width:36px;
+  height:4px;
+  margin-left:-18px;
+  border-radius:2px;
+  background:var(--border-subtle);
+  z-index:2;
+}
+.oxa.m-mob .sheet[data-state="open"] {
+  animation:m-up 420ms var(--sp-def,cubic-bezier(.2,0,0,1)),m-fin 200ms var(--fx-def,linear);
+}
+.oxa.m-mob .sheet[data-state="closed"] {
+  animation:m-down 220ms cubic-bezier(.4,0,1,1) forwards;
+}
+.oxa.m-mob .sh-g {
+  grid-template-columns:minmax(0,1fr);
+  gap:22px;
+}
+.oxa.m-mob .cols2 {
+  grid-template-columns:minmax(0,1fr);
+}
+.oxa.m-mob .cols2>div:first-child>.tr:last-child {
+  border-bottom:0;
+}
+.oxa .m-row .tg {
+  margin-left:4px;
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa.m-mob .sheet[data-state] {
+    animation:m-fin 120ms linear;
+  }
+}
+
+/* from safe.css */
+.oxa.m-mob .sheet {
+  max-height:calc(100% - 44px - var(--sa-t));
+}
+.oxa.t-tab .sheet {
+  top:calc(70px + var(--sa-t));
+}
+.oxa.t-tab .scrim {
+  top:calc(var(--top-h) + var(--sa-t));
+}
+
+/* from ui/ui.css */
+.oxa .cdlg-a .cta {
+  min-width:96px;
+  justify-content:center;
+}
+.oxa .cta.bad {
+  background:var(--danger);
+  color:var(--on-accent-fixed);
+}
+@keyframes m-fin {from{opacity:0}}
+@keyframes m-sdin {from{transform:translateY(-24px)}}
+@keyframes m-sdout {to{transform:translateY(-16px);opacity:0}}
+@keyframes m-sdy {to{transform:translateY(-14px)}}
+@keyframes m-fo {to{opacity:0}}
+@keyframes m-up {from{transform:translateY(100%)}}
+@keyframes m-down {to{transform:translateY(100%)}}
+
+/* The predefined layouts' menu (1.0.0-alpha.16): the system's menu, at least as wide as its field */
+.sonar-menu.roles-menu {
+  min-width: var(--anchor-width, 200px);
+}
+
+/* Save layout (1.0.0-alpha.16): its capitals sat 1.2 px below the pill's middle (the product's 1 px top padding on
+   every .cta, over Plex's low capitals). 1 px at the foot instead brings them within 0.2 px; the icon keeps its place */
+.oxa .sh-a .cta {
+  padding-top: 0 !important;
+  padding-bottom: 1px;
+}
+
+.oxa .sh-a .cta .ms {
+  margin-top: 1px;
+}

@@ -1,0 +1,31 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Variants from '../../demos/icon-button/Variants.tsx'
+import variantsCode from '../../demos/icon-button/Variants.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import { IconButtonStates } from '../../demos/icon-button/Specimens.tsx'
+---
+
+<ComponentDoc
+  entry="icon-button"
+  lead="A round button with one icon, for actions people recognize at a glance: notifications, search, more actions. Its name is required, because nothing else on screen says it."
+>
+  <Demo title="Variants and sizes" code={variantsCode}><Variants /></Demo>
+  <SpecimenFigure slot="specimens" title="Variants, states and sizes"><IconButtonStates /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li><strong>Standard</strong> in bars and on cards; the other weights follow Button.</li>
+      <li>Give it a Tooltip with the same words as its label, so sighted people can learn it too.</li>
+      <li>When an icon could mean several things, use a Button with a label instead.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li><code>label</code> is required and becomes the button’s accessible name.</li>
+    <li>The icon is hidden from assistive technology.</li>
+    <li>On touch screens the hit area grows to 48 px.</li>
+  </ul>
+</ComponentDoc>

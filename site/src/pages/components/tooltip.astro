@@ -1,0 +1,31 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Toolbar from '../../demos/tooltip/Toolbar.tsx'
+import toolbarCode from '../../demos/tooltip/Toolbar.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import { TooltipVariants } from '../../demos/tooltip/Specimens.tsx'
+---
+
+<ComponentDoc
+  entry="tooltip"
+  baseUi="https://base-ui.com/react/components/tooltip"
+  lead="A short label on the inverse surface, shown on hover and on keyboard focus. Base UI positions it and manages the delays."
+>
+  <Demo title="A toolbar of icon buttons" code={toolbarCode}><Toolbar client:visible /></Demo>
+  <SpecimenFigure slot="specimens" title="Length"><TooltipVariants /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>A name or a hint, never information someone needs to continue: touch screens show tooltips only on a long press.</li>
+      <li>Wrap a toolbar in a TooltipProvider: once one tooltip is open, the next appears at once.</li>
+      <li>The trigger must be focusable, so keyboard users get the tooltip too.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>Keyboard focus opens the tooltip without delay; Escape closes it.</li>
+    <li>Text on the inverse surface passes AA in both themes.</li>
+  </ul>
+</ComponentDoc>

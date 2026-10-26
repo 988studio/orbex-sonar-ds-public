@@ -1,0 +1,32 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import { UnitMenuStates } from '../../demos/card/UnitMenuStates.tsx'
+import Units from '../../demos/card/Units.tsx'
+import unitsCode from '../../demos/card/Units.tsx?raw'
+import { CardPartStates } from '../../demos/patterns/CardParts.tsx'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+---
+
+<ComponentDoc
+  entry="unit-menu"
+  lead="The unit a card’s figures are shown in, as a small pill that opens a menu: pallets, kilograms or items, dollars or euros. Changing it converts every figure in the card; it is the card’s only setting."
+  baseUi="https://base-ui.com/react/components/menu"
+>
+  <Demo title="A figure that follows its unit" code={unitsCode}><Units client:visible /></Demo>
+  <SpecimenFigure slot="specimens" title="The pill at rest, hovered, focused and pressed"><CardPartStates only="unit" /></SpecimenFigure>
+  <SpecimenFigure slot="specimens" title="Changing the unit, on a desktop card and a phone card"><UnitMenuStates /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>At the end of the card’s header, and only there. Load <code>menu.css</code> with <code>card.css</code>: the pill opens a Menu.</li>
+      <li>The pill shows the short code (plt, kg, USD); the menu shows the full names.</li>
+      <li>The choice is per card: each team counts in its own unit.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>The pill is named with what it measures and what it shows, so “Unit: plt, Pallets” is both read and reachable by voice.</li>
+  </ul>
+</ComponentDoc>

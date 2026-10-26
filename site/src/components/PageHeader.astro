@@ -1,0 +1,33 @@
+---
+interface Props {
+  title: string
+  lead: string
+}
+
+const { title, lead } = Astro.props
+---
+
+<header class="page-header">
+  <h1>{title}</h1>
+  <p class="lead">{lead}</p>
+  <slot />
+</header>
+
+<style>
+  .page-header {
+    max-width: var(--site-content-width);
+    margin-bottom: var(--sonar-space-48);
+  }
+
+  h1 {
+    font: var(--site-heading-1);
+    letter-spacing: -0.01em;
+  }
+
+  .lead {
+    max-width: var(--site-measure);
+    margin-top: var(--sonar-space-16);
+    color: var(--sonar-color-text-secondary);
+    font: var(--site-lead);
+  }
+</style>

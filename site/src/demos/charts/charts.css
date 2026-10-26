@@ -1,0 +1,45 @@
+/* Arrangement of the chart demos: each chart with its caption above and its legend below */
+.chart-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sonar-space-32) var(--sonar-space-40);
+  width: 100%;
+}
+
+.chart-demo figure {
+  display: grid;
+  gap: var(--sonar-space-10);
+  margin: 0;
+}
+
+.chart-demo[data-shape='bars'] {
+  display: grid;
+  gap: var(--sonar-space-28);
+  max-width: 360px;
+}
+
+.chart-demo[data-shape='rings'] figure {
+  justify-items: center;
+}
+
+.chart-demo figcaption {
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-label-md);
+  letter-spacing: var(--sonar-type-label-md-tracking);
+}
+
+.chart-demo .ring-total {
+  display: grid;
+  justify-items: center;
+}
+
+.chart-demo .ring-total strong {
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-title-md);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-demo .ring-total span {
+  color: var(--sonar-color-text-tertiary);
+  font: var(--sonar-type-label-sm);
+}

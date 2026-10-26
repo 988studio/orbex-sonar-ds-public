@@ -1,0 +1,124 @@
+---
+import { navigation } from '../lib/navigation.ts'
+
+const current = Astro.url.pathname
+---
+
+<div class="navigation">
+  {
+    navigation.map((section) => (
+      <section aria-labelledby={section.label && `nav-${section.label}`}>
+        {section.label && (
+          <p class="section-label" id={`nav-${section.label}`}>
+            {section.href ? (
+              <a class="section-link" href={section.href} aria-current={section.href === current ? 'page' : undefined}>
+                {section.label}
+              </a>
+            ) : (
+              section.label
+            )}
+          </p>
+        )}
+        <ul role="list">
+          {section.items.map(({ label, href }) => (
+            <li>
+              {href ? (
+                <a href={href} aria-current={href === current ? 'page' : undefined}>
+                  {label}
+                </a>
+              ) : (
+                <span class="planned">
+                  {label}
+                  <span class="status">Planned</span>
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .navigation {
+    display: grid;
+    gap: var(--sonar-space-24);
+  }
+
+  .section-label {
+    margin: 0 0 var(--sonar-space-4) var(--sonar-space-12);
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-overline);
+    letter-spacing: var(--sonar-type-overline-tracking);
+    text-transform: uppercase;
+  }
+
+  /* A section’s name leads to its index page: it keeps the look of a heading, with the states of a link */
+  .section-label:has(.section-link) {
+    margin-left: 0;
+  }
+
+  .section-link.section-link {
+    min-height: 32px;
+    color: var(--sonar-color-text-tertiary);
+    font: inherit;
+    letter-spacing: inherit;
+  }
+
+  ul {
+    display: grid;
+    gap: var(--sonar-space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  a,
+  .planned {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 36px;
+    padding: 0 var(--sonar-space-12);
+    border-radius: var(--sonar-shape-corner-full);
+    font: var(--sonar-type-label-lg);
+    font-weight: var(--sonar-font-weight-regular);
+    letter-spacing: var(--sonar-type-label-lg-tracking);
+  }
+
+  a {
+    color: var(--sonar-color-text-secondary);
+    text-decoration: none;
+    transition: background-color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);
+  }
+
+  a:hover {
+    background: var(--sonar-color-state-hover);
+    color: var(--sonar-color-text-strong);
+  }
+
+  a[aria-current='page'] {
+    background: var(--sonar-color-accent-tonal);
+    color: var(--sonar-color-on-accent-tonal);
+    font-weight: var(--sonar-font-weight-semibold);
+  }
+
+  .section-link[aria-current='page'] {
+    color: var(--sonar-color-on-accent-tonal);
+  }
+
+  a:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: calc(-1 * var(--sonar-focus-width));
+  }
+
+  .planned {
+    color: var(--sonar-color-text-tertiary);
+  }
+
+  .status {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-sm);
+    letter-spacing: var(--sonar-type-label-sm-tracking);
+  }
+</style>

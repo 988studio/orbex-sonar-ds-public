@@ -1,0 +1,49 @@
+---
+/**
+ * Renders its content twice, in a light and a dark scope, side by side.
+ * Works because every themed token is declared on any element with data-theme.
+ */
+interface Props {
+  label?: string
+}
+
+const { label } = Astro.props
+const content = await Astro.slots.render('default')
+---
+
+<figure class="theme-pair" aria-label={label}>
+  <div class="panel" data-theme="light">
+    <span class="caption">Light</span>
+    <div class="stage" set:html={content} />
+  </div>
+  <div class="panel" data-theme="dark" aria-hidden="true">
+    <span class="caption">Dark</span>
+    <div class="stage" set:html={content} />
+  </div>
+</figure>
+
+<style>
+  /* Two separate panels, each with its own corners: nothing relies on a parent clipping its children */
+  .theme-pair {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: var(--sonar-space-8);
+  }
+
+  .panel {
+    display: grid;
+    gap: var(--sonar-space-16);
+    align-content: start;
+    padding: var(--sonar-space-20) var(--sonar-space-24) var(--sonar-space-28);
+    border-radius: var(--sonar-shape-corner-large);
+    background: var(--sonar-color-surface-page);
+    box-shadow: 0 0 0 1px var(--sonar-color-divider);
+    color: var(--sonar-color-text-default);
+  }
+
+  .caption {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+</style>

@@ -1,0 +1,31 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Examples from '../../demos/badge/Examples.tsx'
+import examplesCode from '../../demos/badge/Examples.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import { BadgeVariants } from '../../demos/badge/Specimens.tsx'
+---
+
+<ComponentDoc
+  entry="badge"
+  lead="A count or a dot on a navigation item or an icon button. Figures are set in the mono face, as everywhere numbers are compared."
+>
+  <Demo title="Count, dot and tones" code={examplesCode}><Examples /></Demo>
+  <SpecimenFigure slot="specimens" title="Forms and tones"><BadgeVariants /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li><strong>Danger</strong> for what needs attention, such as unpaid invoices; <strong>accent</strong> for news.</li>
+      <li>A dot says that something is new; a count says how much. Counts above 99 show as 99+.</li>
+      <li>The badge does not position itself: its container places it, so it fits any shape it sits on.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>Give it a <code>label</code> that says what it counts; the bare number is then hidden from assistive technology.</li>
+    <li>When the element it sits on already says it, as an icon button named “Notifications, 12 unread”, hide the badge with <code>aria-hidden</code>.</li>
+    <li>White on the danger fill reaches 4.5:1 in both themes.</li>
+  </ul>
+</ComponentDoc>

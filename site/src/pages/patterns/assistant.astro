@@ -1,0 +1,64 @@
+---
+import '../../styles/global.css'
+import '@orbex/sonar-components/styles.css'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import AppDemo from '@orbex/sonar-patterns/app/AppDemo.tsx'
+import Docs from '../../layouts/Docs.astro'
+---
+
+<Docs title="AI assistant" description="The Orbex assistant: a floating chat on desktops and tablets, a bottom sheet on phones, with answers that carry a card of the data they talk about.">
+  <PageHeader
+    title="AI assistant"
+    lead="A chat with the Orbex assistant, opened from the chat button in the top bar or Assistant in the phone’s bottom bar. It answers about deliveries, stock, payments and orders, and an answer about one thing carries a small card with its figures and the action to take."
+  />
+
+  <Section title="Desktop and tablet" id="desktop">
+    <p class="prose">
+      A floating window over the overview, 340 × 460 px, 32 px from the right edge. Drag it by its header, or focus the
+      header and use the arrow keys (Shift moves further). The button next to × toggles 340 × 460 and 520 × 680. On the
+      desktop, with a mouse, any edge or corner also resizes it between 300 × 380 and 640 × 820; on a touch screen only
+      the button does. It never leaves the frame. Escape or × closes it.
+      Try a suggestion, or ask about stock, payments, a reorder or 04-127C.
+    </p>
+    <SpecimenFigure title="The assistant at 1440 × 980"><AppDemo client:visible open="chat" /></SpecimenFigure>
+  </Section>
+
+  <Section title="Tablet" id="tablet">
+    <p class="prose">
+      The same floating window, over the tablet’s overview and under its top bar, where the chat button opens and closes
+      it. It keeps every measure of the desktop’s and stays inside the 820 × 1180 screen. It does not resize from its
+      edges or corners: the button next to × toggles its two sizes.
+    </p>
+    <SpecimenFigure title="The assistant at 820 × 1180"><AppDemo client:visible device="tablet" open="chat" /></SpecimenFigure>
+  </Section>
+
+  <Section title="Phone" id="phone">
+    <p class="prose">
+      A bottom sheet with a handle that covers all but the top 44 px, rising in 420 ms on the default spatial spring
+      and leaving in 150 ms. The size button is gone; × closes it. The input sits above the keyboard.
+    </p>
+    <SpecimenFigure title="The assistant at 390 × 844"><AppDemo client:visible device="phone" open="chat" /></SpecimenFigure>
+  </Section>
+
+  <Section title="Anatomy" id="anatomy">
+    <ul class="prose">
+      <li><strong>Header</strong>: the sun on a green disc, “Orbex assistant” with an AI tag, a green dot and what it knows about; size and close buttons.</li>
+      <li><strong>Messages</strong>: the assistant’s on the left in a quiet bubble, the person’s on the right in green, each with its time. While it thinks, three dots pulse.</li>
+      <li><strong>Answer card</strong>: a title, an optional status tag, label and value rows, and one action.</li>
+      <li><strong>Suggestions</strong>: three questions as chips above the input.</li>
+      <li><strong>Input</strong>: a text area that grows to 96 px, Enter sends and Shift+Enter breaks the line; the send button is disabled while it is empty.</li>
+      <li><strong>Note</strong>: “AI answers can be wrong. Check important details.”</li>
+    </ul>
+  </Section>
+
+  <Section title="Accessibility" id="accessibility">
+    <ul class="prose">
+      <li>The window is a dialog named “Chat with the Orbex AI assistant”; focus moves to the input when it opens.</li>
+      <li>The message list is a polite live region, so new answers are read as they arrive.</li>
+      <li>The header is focusable and moves the window with the arrow keys; the resize edges are for pointers only, and the size button does the same with one press.</li>
+      <li>The thinking dots are an image named “The assistant is thinking”.</li>
+    </ul>
+  </Section>
+</Docs>

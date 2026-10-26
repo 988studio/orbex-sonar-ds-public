@@ -1,0 +1,66 @@
+/* Notice: a tinted container with an icon and the message at a reading level. The hue lives in the tint and the
+   icon; the text, links and the action stay in the strong and default levels, so they pass AA on every tint. */
+@layer sonar.components {
+  .sonar-notice {
+    --_tint: var(--sonar-color-surface-container);
+    --_icon: var(--sonar-color-text-secondary);
+
+    display: flex;
+    gap: var(--sonar-space-10);
+    align-items: flex-start;
+    padding: var(--sonar-space-12) var(--sonar-space-16);
+    border-radius: var(--sonar-shape-corner-large);
+    background: var(--_tint);
+    color: var(--sonar-color-text-default);
+    font: var(--sonar-type-body-md);
+    letter-spacing: var(--sonar-type-body-md-tracking);
+  }
+
+  .sonar-notice[data-tone='success'] {
+    --_tint: var(--sonar-color-success-container);
+    --_icon: var(--sonar-color-text-accent);
+  }
+
+  .sonar-notice[data-tone='warning'] {
+    --_tint: var(--sonar-color-warning-container);
+    --_icon: var(--sonar-color-text-warning);
+  }
+
+  .sonar-notice[data-tone='danger'] {
+    --_tint: var(--sonar-color-danger-container);
+    --_icon: var(--sonar-color-text-danger);
+  }
+
+  .sonar-notice-icon {
+    flex: none;
+    width: var(--sonar-size-icon-small);
+    height: var(--sonar-size-icon-small);
+    color: var(--_icon);
+  }
+
+  .sonar-notice-text {
+    flex: 1;
+    min-width: 0;
+    padding-top: 1px;
+  }
+
+  .sonar-notice-title {
+    color: var(--sonar-color-text-strong);
+    font-weight: var(--sonar-font-weight-semibold);
+  }
+
+  .sonar-notice-text a {
+    color: var(--sonar-color-text-strong);
+    text-underline-offset: 2px;
+  }
+
+  .sonar-notice-action {
+    flex: none;
+    margin: calc(-1 * var(--sonar-space-6)) calc(-1 * var(--sonar-space-8)) calc(-1 * var(--sonar-space-6)) 0;
+  }
+
+  /* Accent text falls under 4.5:1 on the tints; the action keeps the strong level, as the title does */
+  .sonar-notice-action .sonar-button[data-variant]:not(:disabled, [aria-disabled='true']) {
+    --_ink: var(--sonar-color-text-strong);
+  }
+}

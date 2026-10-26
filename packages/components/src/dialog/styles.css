@@ -1,0 +1,496 @@
+/* Dialog: the native dialog in three placements. Centered, it settles in from slightly below; as a side panel it
+   slides in from the end; as a sheet it rises from the bottom. Leaving is quicker than arriving. */
+@layer sonar.components {
+  .sonar-dialog {
+    --_enter: var(--sonar-motion-spatial-default-duration) var(--sonar-motion-spatial-default-easing);
+    --_leave: var(--sonar-motion-effects-fast-duration) var(--sonar-motion-easing-exit);
+
+    box-sizing: border-box;
+    display: none;
+    flex-direction: column;
+    gap: var(--sonar-space-16);
+    width: min(480px, 100% - 2 * var(--sonar-space-16));
+    max-height: min(720px, 100% - 2 * var(--sonar-space-32));
+    margin: auto;
+    padding: var(--sonar-space-24) var(--sonar-space-28) var(--sonar-space-28);
+    /* One axis only: nothing scrolls sideways */
+    overflow: hidden auto;
+    border: 0;
+    border-radius: var(--sonar-shape-corner-extra-large);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-3);
+    color: var(--sonar-color-text-default);
+    overscroll-behavior: contain;
+    opacity: 0;
+    translate: 0 16px;
+    transition:
+      opacity var(--_leave),
+      translate var(--_leave),
+      display var(--_leave) allow-discrete,
+      overlay var(--_leave) allow-discrete;
+  }
+
+  .sonar-dialog[open] {
+    display: flex;
+  }
+
+  /* Open and not leaving: while it leaves (data-leaving) a dialog keeps its place but takes its closed look */
+  .sonar-dialog[open]:not([data-leaving]) {
+    opacity: 1;
+    translate: 0 0;
+    transition:
+      opacity var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing),
+      translate var(--_enter),
+      display var(--_enter) allow-discrete,
+      overlay var(--_enter) allow-discrete;
+  }
+
+  @starting-style {
+    .sonar-dialog[open]:not([data-leaving]) {
+      opacity: 0;
+      translate: 0 16px;
+    }
+  }
+
+  .sonar-dialog::backdrop {
+    background: var(--sonar-color-scrim);
+    opacity: 0;
+    transition:
+      opacity var(--_leave),
+      display var(--_leave) allow-discrete,
+      overlay var(--_leave) allow-discrete;
+  }
+
+  .sonar-dialog[open]:not([data-leaving])::backdrop {
+    opacity: 1;
+    transition:
+      opacity var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing),
+      display var(--_enter) allow-discrete,
+      overlay var(--_enter) allow-discrete;
+  }
+
+  @starting-style {
+    .sonar-dialog[open]:not([data-leaving])::backdrop {
+      opacity: 0;
+    }
+  }
+
+  /* Side panel: 402 px at the end of the window, from under the top bar to the bottom, rounded on its open side, its
+     shadow only towards the page. It slides 48 px in and fades in 420 ms; it leaves 28 px and fades in 150 ms. */
+  .sonar-dialog[data-placement='end'] {
+    --_top: var(--sonar-dialog-top, var(--sonar-layout-bar-top));
+
+    position: fixed;
+    inset: var(--_top) 0 0 auto;
+    z-index: 40;
+    width: min(402px, 100%);
+    height: auto;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 24px 32px calc(22px + env(safe-area-inset-bottom, 0px)) 28px;
+    border-radius: 28px 0 0 28px;
+    box-shadow: var(--sonar-elevation-panel);
+    clip-path: inset(0 0 0 -60px);
+    translate: 28px 0;
+    transition:
+      opacity var(--sonar-motion-duration-panel-exit) linear,
+      translate var(--sonar-motion-duration-panel-exit) var(--sonar-motion-easing-accelerate),
+      display var(--sonar-motion-duration-panel-exit) allow-discrete,
+      overlay var(--sonar-motion-duration-panel-exit) allow-discrete;
+  }
+
+  .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+    translate: 0 0;
+    transition:
+      opacity var(--sonar-motion-duration-panel-enter) var(--sonar-motion-effects-default-easing),
+      translate var(--sonar-motion-duration-panel-enter) var(--sonar-motion-spatial-default-easing),
+      display var(--sonar-motion-duration-panel-enter) allow-discrete,
+      overlay var(--sonar-motion-duration-panel-enter) allow-discrete;
+  }
+
+  @starting-style {
+    .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+      opacity: 0;
+      translate: 48px 0;
+    }
+  }
+
+  /* A modal side panel takes the whole height over its scrim */
+  .sonar-dialog[data-placement='end']:modal {
+    --_top: 0px;
+  }
+
+  .sonar-dialog[data-modal='false']:focus {
+    outline: 0;
+  }
+
+  /* In a side panel the title sits on the header's line and the close button is 28 px */
+  .sonar-dialog[data-placement='end'] .sonar-dialog-header {
+    align-items: center;
+  }
+
+  .sonar-dialog[data-placement='end'] .sonar-dialog-title {
+    padding-top: 0;
+  }
+
+  .sonar-dialog[data-placement='end'] .sonar-dialog-close {
+    width: 28px;
+    height: 28px;
+    margin-right: -4px;
+    color: var(--sonar-color-text-strong);
+  }
+
+  .sonar-dialog[data-placement='end'] .sonar-dialog-close > svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Bottom sheet: full width, rising from the bottom edge, above the home indicator */
+  .sonar-dialog[data-placement='bottom'] {
+    width: 100%;
+    max-width: none;
+    max-height: calc(100% - var(--sonar-layout-bar-top-compact));
+    margin: auto 0 0;
+    padding-top: var(--sonar-space-12);
+    padding-bottom: calc(var(--sonar-space-28) + env(safe-area-inset-bottom, 0px));
+    border-radius: var(--sonar-shape-corner-extra-large) var(--sonar-shape-corner-extra-large) 0 0;
+    box-shadow: var(--sonar-elevation-sheet-up);
+    translate: 0 100%;
+  }
+
+  .sonar-dialog[data-placement='bottom'][open]:not([data-leaving]) {
+    translate: 0 0;
+  }
+
+  @starting-style {
+    .sonar-dialog[data-placement='bottom'][open]:not([data-leaving]) {
+      translate: 0 100%;
+    }
+  }
+
+  /* Phones: a side panel becomes a sheet from the bottom, 44 px from the top of the window as in the product (over the
+     top bar's lower part, 1.0.0-alpha.18; it started 12 px lower), with a handle to swipe it down. It rises in 420 ms
+     and fades in 200 ms; it goes down in 220 ms. Tablets, from 600 px, keep the side panel (1.0.0-alpha.18). */
+  @media (width < 600px) {
+    .sonar-dialog[data-placement='end'] {
+      inset: var(--sonar-dialog-sheet-top, 44px) 0 0;
+      width: 100%;
+      /* The title's line 31 px under the sheet's edge, as in the product */
+      padding: 28px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+      border-radius: 20px 20px 0 0;
+      box-shadow: var(--sonar-elevation-sheet-up);
+      clip-path: none;
+      /* It goes down whole, without fading, as in the product */
+      opacity: 1;
+      translate: 0 100%;
+      transition:
+        translate var(--sonar-motion-duration-sheet-exit) var(--sonar-motion-easing-accelerate),
+        display var(--sonar-motion-duration-sheet-exit) allow-discrete,
+        overlay var(--sonar-motion-duration-sheet-exit) allow-discrete;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sonar-dialog[data-placement='end'] {
+        opacity: 0;
+        transition:
+          opacity var(--sonar-motion-duration-sheet-exit) linear,
+          display var(--sonar-motion-duration-sheet-exit) allow-discrete,
+          overlay var(--sonar-motion-duration-sheet-exit) allow-discrete;
+      }
+    }
+
+    .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+      translate: 0 0;
+      transition:
+        opacity var(--sonar-motion-duration-sheet-fade) var(--sonar-motion-effects-default-easing),
+        translate var(--sonar-motion-duration-panel-enter) var(--sonar-motion-spatial-default-easing),
+        display var(--sonar-motion-duration-panel-enter) allow-discrete,
+        overlay var(--sonar-motion-duration-panel-enter) allow-discrete;
+    }
+
+    @starting-style {
+      .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+        opacity: 0;
+        translate: 0 100%;
+      }
+    }
+
+    .sonar-dialog[data-placement='end'] .sonar-dialog-handle {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 72px;
+      height: 24px;
+      margin-left: -36px;
+      background: none;
+      touch-action: none;
+    }
+
+    .sonar-dialog[data-placement='end'] .sonar-dialog-handle::after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 18px;
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--sonar-color-border-subtle);
+    }
+
+    .sonar-dialog:is([data-placement='end'], [data-placement='bottom']) .sonar-dialog-header {
+      touch-action: none;
+    }
+  }
+
+  @media (width >= 600px) {
+    .sonar-dialog[data-placement='end'] .sonar-dialog-handle {
+      display: none;
+    }
+  }
+
+  /* Tablets, 600 to 1279 px: the details panel moves as Layout › Navigation by device defines it (1.0.0-alpha.19). The
+     side sheet waits just past the right edge and slides all the way in, from right to left, with the default spatial
+     spring (320 ms); it slides back out the same way. It does not fade: the whole sheet travels. With reduced motion
+     it does not move and fades in and out instead. Desktops, from 1280 px, keep the product's panel motion above. */
+  @media (600px <= width < 1280px) {
+    .sonar-dialog[data-placement='end'] {
+      --_slide: var(--sonar-motion-spatial-default-duration) var(--sonar-motion-spatial-default-easing);
+
+      opacity: 1;
+      translate: 102% 0;
+      transition:
+        translate var(--_slide),
+        display var(--sonar-motion-spatial-default-duration) allow-discrete,
+        overlay var(--sonar-motion-spatial-default-duration) allow-discrete;
+    }
+
+    .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+      translate: 0 0;
+      transition:
+        translate var(--_slide),
+        display var(--sonar-motion-spatial-default-duration) allow-discrete,
+        overlay var(--sonar-motion-spatial-default-duration) allow-discrete;
+    }
+
+    @starting-style {
+      .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+        translate: 102% 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sonar-dialog[data-placement='end'] {
+        opacity: 0;
+        translate: 0 0;
+        transition:
+          opacity var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing),
+          display var(--sonar-motion-effects-default-duration) allow-discrete,
+          overlay var(--sonar-motion-effects-default-duration) allow-discrete;
+      }
+
+      .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+        opacity: 1;
+        translate: 0 0;
+      }
+
+      @starting-style {
+        .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+          opacity: 0;
+          translate: 0 0;
+        }
+      }
+    }
+  }
+
+  /* Following the finger: no transition until it lets go */
+  .sonar-dialog[data-dragging] {
+    transition: none;
+  }
+
+  .sonar-dialog-handle {
+    flex: none;
+    align-self: center;
+    width: 32px;
+    height: 4px;
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-fill-faint);
+  }
+
+  .sonar-dialog-header {
+    display: flex;
+    gap: var(--sonar-space-16);
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .sonar-dialog-title {
+    margin: 0;
+    padding-top: var(--sonar-space-6);
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-title-lg);
+    letter-spacing: var(--sonar-type-title-lg-tracking);
+  }
+
+  .sonar-dialog-close {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--sonar-size-control-medium);
+    height: var(--sonar-size-control-medium);
+    margin: 0 calc(-1 * var(--sonar-space-8)) 0 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sonar-shape-corner-full);
+    background: none;
+    color: var(--sonar-color-text-secondary);
+    cursor: pointer;
+    transition: border-radius var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing);
+  }
+
+  .sonar-dialog-close > svg {
+    width: var(--sonar-size-icon-medium);
+    height: var(--sonar-size-icon-medium);
+  }
+
+  @media (hover: hover) {
+    .sonar-dialog-close:hover {
+      background: var(--sonar-color-state-hover);
+      color: var(--sonar-color-text-strong);
+    }
+  }
+
+  .sonar-dialog-close:active {
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-state-pressed);
+  }
+
+  .sonar-dialog-close:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+  }
+
+  .sonar-dialog-description {
+    margin: 0;
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-body-lg);
+    letter-spacing: var(--sonar-type-body-lg-tracking);
+  }
+
+  .sonar-dialog-body {
+    display: grid;
+    gap: var(--sonar-space-16);
+  }
+
+  .sonar-dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sonar-space-8);
+    justify-content: flex-end;
+    margin-top: var(--sonar-space-8);
+  }
+
+  /* Side panel and sheet: the header and the actions stay put and the body scrolls between them, so the main
+     action is always at the foot, at any height. The body reaches the panel's edges, so wide content such as a map
+     can run edge to edge; its own padding keeps the text where it was. */
+  .sonar-dialog:is([data-placement='end'], [data-placement='bottom']) {
+    overflow: hidden;
+  }
+
+  /* The body takes the height between header and actions; its rows keep their own height at the top of it */
+  .sonar-dialog:is([data-placement='end'], [data-placement='bottom']) .sonar-dialog-body {
+    flex: 1 1 auto;
+    align-content: start;
+    min-height: 0;
+    /* It runs down to the actions' rule (over the 16 px gap above it), so what scrolls out goes under the rule and
+       not into a band of empty panel; at rest its last line sits where it did */
+    margin: calc(-1 * var(--sonar-space-4)) calc(-1 * var(--sonar-space-28)) calc(-1 * var(--sonar-space-16));
+    padding: var(--sonar-space-4) var(--sonar-space-28) var(--sonar-space-16);
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+
+  .sonar-dialog-body::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sonar-dialog-body:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: calc(-1 * var(--sonar-focus-width));
+  }
+
+  /* The indicator, as in the product's panels: 2 px, 4 px from the panel's edge, shown while scrolling */
+  .sonar-dialog-thumb {
+    position: absolute;
+    right: 4px;
+    width: 2px;
+    border-radius: 1px;
+    background: var(--sonar-color-scrollbar);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms var(--sonar-motion-effects-default-easing);
+  }
+
+  .sonar-dialog-thumb[data-visible] {
+    opacity: 1;
+    transition-duration: 100ms;
+  }
+
+  .sonar-dialog-thumb[hidden] {
+    display: none;
+  }
+
+  /* The fade at each edge that has more, the same as the card lists: 24 px at the foot, 22 px at the top */
+  /* (the attributes are set on side panels and sheets only) */
+  .sonar-dialog-body[data-more-below] {
+    mask-image: linear-gradient(#000 calc(100% - 24px), #0000);
+  }
+
+  .sonar-dialog-body[data-more-above] {
+    mask-image: linear-gradient(#0000, #000 22px);
+  }
+
+  .sonar-dialog-body[data-more-above][data-more-below] {
+    mask-image: linear-gradient(#0000, #000 22px, #000 calc(100% - 24px), #0000);
+  }
+
+  .sonar-dialog:is([data-placement='end'], [data-placement='bottom']) .sonar-dialog-actions {
+    flex: none;
+    margin: auto calc(-1 * var(--sonar-space-28)) 0;
+    padding: var(--sonar-space-16) var(--sonar-space-28) 0;
+    border-top: 1px solid var(--sonar-color-divider);
+  }
+
+  @media (pointer: coarse) {
+    .sonar-dialog-close::after {
+      content: '';
+      position: absolute;
+      inset: calc((var(--sonar-size-control-medium) - var(--sonar-layout-touch-target)) / 2);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sonar-dialog,
+    .sonar-dialog[data-placement] {
+      translate: 0 0;
+    }
+
+    .sonar-dialog-thumb {
+      transition: none;
+    }
+
+    @starting-style {
+      .sonar-dialog[open]:not([data-leaving]),
+      .sonar-dialog[data-placement][open]:not([data-leaving]) {
+        translate: 0 0;
+      }
+    }
+  }
+
+  /* Focus given back to its opener after a press: no ring until the next key (1.0.0-alpha.21, Dialog.tsx) */
+  [data-sonar-quiet-focus]:focus-visible {
+    outline: none !important;
+  }
+}

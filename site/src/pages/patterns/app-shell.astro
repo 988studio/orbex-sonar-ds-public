@@ -1,0 +1,156 @@
+---
+import '../../styles/global.css'
+import '@orbex/sonar-components/styles.css'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import AppDemo from '@orbex/sonar-patterns/app/AppDemo.tsx'
+import Docs from '../../layouts/Docs.astro'
+---
+
+<Docs title="App shell" description="The frame every screen of Sonar-DB sits in: the sidebar and its rail, the top bar, the phone bars and the drawer, and how the 1440 canvas fits a window.">
+  <PageHeader
+    title="App shell"
+    lead="The sidebar, the top bar and, on phones, the top bar and bottom app bar: the frame every screen sits in. It is drawn here from the product’s own markup and CSS, live, at the product’s real sizes."
+  />
+
+  <Section title="Desktop" id="desktop">
+    <p class="prose">
+      The desktop is a 1440 × 980 canvas. The sidebar is 224 px wide and folds into a 60 px rail with the double arrow;
+      the cards widen with it on the same spring. Every section name in the rail has a tooltip. The frames on these pages
+      open in dark, the dashboard’s native mode; View mode switches the frame between dark and light (in an app, where
+      the shell is the page, it switches the whole page). Sections that have no screen yet open the
+      <a href="/patterns/unbuilt/">unbuilt module</a> page; Customize overview opens its <a href="/patterns/customize/">sheet</a>, and the chat button the <a href="/patterns/assistant/">AI assistant</a>.
+    </p>
+    <SpecimenFigure title="The app at 1440 × 980"><AppDemo client:visible /></SpecimenFigure>
+  </Section>
+
+  <Section title="Fit to width" id="fit">
+    <p class="prose">
+      When the window is narrower than the canvas, the product draws the whole 1440 × 980 frame smaller with one zoom
+      factor, the window’s width over 1440, so nothing reflows and every proportion stays the designed one. Turn
+      <strong>Fit to width</strong> off to see it 1:1: the frame then scrolls sideways. The desktop editing demo has the same switch.
+    </p>
+  </Section>
+
+  <Section title="Tablet" id="tablet">
+    <p class="prose">
+      From 768 to 1279 px the sidebar starts as the 60 px rail and opens over the content with a scrim. The top bar keeps
+      the account, the search, which takes the free width, Edit layout, alerts, chat and the avatar; the name and role move
+      into the avatar’s menu. Margins are 24 px, and the two columns share the rest: at 820 px, 2 × 346 px with a 20 px gap.
+    </p>
+    <SpecimenFigure title="The app at 820 × 1180"><AppDemo client:visible device="tablet" /></SpecimenFigure>
+  </Section>
+
+  <Section title="Phone" id="phone">
+    <p class="prose">
+      On phones the top bar carries the sun, the account and a search button; search takes the whole bar when it opens.
+      The bottom app bar holds actions, not destinations: Alerts with its count, Assistant, Edit, Account and Menu, which
+      carries a dot when something inside needs attention and opens the whole sidebar as a drawer from the left. Each button is marked while its sheet is open.
+    </p>
+    <SpecimenFigure title="The app at 390 × 844"><AppDemo client:visible device="phone" /></SpecimenFigure>
+  </Section>
+
+  <Section title="Floating bottom bar" id="bottom-bar">
+    <p class="prose">
+      Since 1.1.1 the phone’s bottom app bar floats: the same five buttons, icons, labels, active pill and badges, drawn as
+      a capsule that does not touch the edges of the screen. The page scrolls under it.
+    </p>
+    <ul class="prose">
+      <li><strong>Place:</strong> 12 px from each side and 12 px above the safe area (<code>bottom: calc(12px + safe area)</code>); 366 × 64 px on a 390 px screen.</li>
+      <li><strong>Shape:</strong> the full corner radius (<code>--sonar-shape-corner-full</code>), 8 px inside each end so the first and last active pills keep clear of the round ends.</li>
+      <li><strong>Depth:</strong> <code>--sonar-elevation-2</code>, tight, with no hairline. The shadow is the page’s, so it stays light on a light page.</li>
+      <li><strong>Color:</strong> the same capsule in both themes. The bar is a dark-theme scope (<code>data-theme="dark"</code> on the nav, <code>PhoneNav</code>’s default), so a light page shows the dark bar: dark surface (surface.container), dark-theme icons, labels, active pill and badges. <code>theme="light"</code> or <code>theme="page"</code> draws it otherwise.</li>
+      <li><strong>Room around it:</strong> the page ends 100 px plus the safe area lower, so the last card scrolls fully above the bar; the drawer ends in 76 px of empty room, so View mode clears it; toasts over the page sit 92 px up (<code>PHONE_TOAST_BOTTOM</code>), 16 px above the bar.</li>
+      <li><strong>States:</strong> while the drawer is open the capsule floats whole over it and the scrim; while the layout is edited it steps aside for Edit layout’s own bar.</li>
+    </ul>
+    <p class="prose">
+      Contrast on the capsule (WCAG 2.2 AA): labels and idle icons 5.37:1; the active label 11.03:1; the active icon on its
+      pill 7.42:1; the badge’s white numeral 4.53:1 on the solid danger fill. The capsule against the light page: 12.54:1
+      (page), 10.76:1 (canvas), 13.21:1 (cards).
+    </p>
+  </Section>
+
+  <Section title="Measures" id="measures">
+    <div class="table-wrap" data-scroll-region data-label="Measures, table">
+      <table>
+        <thead><tr><th>Part</th><th>Desktop 1440</th><th>Tablet 820</th><th>Phone 390</th></tr></thead>
+        <tbody>
+          <tr><td>Sidebar</td><td>224 px, folds to a 60 px rail</td><td>60 px rail, opens over the content</td><td>Drawer from the left</td></tr>
+          <tr><td>Top bar</td><td>69 px: name and role, account, alerts, chat, Edit layout, search</td><td>Account, search, Edit layout, alerts, chat, avatar</td><td>Sun, account, search</td></tr>
+          <tr><td>Content margins</td><td>32 px</td><td>24 px after the rail</td><td>16 px</td></tr>
+          <tr><td>Columns</td><td>3 × 370 px, gap 20</td><td>2 × 346 px, gap 20</td><td>1 column</td></tr>
+          <tr><td>Bottom app bar</td><td>—</td><td>—</td><td>Floating capsule, 12 px from the sides and above the safe area, 64 px: Alerts, Assistant, Edit, Account, Menu</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section title="Accessibility" id="accessibility">
+    <ul class="prose">
+      <li>The sidebar is a landmark named “Main navigation”; the open section carries <code>aria-current="page"</code>.</li>
+      <li>The collapse button says what it will do, “Collapse sidebar” or “Expand sidebar”, and reports <code>aria-expanded</code>.</li>
+      <li>View mode is a switch named “Light mode”, operable with Space and Enter.</li>
+      <li>The floating bottom bar keeps every button’s name and state; it is the same landmark (“Actions”) as before, and its colors pass AA in both themes (see Floating bottom bar).</li>
+      <li>The phone’s Alerts button reads its count (“Alerts, 2 unread”), and Menu reads “items need attention” when it carries the dot.</li>
+      <li>With reduced motion requested, the sidebar folds and opens at once.</li>
+      <li>Each frame is an example inside this page: its overview is a named region, not a second main landmark, its titles sit under this page’s section headings, and its icons are hidden from screen readers.</li>
+      <li>Edit layout works in every frame, as on the overview: with a pointer or a finger by the top handle, or by focusing the handle, pressing Space and moving the card with the arrow keys.</li>
+      <li>Since 1.1.0 the shell is in <code>@orbex/sonar-patterns</code> (<code>app/Shell.tsx</code>): an app imports it instead of copying the documentation’s source. <code>SearchSlot</code> puts the app’s own search in the top bar.</li>
+      <li>The sidebar and the phone drawer keep the height of every row: when the window is shorter than the list, the part under the logo scrolls (on an iPad in landscape, about 1180 × 740 in Safari, the logo and the Support rows were squeezed before 1.1.0). The rows scrolled up disappear level with the foot of the top bar: the logo row is as tall as the bar (<code>--top-h</code>, 69 px), and the logo’s 32 px of air scrolls with the rows (since 1.1.2). The rail’s tooltips still sit beside their row.</li>
+      <li>When the shell is the page itself, put <code>data-shell="window"</code> on it or an ancestor: its bars then read the device’s safe areas (the notch, the home indicator). In these frames they stay 0.</li>
+    </ul>
+  </Section>
+</Docs>
+
+<style>
+  /* The measures, one column per device. Each column keeps a readable width (at least 200 px, the part 140 px); where
+     the page is narrower, the table scrolls sideways inside its own block instead of squeezing its words */
+  .table-wrap {
+    /* One axis only: wide content scrolls sideways; nothing scrolls or bounces up and down */
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    font: var(--sonar-type-body-md);
+    letter-spacing: var(--sonar-type-body-md-tracking);
+  }
+
+  th,
+  td {
+    padding: var(--sonar-space-10) var(--sonar-space-16);
+    border-bottom: 1px solid var(--sonar-color-divider);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th + th,
+  td + td {
+    min-width: 200px;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  thead th {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    white-space: nowrap;
+  }
+
+  tbody td:first-child {
+    width: 140px;
+    color: var(--sonar-color-text-strong);
+    font-weight: var(--sonar-font-weight-medium);
+    white-space: nowrap;
+  }
+</style>

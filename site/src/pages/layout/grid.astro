@@ -1,0 +1,417 @@
+---
+import { responsive, sizeClasses } from '@orbex/sonar-tokens'
+import CodeBlock from '../../components/CodeBlock.astro'
+import GridSimulator from '../../components/GridSimulator.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import TokenTable from '../../components/TokenTable.astro'
+import Docs from '../../layouts/Docs.astro'
+import { gridMetrics as metrics } from '../../lib/layout-metrics.ts'
+import { columnWidth, designedOverview, layoutFor, navigationWidth, type CardSize } from '../../lib/overview-grid.ts'
+import { under } from '../../lib/tokens.ts'
+
+const SMALLEST_WINDOW = 360
+const LARGEST_WINDOW = 3440
+
+const devices: Record<string, string> = {
+  compact: 'Phones',
+  medium: 'Tablets',
+  expanded: 'Desktops',
+  large: 'Wide monitors',
+  'extra-large': 'Ultra-wide monitors',
+}
+const navigationLabel = { bar: 'Bottom bar', rail: 'Rail', sidebar: 'Sidebar' }
+
+/* Narrowest and widest card of each class, with the sidebar open */
+const classes = metrics.classes.map((sizeClass, index) => {
+  const { max } = sizeClasses[index]
+  const first = Math.max(sizeClass.min, SMALLEST_WINDOW)
+  const last = max === null ? LARGEST_WINDOW : max - 1
+  return {
+    ...sizeClass,
+    device: devices[sizeClass.name],
+    range: max === null ? `${first} px and wider` : `${first}–${last} px`,
+    from: columnWidth(first, sizeClass, metrics, true),
+    to: columnWidth(last, sizeClass, metrics, true),
+  }
+})
+const expanded = metrics.classes.find(({ name }) => name === 'expanded')!
+const at1440 = columnWidth(1440, expanded, metrics, true)
+const at1440Rail = columnWidth(1440, expanded, metrics, false)
+
+const sizes: CardSize[] = ['s', 'm', 'l', 'xl']
+const scale = 0.32
+const twoColumns = layoutFor(2, designedOverview, metrics)
+
+const formula = `column = ⌊(window − navigation − 2 × margin
+           − (columns − 1) × gap) ÷ columns⌋
+
+1440 px desktop, sidebar open:
+⌊(1440 − ${navigationWidth(expanded, metrics, true)} − 2 × ${expanded.margin} − 2 × ${metrics.gap}) ÷ 3⌋ = ${at1440} px`
+
+const css = `/* The overview grid: columns, gap and margins follow the size class */
+.overview {
+  display: grid;
+  grid-template-columns: repeat(var(--sonar-layout-columns), minmax(0, 1fr));
+  gap: var(--sonar-layout-gap);
+  padding-inline: var(--sonar-layout-margin);
+}
+
+.top-app-bar {
+  block-size: calc(var(--sonar-layout-bar-top) + env(safe-area-inset-top, 0px));
+  padding-block-start: env(safe-area-inset-top, 0px);
+}`
+
+const script = `import { sizeClasses } from '@orbex/sonar-tokens'
+
+/* The current size class, kept up to date as the window changes */
+const current = () => sizeClasses.find(({ media }) => matchMedia(media).matches)!.name`
+
+const layoutTokens = under('layout').filter(({ name }) => !name.startsWith('layout.breakpoint.'))
+---
+
+<Docs title="Breakpoints and grid" description="Sonar-DB window size classes, the overview grid, card heights and how one desktop layout is derived for every width.">
+  <PageHeader
+    title="Breakpoints and grid"
+    lead="Five size classes and one grid. The window decides how many columns there are; the cards are arranged once, for the desktop, and every other width is derived from that arrangement."
+  />
+
+  <Section title="Size classes" id="size-classes">
+    <p class="prose">
+      The classes follow Material 3, with thresholds set by the cards: a card should never be narrower than a phone or
+      wider than about 575 px, where a row of figures stops reading as one line. When a column would grow past that, the
+      grid gains a column, up to five: on the widest monitors, cards reach {classes.at(-1)!.to} px.
+    </p>
+    <div class="table-wrap" data-scroll-region data-label="Size classes and their grid">
+      <table class="classes" role="table">
+        <caption class="visually-hidden">Size classes and their grid</caption>
+        <thead>
+          <tr>
+            <th scope="col">Size class</th>
+            <th scope="col">Window</th>
+            <th scope="col">Columns</th>
+            <th scope="col">Navigation</th>
+            <th scope="col">Margins</th>
+            <th scope="col">Card width</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            classes.map(({ name, device, range, columns, navigation, margin, from, to }) => (
+              <tr role="row">
+                <th scope="row" role="rowheader">
+                  <code>{name}</code>
+                  <span>{device}</span>
+                </th>
+                <td role="cell" data-label="Window">{range}</td>
+                <td role="cell" data-label="Columns">{columns}</td>
+                <td role="cell" data-label="Navigation">{navigationLabel[navigation]}</td>
+                <td role="cell" data-label="Margins">{margin} px</td>
+                <td role="cell" data-label="Card width">{from}–{to} px</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Card widths with the sidebar open. Collapsing it to the rail gives the columns its width.</p>
+  </Section>
+
+  <Section title="The grid at any width" id="simulator">
+    <GridSimulator metrics={metrics} />
+  </Section>
+
+  <Section title="Column width" id="columns">
+    <p class="prose">
+      Columns are fluid: they share whatever the navigation and the margins leave, rounded down to whole pixels so card
+      edges stay sharp. Collapsing the sidebar on a 1440 px desktop widens every column from {at1440} to {at1440Rail} px;
+      the cards follow with the same spring as the sidebar.
+    </p>
+    <CodeBlock code={formula} language="text" />
+  </Section>
+
+  <Section title="Card heights" id="heights">
+    <p class="prose">
+      Cards come in four heights. Width is the column’s; a card never spans two. The heights are chosen so that{' '}
+      <strong>M + L = S + XL</strong>: two columns built from different sizes end level, and the overview keeps a straight
+      bottom edge as people rearrange it.
+    </p>
+    <figure class="heights">
+      <ol class="sizes" role="list">
+        {
+          sizes.map((size) => (
+            <li>
+              <span class="block" style={`height: ${metrics.heights[size] * scale}px`}>{size.toUpperCase()}</span>
+              <span class="measure">{metrics.heights[size]} px</span>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="equation" aria-hidden="true">
+        {
+          [
+            ['m', 'l'],
+            ['s', 'xl'],
+          ].map((stack) => (
+            <div class="stack">
+              {stack.map((size) => (
+                <span class="block" style={`height: ${metrics.heights[size as CardSize] * scale}px`}>{size.toUpperCase()}</span>
+              ))}
+            </div>
+          ))
+        }
+      </div>
+      <figcaption>
+        {metrics.heights.m} + {metrics.gap} + {metrics.heights.l} = {metrics.heights.s} + {metrics.gap} + {metrics.heights.xl} = {metrics.heights.m + metrics.gap + metrics.heights.l} px
+      </figcaption>
+    </figure>
+  </Section>
+
+  <Section title="One layout, derived" id="derived">
+    <ul class="prose">
+      <li>
+        <strong>The desktop layout is the one people design.</strong> They choose each card’s column, position and size
+        on a three-column desktop.
+      </li>
+      <li>
+        <strong>Every other width reads it in order.</strong> Cards are taken by how far down they start, and left to
+        right when two start level. Each goes into the shortest column. One column on phones keeps the same order, so the
+        first card on a desktop is the first card on a phone.
+      </li>
+      <li>
+        <strong>A layout edited at another width is kept for that width.</strong> Rearranging cards on a tablet stores a
+        tablet layout; until then, the tablet follows the desktop. What is shown is shared: hiding a card hides it
+        everywhere.
+      </li>
+    </ul>
+    <p class="prose">
+      On a tablet, the six cards of the default overview land as{' '}
+      {twoColumns.map((column, index) => (
+        <span>
+          {index ? ' and ' : ''}
+          {column.map(({ title }) => title).join(', ')}
+        </span>
+      ))}
+      .
+    </p>
+  </Section>
+
+  <Section title="In code" id="code">
+    <p class="prose">
+      Media queries cannot read custom properties, so the token build writes the breakpoints into them. Three properties
+      follow the size class on their own: {responsive.map(({ cssVar }, index) => (
+        <span>
+          {index ? (index === responsive.length - 1 ? ' and ' : ', ') : ''}
+          <code>{cssVar}</code>
+        </span>
+      ))}
+      . Components read those, never a breakpoint.
+    </p>
+    <CodeBlock code={css} language="css" />
+    <p class="prose">For scripts, the package exports each size class with a media query for exactly its range.</p>
+    <CodeBlock code={script} language="ts" />
+  </Section>
+
+  <Section title="Safe areas" id="safe-areas">
+    <p class="prose">
+      On phones and tablets in full screen, the system draws its status bar and home indicator over the page. The app
+      bars grow by <code>env(safe-area-inset-*)</code> so their background reaches the edge, and the content starts below
+      them. In a browser tab the insets are zero and nothing changes.
+    </p>
+  </Section>
+
+  <Section title="Tokens" id="tokens">
+    <TokenTable caption="Layout tokens" tokens={layoutTokens} preview="none" />
+  </Section>
+</Docs>
+
+<style>
+  .table-wrap {
+    /* One axis only: wide content scrolls sideways; nothing scrolls or bounces up and down */
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    font: var(--sonar-type-body-md);
+    letter-spacing: var(--sonar-type-body-md-tracking);
+    font-variant-numeric: tabular-nums;
+  }
+
+  th,
+  td {
+    padding: var(--sonar-space-12) var(--sonar-space-16);
+    border-bottom: 1px solid var(--sonar-color-divider);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  thead th {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    white-space: nowrap;
+  }
+
+  tbody th {
+    display: grid;
+    gap: var(--sonar-space-2);
+    font-weight: inherit;
+  }
+
+  tbody th code {
+    color: var(--sonar-color-text-strong);
+    font: 500 12px/1.4 var(--sonar-font-family-mono);
+  }
+
+  tbody th span {
+    color: var(--sonar-color-text-secondary);
+  }
+
+  td {
+    color: var(--sonar-color-text-default);
+    white-space: nowrap;
+  }
+
+  /* Phones: each class becomes a block of labeled values instead of a row to scroll.
+     Explicit roles keep the table semantics that some browsers drop when rows stop displaying as rows. */
+  @container page (width < 608px) {
+    table.classes {
+      min-width: 0;
+    }
+
+    .classes thead {
+      display: none;
+    }
+
+    .classes tr {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--sonar-space-8) var(--sonar-space-16);
+      padding: var(--sonar-space-16);
+      border-bottom: 1px solid var(--sonar-color-divider);
+    }
+
+    .classes tbody tr:last-child {
+      border-bottom: 0;
+    }
+
+    .classes th,
+    .classes td {
+      padding: 0;
+      border: 0;
+    }
+
+    .classes tbody th {
+      grid-column: 1 / -1;
+      margin-bottom: var(--sonar-space-4);
+    }
+
+    .classes td::before {
+      content: attr(data-label);
+      display: block;
+      color: var(--sonar-color-text-tertiary);
+      font: var(--sonar-type-label-sm);
+      letter-spacing: var(--sonar-type-label-sm-tracking);
+    }
+  }
+
+  .note {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-body-md);
+  }
+
+  /* ---------- Card heights ---------- */
+
+  .heights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sonar-space-32) var(--sonar-space-48);
+    align-items: flex-end;
+    padding: var(--sonar-space-28) var(--sonar-space-32);
+    border-radius: var(--sonar-shape-corner-large);
+    background: var(--sonar-color-surface-page);
+    box-shadow: 0 0 0 1px var(--sonar-color-divider);
+  }
+
+  .sizes {
+    display: flex;
+    gap: var(--sonar-space-16);
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .sizes li {
+    display: grid;
+    gap: var(--sonar-space-8);
+    justify-items: center;
+  }
+
+  .block {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    border-radius: var(--sonar-shape-corner-small);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-title-sm);
+  }
+
+  .measure {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .equation {
+    display: flex;
+    gap: 6px;
+    align-items: flex-end;
+    padding-bottom: 28px;
+  }
+
+  .stack {
+    display: grid;
+    gap: 6px;
+  }
+
+  .stack .block {
+    width: 56px;
+    background: var(--sonar-color-accent-tonal);
+    box-shadow: none;
+    color: var(--sonar-color-on-accent-tonal);
+  }
+
+  .heights figcaption {
+    flex-basis: 100%;
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-label-lg);
+    letter-spacing: var(--sonar-type-label-lg-tracking);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @container page (width < 608px) {
+    .heights {
+      padding: var(--sonar-space-20);
+    }
+
+    .block {
+      width: 52px;
+    }
+
+    .stack .block {
+      width: 44px;
+    }
+  }
+</style>

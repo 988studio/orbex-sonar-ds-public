@@ -1,0 +1,97 @@
+/* Unbuilt module: the page the product shows for a section that has no screen yet
+   Ported from the prototype’s CSS (Orbex · Prototype v38), rule by rule in its cascade order, scoped to .oxa.
+   The prototype’s custom properties resolve to the system’s tokens in app-tokens.css. */
+
+
+/* from app.css */
+.oxa .stage.notice {
+  display:grid;
+  place-items:center;
+  overflow:auto;
+}
+.oxa .nt-card {
+  width:min(560px,86%);
+  background:var(--surface-card);
+  border-radius:var(--r-card,12px);
+  box-shadow:var(--shadow-card,none);
+  padding:40px 44px 36px;
+  color:var(--text-strong);
+}
+.oxa .nt-code {
+  display:inline-block;
+  color:var(--accent);
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.oxa .nt-h {
+  margin:10px 0 10px;
+  font:600 26px/1.2 var(--sans);
+  letter-spacing:-.01em;
+}
+.oxa .nt-p {
+  margin:0 0 24px;
+  color:var(--text-muted);
+  font-size:14px;
+  line-height:1.55;
+}
+.oxa .nt-s {
+  margin:0 0 10px;
+  color:var(--text-dim);
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  font-weight:600;
+}
+.oxa .nt-chips {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:22px;
+}
+.oxa .nt-chip {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  height:34px;
+  padding:0 14px 0 10px;
+  border-radius:999px;
+  border:1px solid var(--border-muted);
+  background:none;
+  color:var(--text-strong);
+  font-size:13px;
+  cursor:pointer;
+  transition:background-color .16s cubic-bezier(.23,1,.32,1),border-color .16s cubic-bezier(.23,1,.32,1);
+}
+.oxa .nt-chip .ms {
+  font-size:18px;
+  color:var(--accent);
+}
+.oxa .nt-chip:hover {
+  background:var(--surface-hover);
+  border-color:var(--accent);
+}
+.oxa .nt-chip:focus-visible {
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+.oxa .nt-list {
+  list-style:none;
+  margin:0 0 28px;
+  padding:0;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px 16px;
+  color:var(--text,var(--text-strong));
+  font-size:13px;
+}
+.oxa .nt-list li {
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.oxa .nt-list .ms {
+  font-size:18px;
+  color:var(--text-soft);
+}
+.oxa .nt-cta {
+  padding:0 22px;
+}

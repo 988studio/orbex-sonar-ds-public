@@ -1,0 +1,229 @@
+---
+import CodeBlock from '../../components/CodeBlock.astro'
+import MotionCurve from '../../components/MotionCurve.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import Docs from '../../layouts/Docs.astro'
+import { group, type TokenDocument } from '../../lib/tokens.ts'
+
+const springs = (prefix: string) =>
+  group(prefix).map((doc: TokenDocument) => {
+    const css = doc.light.css
+    const spring = (doc.extensions as { spring?: { bounce: number } } | undefined)?.spring
+    return {
+      name: doc.cssVar.replace(/^--/, ''),
+      duration: css[`${doc.cssVar}-duration`],
+      easing: css[`${doc.cssVar}-easing`],
+      bounce: spring?.bounce,
+      description: doc.description,
+    }
+  })
+
+const easings = group('motion.easing').map((doc) => ({
+  name: doc.cssVar.replace(/^--/, ''),
+  easing: doc.light.css[doc.cssVar],
+  description: doc.description,
+}))
+
+const durations = group('motion.duration').map((doc) => ({
+  name: doc.cssVar,
+  value: doc.light.css[doc.cssVar],
+  description: doc.description,
+}))
+
+const themeCss = `::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--sonar-motion-duration-theme);          /* 700ms */
+  animation-timing-function: var(--sonar-motion-easing-crossfade); /* cubic-bezier(.4,0,.2,1) */
+}
+
+/* Without View Transitions: colors ease */
+.sonar-theming, .sonar-theming * {
+  transition: color var(--sonar-motion-duration-theme-fallback) ease,
+              background-color var(--sonar-motion-duration-theme-fallback) ease !important;
+}`
+
+const themeJs = `function switchTheme(next) {
+  const apply = () => (document.documentElement.dataset.theme = next)
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return apply()
+  if (document.startViewTransition) {
+    // the knob slides first (200 ms), then the page cross-fades
+    return setTimeout(() => document.startViewTransition(apply), 200)
+  }
+  document.documentElement.classList.add('sonar-theming')
+  apply()
+  setTimeout(() => document.documentElement.classList.remove('sonar-theming'), 300)
+}`
+
+const usage = `.accordion-panel {
+  transition: height var(--sonar-motion-spatial-default-duration)
+                     var(--sonar-motion-spatial-default-easing);
+}
+
+.menu {
+  transition: opacity var(--sonar-motion-effects-fast-duration)
+                      var(--sonar-motion-effects-fast-easing);
+}`
+---
+
+<Docs title="Motion" description="Sonar-DB motion: springs defined by duration and bounce, generated as CSS easing curves, and when to use each.">
+  <PageHeader
+    title="Motion"
+    lead="Short, decelerating, and without bounce by default. The interface is a working tool: motion explains what changed and gets out of the way. A small bounce is kept for two moments that deserve it."
+  />
+
+  <Section title="Springs" id="springs">
+    <div class="prose">
+      <p>
+        Springs are described as designers talk about them: a <strong>duration</strong>, the time the spring takes to
+        settle within 0.2% of its target, and a <strong>bounce</strong>. The build turns each pair into
+        a CSS <code>linear()</code> curve, so the motion runs like any transition, with no JavaScript.
+      </p>
+      <p>
+        <strong>Spatial</strong> springs move things: position, size, shape. <strong>Effects</strong> springs change how
+        things look: opacity and color. Effects are quicker, because a fade that lags reads as slowness.
+      </p>
+    </div>
+    <div class="curves">
+      {springs('motion.spatial').map((spring) => <MotionCurve {...spring} />)}
+      {springs('motion.effects').map((spring) => <MotionCurve {...spring} />)}
+    </div>
+  </Section>
+
+  <Section title="Easing curves" id="easing">
+    <p class="prose">Cubic curves for what is not a spring: leaving the screen, entering panels, the sidebar folding, the theme switch and cards changing columns.</p>
+    <div class="curves">
+      {easings.map((easing) => <MotionCurve {...easing} duration="400ms" />)}
+    </div>
+  </Section>
+
+  <Section title="Durations" id="durations">
+    <p class="prose">
+      Fixed durations for the moments that are not a spring. Each is used with the easing named beside it in the
+      guidelines below.
+    </p>
+    <div class="table-wrap" data-scroll-region data-label="Motion durations">
+      <table>
+        <thead>
+          <tr><th scope="col">Token</th><th scope="col">Value</th><th scope="col">Use</th></tr>
+        </thead>
+        <tbody>
+          {
+            durations.map(({ name, value, description }) => (
+              <tr>
+                <td><code>{name}</code></td>
+                <td><code>{value}</code></td>
+                <td>{description}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section title="Theme switch" id="theme-switch">
+    <div class="prose">
+      <p>
+        Changing the theme is two steps. The switch’s knob slides first, in 200 ms on
+        <code>--sonar-motion-easing-emphasized</code>. At 200 ms the whole page cross-fades into the new theme with a
+        View Transition: 700 ms on <code>--sonar-motion-easing-crossfade</code>. Nothing changes color out of step,
+        because the page fades as one picture.
+      </p>
+      <p>
+        Browsers without View Transitions ease every color over 250 ms instead. With reduced motion requested, the
+        theme changes at once.
+      </p>
+    </div>
+    <CodeBlock code={themeCss} language="css" />
+    <CodeBlock code={themeJs} language="js" />
+  </Section>
+
+  <Section title="In code" id="code">
+    <p class="prose">Every spring is two custom properties, a duration and an easing, always used together.</p>
+    <CodeBlock code={usage} language="css" />
+  </Section>
+
+  <Section title="Guidelines" id="guidelines">
+    <ul class="prose">
+      <li>
+        Bounce only when a dragged card lands in its slot and when an action succeeds. Everywhere else, motion settles
+        without overshoot.
+      </li>
+      <li>
+        Side panels enter from 48 px in 420 ms with a fade, and leave by 28 px in 150 ms on the accelerate curve. On
+        tablets the panel slides all the way in from the right edge on the default spatial spring (320 ms) and back out
+        the same way, as <a href="/layout/navigation/#tablets">Navigation by device</a> shows. On phones the sheet rises
+        in 420 ms (fade 200 ms) and drops in 220 ms.
+      </li>
+      <li>
+        Menus open from 0.9 in 200 ms with a 138 ms fade, and close to 0.96 in 110 ms on
+        <code>cubic-bezier(.3,0,.8,.15)</code>. The search list drops 4 px from 0.98 in 180 ms.
+      </li>
+      <li>
+        Tooltips wait 300 ms, then grow from 0.96 in 140 ms; they leave with a 90 ms fade. The chart bubble only fades,
+        in 200 ms.
+      </li>
+      <li>Hover and other state changes take 160 ms on <code>cubic-bezier(.23,1,.32,1)</code>.</li>
+      <li>
+        Editing the overview: a lifted card grows to 1.03 (200 ms) and rises to elevation 4; its height follows in
+        320 ms. Dropped, it settles in 500 ms on the expressive spring. Neighbors and resizes move in 320 ms. When the
+        column count changes, cards travel to their new places in 620 ms on <code>cubic-bezier(.2,0,0,1)</code>.
+      </li>
+      <li>Theme changes never move content: only the switch’s knob slides, then the page fades.</li>
+      <li>
+        With reduced motion requested, spatial movement is replaced by an immediate change; fades stay, shortened, to keep
+        the change perceptible.
+      </li>
+    </ul>
+  </Section>
+</Docs>
+
+<style>
+  .curves {
+    display: grid;
+    gap: var(--sonar-space-16);
+  }
+
+  .table-wrap {
+    min-width: 0;
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  .table-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .table-wrap caption {
+    padding: var(--sonar-space-16) var(--sonar-space-16) var(--sonar-space-8);
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+    text-align: left;
+  }
+
+  .table-wrap :is(th, td) {
+    padding: var(--sonar-space-8) var(--sonar-space-16);
+    border-top: 1px solid var(--sonar-color-divider);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .table-wrap thead th {
+    color: var(--sonar-color-text-tertiary);
+    font-weight: var(--sonar-font-weight-medium);
+    white-space: nowrap;
+  }
+
+  .table-wrap code {
+    white-space: nowrap;
+  }
+</style>

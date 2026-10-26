@@ -1,0 +1,43 @@
+/* Tooltip: small text on the inverse surface, as in Material 3. It fades in and settles toward its trigger, and fades out. */
+@layer sonar.components {
+  .sonar-tooltip-positioner {
+    z-index: 60;
+  }
+
+  .sonar-tooltip {
+    max-width: 240px;
+    padding: var(--sonar-space-8) var(--sonar-space-10);
+    border-radius: var(--sonar-shape-corner-small);
+    background: var(--sonar-color-surface-inverse);
+    color: var(--sonar-color-text-inverse);
+    font: var(--sonar-type-label-sm);
+    letter-spacing: var(--sonar-type-label-sm-tracking);
+    line-height: 1.35;
+    transform-origin: var(--transform-origin);
+    transition:
+      opacity var(--sonar-motion-duration-tooltip-enter) var(--sonar-motion-easing-decelerate),
+      scale var(--sonar-motion-duration-tooltip-enter) var(--sonar-motion-easing-decelerate);
+  }
+
+  /* Opens from 96 % after the pointer rests 300 ms; closes by fading only, in 90 ms */
+  .sonar-tooltip[data-starting-style] {
+    opacity: 0;
+    scale: 0.96;
+  }
+
+  .sonar-tooltip[data-ending-style] {
+    opacity: 0;
+    transition: opacity var(--sonar-motion-duration-tooltip-exit) var(--sonar-motion-easing-exit);
+  }
+
+  /* Moving between triggers in a provider: the next tooltip appears without animating */
+  .sonar-tooltip[data-instant] {
+    transition: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sonar-tooltip {
+      transition-property: opacity;
+    }
+  }
+}

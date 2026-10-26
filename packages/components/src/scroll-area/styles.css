@@ -1,0 +1,104 @@
+/* Scroll area: content that scrolls inside a fixed height, as the product's lists do. The system's scrollbar is hidden
+   (on a phone it was drawn over the rows' buttons, white in dark mode); a fade marks each edge that has more, and a
+   2 px indicator shows while scrolling, 1 s after, and for 0.8 s when the pointer or focus arrives. Its length follows
+   what is visible, never under 32 px. Outside, it runs in the padding beside the area; inside, in a lane of its own. */
+@layer sonar.components {
+  .sonar-scroll-area {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .sonar-scroll-area-viewport {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+
+  .sonar-scroll-area-viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* The lane the indicator runs in, which the content never reaches */
+  .sonar-scroll-area[data-indicator='inside'] > .sonar-scroll-area-viewport {
+    padding-inline-end: var(--sonar-space-12);
+  }
+
+  /* The fades (1.0.0-alpha.22, alpha.23): a list that stops on its rows sets how far the top fade reaches (the room
+     inside a row at its edge); elsewhere, and at the bottom, the product's 22 px and 24 px. Nothing is hidden while
+     the list scrolls */
+  .sonar-scroll-area-viewport[data-scrollable] {
+    mask-image: linear-gradient(#000 calc(100% - var(--_fade-bottom, 24px)), transparent);
+  }
+
+  .sonar-scroll-area-viewport[data-scrollable]:not([data-at-start]) {
+    mask-image: linear-gradient(
+      transparent,
+      #000 var(--_fade-top, 22px),
+      #000 calc(100% - var(--_fade-bottom, 24px)),
+      transparent
+    );
+  }
+
+  .sonar-scroll-area-viewport[data-scrollable][data-at-end]:not([data-at-start]) {
+    mask-image: linear-gradient(transparent, #000 var(--_fade-top, 22px));
+  }
+
+  .sonar-scroll-area-viewport:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: calc(-1 * var(--sonar-focus-width));
+    border-radius: var(--sonar-shape-corner-small);
+  }
+
+  .sonar-scroll-area-thumb {
+    position: absolute;
+    right: -6px;
+    width: 2px;
+    border-radius: 1px;
+    background: var(--sonar-color-scrollbar);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms var(--sonar-motion-effects-default-easing);
+  }
+
+  .sonar-scroll-area[data-indicator='inside'] > .sonar-scroll-area-thumb {
+    right: 4px;
+  }
+
+  /* In a card, as in the product: the card's body leaves the scrolling to the area, and the indicator runs 4 px from
+     the card's edge, in its padding, clear of the rows' buttons */
+  .sonar-card[data-size] .sonar-card-body:has(> .sonar-scroll-area) {
+    overflow: visible;
+  }
+
+  .sonar-card .sonar-scroll-area[data-indicator='outside'] > .sonar-scroll-area-thumb {
+    right: calc(4px - var(--_pad-x, 28px));
+  }
+
+  .sonar-scroll-area-thumb[data-visible] {
+    opacity: 1;
+    transition-duration: 100ms;
+  }
+
+  .sonar-scroll-area-thumb[hidden] {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sonar-scroll-area-thumb {
+      transition: none;
+    }
+  }
+
+  /* 1.1.3: on a desktop (a pointer that hovers and is fine: mouse or trackpad) the rows do not snap; the list stops
+     where the wheel leaves it (the wheel is still eased, internal/smooth-wheel.ts). Touch screens keep the snap. */
+  @media (hover: hover) and (pointer: fine) {
+    .sonar-scroll-area-viewport {
+      scroll-snap-type: none !important;
+    }
+  }
+}

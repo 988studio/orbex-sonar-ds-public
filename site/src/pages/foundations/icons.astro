@@ -1,0 +1,243 @@
+---
+import CodeBlock from '../../components/CodeBlock.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import ThemePair from '../../components/ThemePair.astro'
+import { catalog } from '@orbex/sonar-patterns/icons.tsx'
+import Docs from '../../layouts/Docs.astro'
+import { group } from '../../lib/tokens.ts'
+/* The marks live inside the components package; the page draws them from the same source */
+import {
+  AlertMark,
+  ArrowMark,
+  CheckMark,
+  ChevronDownMark,
+  CloseMark,
+  DashMark,
+  InfoMark,
+  SearchMark,
+  SuccessMark,
+} from '../../../../packages/components/src/internal/icons.tsx'
+
+const marks = [
+  { name: 'Check', Mark: CheckMark, used: 'Checkbox, menu choices' },
+  { name: 'Dash', Mark: DashMark, used: 'Checkbox, partly selected' },
+  { name: 'Chevron down', Mark: ChevronDownMark, used: 'Select, unit menu' },
+  { name: 'Close', Mark: CloseMark, used: 'Dialog, toast, search field' },
+  { name: 'Alert', Mark: AlertMark, used: 'Field errors, warning and danger notices' },
+  { name: 'Info', Mark: InfoMark, used: 'Info notices' },
+  { name: 'Success', Mark: SuccessMark, used: 'Success notices' },
+  { name: 'Arrow', Mark: ArrowMark, used: 'Card link' },
+  { name: 'Search', Mark: SearchMark, used: 'Search field' },
+]
+
+const iconSizes = group('size.icon')
+const Sample = catalog.find((entry) => entry.name === 'local_shipping')!.Icon
+const sizes = [
+  { px: 16, token: 'size.icon.small', use: 'Inside small controls and text: the unit menu, fields, status lines, the stock line of a product' },
+  { px: 20, token: 'size.icon.medium', use: 'Buttons, icon buttons, menu items, search results' },
+  { px: 24, token: '—', use: 'Navigation, the card header’s bolt, the empty state of a calendar day (28)' },
+]
+
+const importing = `/* 1. Install the symbols: one SVG per icon, weight 400, outlined, rounded or sharp, each with a -fill variant */
+npm install @material-symbols/svg-400 @material-symbols/svg-500
+
+/* 2. Make a component from the SVG’s path. With Vite, ?raw reads the file as text at build time */
+import truck from '@material-symbols/svg-400/rounded/local_shipping.svg?raw'
+
+const path = truck.match(/ d="([^"]+)"/)?.[1]
+
+export const ShippingIcon = (props) => (
+  <svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false" {...props}>
+    <path d={path} />
+  </svg>
+)
+
+/* 3. Pass it to a component: the component sizes it and the label names the action */
+<IconButton label="Track delivery" icon={<ShippingIcon />} />
+<Button icon={<AddIcon />}>New order</Button>`
+---
+
+<Docs title="Icons" description="The icons of Sonar-DB: the marks the components draw themselves, the Material Symbols the product uses, their sizes, weight and how to import them.">
+  <PageHeader
+    title="Icons"
+    lead="Two families, one look. The components draw a handful of marks themselves, so they need nothing else to work; everything else is a Material Symbol, Rounded, weight 400, passed in by the product. Both take the color of the text beside them."
+  />
+
+  <Section title="Marks the components draw" id="marks">
+    <p class="prose">
+      Drawn on a 16 px grid with a 1.75 px round stroke, in currentColor. They are part of the components, not an
+      icon set to pick from: a product never imports them.
+    </p>
+    <ThemePair label="The marks of the components in light and dark">
+      <ul class="grid" role="list">
+        {
+          marks.map(({ name, Mark, used }) => (
+            <li>
+              <span class="glyph mark">
+                <Mark />
+              </span>
+              <span class="name">{name}</span>
+              <span class="use">{used}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </ThemePair>
+  </Section>
+
+  <Section title="Product icons" id="symbols">
+    <p class="prose">
+      Material Symbols, Rounded, weight 400, grade 0, at the optical size of 24. Outlined by default; filled (the
+      -fill variant) only to show a state: in stock, a quick action, a call in progress. The chevrons that step through
+      days and months are weight 500, so they read as bold beside 12 px labels. These are the {catalog.length}{' '}
+      icons the overview and its panels use, with their Material names.
+    </p>
+    <ThemePair label="The product icons of the overview in light and dark">
+      <ul class="grid symbols" role="list">
+        {
+          catalog.map(({ name, Icon }) => (
+            <li>
+              <span class="glyph">
+                <Icon />
+              </span>
+              <code class="name">{name}</code>
+            </li>
+          ))
+        }
+      </ul>
+    </ThemePair>
+  </Section>
+
+  <Section title="Sizes" id="sizes">
+    <div class="sizes">
+      {
+        sizes.map(({ px, token, use }) => (
+          <div class="size">
+            <span class="glyph" style={`width: ${px}px; height: ${px}px`}>
+              <Sample />
+            </span>
+            <span class="name">{px} px</span>
+            <code class="token">{token}</code>
+            <span class="use">{use}</span>
+          </div>
+        ))
+      }
+    </div>
+    <p class="prose">
+      The two icon tokens, {iconSizes.map((doc) => `${doc.name} (${(doc.light.resolved as { value: number }).value} px)`).join(' and ')},
+      are the boxes the components give an icon; the icon fills its box. On touch screens icons keep their size and the
+      control around them grows to the 48 px target.
+    </p>
+  </Section>
+
+  <Section title="Weight and color" id="weight">
+    <ul class="prose">
+      <li><strong>One weight.</strong> Symbols at 400 match the 1.75 px stroke of the marks at 16 px and the medium weight of labels. Never mix weights in one screen.</li>
+      <li><strong>The color of the text.</strong> Icons are drawn in currentColor, so they follow the text level, the theme and the disabled state with no extra token.</li>
+      <li><strong>Color says nothing alone.</strong> A red icon always comes with words: a status, an alert with its name.</li>
+    </ul>
+  </Section>
+
+  <Section title="Use" id="usage">
+    <ul class="prose">
+      <li><strong>Decorative by default.</strong> An icon beside a label is hidden from assistive technology; the label names the action.</li>
+      <li><strong>Icon-only buttons have a name.</strong> IconButton requires a label, read by screen readers; pair it with a tooltip where there is room to hover.</li>
+      <li><strong>One meaning per icon.</strong> The truck is a delivery everywhere; the receipt, an invoice. A new meaning takes a new icon.</li>
+      <li><strong>Icons support words, not replace them,</strong> except for the few actions everyone knows: close, search, add, more.</li>
+    </ul>
+  </Section>
+
+  <Section title="Import them" id="import">
+    <p class="prose">
+      Components take any icon as a React node, so the product chooses how to load them. This is how this site does it,
+      with no icon font and no runtime download: only the icons used end up in the bundle.
+    </p>
+    <CodeBlock code={importing} language="tsx" />
+  </Section>
+</Docs>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--sonar-space-12);
+    padding: var(--sonar-space-8) 0;
+  }
+
+  .grid li {
+    display: grid;
+    gap: var(--sonar-space-4);
+    justify-items: start;
+    min-width: 0;
+    padding: var(--sonar-space-12);
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    color: var(--sonar-color-text-strong);
+  }
+
+  .symbols {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .glyph {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    margin-bottom: var(--sonar-space-4);
+    color: var(--sonar-color-text-strong);
+  }
+
+  .glyph :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .name {
+    max-width: 100%;
+    overflow: hidden;
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  code.name {
+    font: 400 12px/1.4 var(--sonar-font-family-mono);
+    color: var(--sonar-color-text-secondary);
+  }
+
+  .use {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-body-md);
+    letter-spacing: var(--sonar-type-body-md-tracking);
+  }
+
+  .sizes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--sonar-space-16);
+    max-width: var(--site-content-width);
+  }
+
+  .size {
+    display: grid;
+    gap: var(--sonar-space-4);
+    align-content: start;
+    padding: var(--sonar-space-16);
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  .size .glyph {
+    margin-bottom: var(--sonar-space-8);
+  }
+
+  .token {
+    color: var(--sonar-color-text-secondary);
+    font: 400 12px/1.4 var(--sonar-font-family-mono);
+  }
+</style>

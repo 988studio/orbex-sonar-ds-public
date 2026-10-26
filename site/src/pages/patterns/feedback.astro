@@ -1,0 +1,144 @@
+---
+import '../../styles/global.css'
+import '@orbex/sonar-components/styles.css'
+import Demo from '../../components/Demo.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import Confirm from '../../demos/dialog/Confirm.tsx'
+import confirmCode from '../../demos/dialog/Confirm.tsx?raw'
+import Tones from '../../demos/notice/Tones.tsx'
+import tonesCode from '../../demos/notice/Tones.tsx?raw'
+import Undo from '../../demos/toast/Undo.tsx'
+import undoCode from '../../demos/toast/Undo.tsx?raw'
+import Docs from '../../layouts/Docs.astro'
+import DoDont from '../../components/DoDont.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import '@orbex/sonar-patterns/app/app-tokens.css'
+import '@orbex/sonar-patterns/app/assistant.css'
+
+const choices = [
+  ['Something just happened', 'Toast', 'Layout saved. Order PO-2210 created.'],
+  ['It can be taken back', 'Toast with Undo', 'Inventory removed from your overview.'],
+  ['It cannot be taken back', 'Dialog, before acting', 'Reset the overview? Discard the new order?'],
+  ['A state that lasts', 'Notice, in place', '2 invoices overdue. The carrier changed.'],
+  ['A field is wrong', 'Error under the field', 'Choose a date from May 12 on.'],
+]
+---
+
+<Docs title="Feedback" description="How Sonar-DB tells people what happened: toasts, undo, confirmations, notices and field errors, and when to use each.">
+  <PageHeader
+    title="Feedback"
+    lead="Say what happened, close to where it happened, and only interrupt for what cannot be undone. Most actions act at once and offer an Undo; a confirmation is the exception."
+  />
+
+  <Section title="Which one" id="which">
+    <div class="table-wrap" data-scroll-region data-label="Which feedback to use">
+      <table>
+        <caption class="visually-hidden">Which feedback to use</caption>
+        <thead>
+          <tr>
+            <th scope="col">When</th>
+            <th scope="col">Use</th>
+            <th scope="col">Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          {choices.map(([when, use, example]) => (
+            <tr>
+              <th scope="row">{when}</th>
+              <td>{use}</td>
+              <td>{example}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section title="Act, then offer to undo" id="undo">
+    <Demo title="Saved, and removed with undo" code={undoCode}><Undo client:visible /></Demo>
+  </Section>
+
+  <Section title="Confirm what cannot be undone" id="confirm">
+    <Demo title="Resetting the overview" code={confirmCode}><Confirm client:visible /></Demo>
+  </Section>
+
+  <Section title="States that last" id="notices">
+    <Demo title="Notices" code={tonesCode} layout="list"><Tones /></Demo>
+  </Section>
+
+  <Section title="Loading" id="loading">
+    <p class="prose">
+      The product waits in two places, and each shows it in place, with the words of what is happening rather than an empty
+      shape. While the search reads a query, its status line says “Understanding “…”…” and a light band in the accent
+      green crosses the words once a second; the results replace it. While the AI assistant writes an answer, three dots
+      pulse in its bubble, 1 s each, 150 ms apart. Cards arrive with their data, so the overview has no skeleton screens; a
+      module that someday needs to load reuses the shimmer on its own words. With reduced motion requested, the words
+      stay still and the dots stop.
+    </p>
+    <SpecimenFigure title="Search, reading the query">
+      <div class="sonar-search-status loading-specimen"><span class="sonar-shimmer">Understanding “delayed deliveries this week”…</span></div>
+    </SpecimenFigure>
+    <SpecimenFigure title="AI assistant, writing an answer">
+      <div class="oxa loading-specimen"><div class="cw-m them"><div class="cw-bub typing" role="img" aria-label="The assistant is thinking"><i></i><i></i><i></i></div></div></div>
+    </SpecimenFigure>
+  </Section>
+
+  <Section title="Writing it" id="writing">
+    <ul class="prose">
+      <li>Past tense for what happened (“Layout saved.”), a question for a decision (“Reset the overview?”).</li>
+      <li>Name the thing: “Inventory removed”, not “Item removed”.</li>
+      <li>The button that answers a question repeats its verb: Reset, Discard. Never Yes or OK.</li>
+      <li>No exclamation marks and no apologies. Errors say how to fix them.</li>
+    </ul>
+  </Section>
+  <DoDont page="feedback" />
+</Docs>
+
+<style>
+  .table-wrap {
+    /* One axis only: wide content scrolls sideways; nothing scrolls or bounces up and down */
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font: var(--sonar-type-body-md);
+  }
+
+  th,
+  td {
+    padding: var(--sonar-space-12) var(--sonar-space-16);
+    border-bottom: 1px solid var(--sonar-color-divider);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  thead th {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+  }
+
+  tbody th {
+    color: var(--sonar-color-text-strong);
+    font-weight: var(--sonar-font-weight-medium);
+  }
+
+  td:nth-child(2) {
+    color: var(--sonar-color-text-strong);
+  }
+
+  td:last-child {
+    color: var(--sonar-color-text-secondary);
+  }
+</style>

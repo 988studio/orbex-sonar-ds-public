@@ -1,0 +1,98 @@
+---
+/**
+ * Theme preference: follow the system, or force light or dark.
+ * A radio group, so it works with the keyboard and screen readers without extra ARIA.
+ * The choice is applied before first paint by the inline script in the layout.
+ */
+const options = [
+  { value: 'system', label: 'System' },
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+]
+---
+
+<fieldset class="theme-switch">
+  <legend class="visually-hidden">Theme</legend>
+  {
+    options.map(({ value, label }) => (
+      <label>
+        <input type="radio" name="theme" value={value} checked={value === 'system'} />
+        <span>{label}</span>
+      </label>
+    ))
+  }
+</fieldset>
+
+<script>
+  import { storedTheme, switchTheme, type ThemePreference } from '../lib/theme.ts'
+
+  for (const input of document.querySelectorAll<HTMLInputElement>('.theme-switch input')) {
+    input.checked = input.value === storedTheme()
+    input.addEventListener('change', () => switchTheme(input.value as ThemePreference))
+  }
+</script>
+
+<style>
+  .theme-switch {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: var(--sonar-space-2);
+    border: 0;
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-surface-container);
+  }
+
+  /* The knob: one raised pill that slides to the chosen option before the theme changes */
+  .theme-switch::before {
+    content: '';
+    position: absolute;
+    inset: var(--sonar-space-2) auto var(--sonar-space-2) var(--sonar-space-2);
+    width: calc((100% - 2 * var(--sonar-space-2)) / 3);
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-surface-raised);
+    box-shadow: var(--sonar-elevation-1);
+    transition: translate var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-easing-emphasized);
+  }
+
+  .theme-switch:has([value='light']:checked)::before {
+    translate: 100% 0;
+  }
+
+  .theme-switch:has([value='dark']:checked)::before {
+    translate: 200% 0;
+  }
+
+  label {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 32px;
+    border-radius: var(--sonar-shape-corner-full);
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    cursor: pointer;
+    transition: background-color var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing),
+      color var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing);
+  }
+
+  label:hover {
+    color: var(--sonar-color-text-strong);
+  }
+
+  label:has(:checked) {
+    color: var(--sonar-color-text-strong);
+  }
+
+  label:has(:focus-visible) {
+    outline: 2px solid var(--sonar-color-accent);
+    outline-offset: 1px;
+  }
+
+  input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>

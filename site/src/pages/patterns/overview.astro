@@ -1,0 +1,34 @@
+---
+import '../../styles/global.css'
+import '@orbex/sonar-components/styles.css'
+import Demo from '../../components/Demo.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import Overview from '@orbex/sonar-patterns/patterns/Overview.tsx'
+import overviewCode from '../../snippets/Overview.tsx?raw'
+import DoDont from '../../components/DoDont.astro'
+import Docs from '../../layouts/Docs.astro'
+import { gridMetrics } from '../../lib/layout-metrics.ts'
+---
+
+<Docs title="Overview" description="The Sonar-DB overview: the six default cards composed on the grid, live, and the rules that keep it legible at every width.">
+  <PageHeader
+    title="Overview"
+    lead="The six cards of the default overview on the grid, live, with the figures of one day: Tuesday, May 12, 2026. Change a unit, turn a week, read a day of shipments; narrow the window and the columns follow the reading order of the desktop layout."
+  />
+
+  <Section title="Live" id="live">
+    <Demo title="The default overview" code={overviewCode} snippet layout="wide"><Overview client:idle metrics={gridMetrics} /></Demo>
+  </Section>
+
+  <Section title="Rules" id="rules">
+    <ul class="prose">
+      <li><strong>One overview, arranged once.</strong> People arrange it on a desktop; tablets and phones read that arrangement in order. See <a href="/layout/grid/">Breakpoints and grid</a>.</li>
+      <li><strong>Columns end level.</strong> Card heights are chosen so that M + L = S + XL, and the default overview keeps a straight bottom edge.</li>
+      <li><strong>What matters most goes first.</strong> Orders and Daily shipments open the reading order because they are what people check every morning.</li>
+      <li><strong>Every card leads somewhere.</strong> The overview never becomes the place where work is done; it says where to go.</li>
+      <li><strong>Units are per card.</strong> Pallets, kilograms or items are chosen in each card, because each team counts differently.</li>
+    </ul>
+  </Section>
+  <DoDont page="overview" />
+</Docs>

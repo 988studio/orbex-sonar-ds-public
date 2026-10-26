@@ -1,0 +1,35 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Actions from '../../demos/menu/Actions.tsx'
+import actionsCode from '../../demos/menu/Actions.tsx?raw'
+import Units from '../../demos/menu/Units.tsx'
+import unitsCode from '../../demos/menu/Units.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import { MenuAnatomy } from '../../demos/menu/Specimens.tsx'
+---
+
+<ComponentDoc
+  entry="menu"
+  baseUi="https://base-ui.com/react/components/menu"
+  lead="A list of actions in a popup that grows from its trigger. Base UI provides the behavior: focus, arrow keys, typeahead, dismissal and positioning away from the window edges."
+>
+  <Demo title="Actions on an order" code={actionsCode}><Actions client:visible /></Demo>
+  <Demo title="A choice inside a menu" code={unitsCode}><Units client:visible /></Demo>
+  <SpecimenFigure slot="specimens" title="Kinds of item and their states"><MenuAnatomy /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>For actions on the thing in view. Choices that change what is shown can live in a menu as a radio group.</li>
+      <li>Destructive actions go last, after a separator, in the danger tone. They still need a confirmation or an undo.</li>
+      <li>The trigger keeps its look: pass a Button or an IconButton with <code>render</code>.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>The trigger announces that it opens a menu, and whether it is open.</li>
+    <li>Arrow keys move between items, typing jumps to an item, Escape closes and returns focus to the trigger.</li>
+    <li>The highlight stays neutral behind danger items, so their red text keeps 4.5:1.</li>
+  </ul>
+</ComponentDoc>

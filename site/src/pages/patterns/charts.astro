@@ -1,0 +1,90 @@
+---
+import '../../styles/global.css'
+import '@orbex/sonar-components/styles.css'
+import '../../demos/charts/charts.css'
+import Demo from '../../components/Demo.astro'
+import DoDont from '../../components/DoDont.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import TokenTable from '../../components/TokenTable.astro'
+import Rings from '../../demos/charts/Rings.tsx'
+import ringsCode from '../../demos/charts/Rings.tsx?raw'
+import TickBars from '../../demos/charts/TickBars.tsx'
+import tickBarsCode from '../../demos/charts/TickBars.tsx?raw'
+import { ChartTones } from '../../demos/charts/Tones.tsx'
+import Trend from '../../demos/charts/Trend.tsx'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import trendCode from '../../demos/charts/Trend.tsx?raw'
+import A11yTables from '../../components/A11yTables.astro'
+import Docs from '../../layouts/Docs.astro'
+import { group } from '../../lib/tokens.ts'
+---
+
+<Docs title="Charts" description="The three chart shapes of the Sonar-DB overview: tick bars, ring charts and the trend chart, with the legend they share and their rules.">
+  <PageHeader
+    title="Charts"
+    lead="Three shapes cover the overview: a tick bar for a share, a ring for the parts of a whole, a line for a month day by day, and one legend for all of them. They are drawn in SVG and CSS with the chart roles of the tokens; no charting library."
+  />
+
+  <Section title="Tick bar" id="tick-bar">
+    <p class="prose">One row of fine ticks, each part in its share of the width and in its chart role. The parts meet without a gap, and a legend under the bar names each color.</p>
+    <Demo title="Orders of a month, and an overdue share" code={tickBarsCode}><TickBars /></Demo>
+  </Section>
+
+  <Section title="Ring chart" id="ring-chart">
+    <p class="prose">Parts of a whole as a ring of 96 ticks, the Inventory donut. The hole can hold the total; the legend names each color.</p>
+    <Demo title="Two and three parts" code={ringsCode}><Rings /></Demo>
+  </Section>
+
+  <Section title="Trend chart" id="trend-chart">
+    <p class="prose">
+      A month day by day as a line, with its running total dotted against a second axis. The legend turns each series
+      off and on; hovering, touching or the arrow keys read a day.
+    </p>
+    <Demo title="Daily shipments in April" code={trendCode}><Trend client:visible /></Demo>
+  </Section>
+
+  <Section title="Rules" id="rules">
+    <ul class="prose">
+      <li><strong>Color by role.</strong> The first series in accent, the second in the strong neutral, the rest of a whole in the rest tone, alerts in danger. Never a hue that means nothing.</li>
+      <li><strong>A series that is off keeps its name readable.</strong> It drops to the tertiary level at full opacity and its marker turns hollow; it is never faded.</li>
+      <li><strong>Figures in the data role</strong>, the mono face at 10 px, with tabular numerals; gridlines dotted and quiet.</li>
+      <li><strong>Labels beside the chart, not inside it.</strong> The card states the key figures in text; the chart shows their shape.</li>
+      <li><strong>No animation on load.</strong> A chart draws at once; values move only when the unit or the period changes.</li>
+    </ul>
+  </Section>
+
+  <DoDont page="charts" />
+
+  <Section title="Accessibility" id="accessibility">
+    <A11yTables entry="charts" />
+    <h3 class="notes">Notes</h3>
+    <ul class="prose">
+      <li>A chart is never the only way to a figure: the card states its key figures in text beside it.</li>
+      <li>Color is never the only cue: a legend names every color, and a series that is off keeps its name readable.</li>
+      <li>The parts of one chart differ in lightness as well as hue (accent, strong and rest; or danger and rest), so they stay distinct without color vision.</li>
+    </ul>
+  </Section>
+
+  <Section title="Chart roles" id="tokens">
+    <SpecimenFigure title="The tones, as a tick bar and in the legend"><ChartTones /></SpecimenFigure>
+    <TokenTable caption="Chart roles" tokens={group('color.chart')} />
+  </Section>
+
+  <Section title="Built with" id="built-with">
+    <p class="prose">
+      Each chart is its own component, with its API: <a href="/components/tick-bar/">Tick bar</a>,
+      <a href="/components/ring-chart/">Ring chart</a>, <a href="/components/trend-chart/">Trend chart</a> and
+      <a href="/components/chart-legend/">Chart legend</a>. The trend chart has a budget of 4 KB instead of 3: it draws
+      axes, two series, a legend and reading by pointer and keys.
+    </p>
+  </Section>
+</Docs>
+
+<style>
+  .notes {
+    margin: var(--sonar-space-28) 0 var(--sonar-space-8);
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+  }
+</style>

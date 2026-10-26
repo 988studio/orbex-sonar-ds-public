@@ -1,0 +1,31 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Tones from '../../demos/notice/Tones.tsx'
+import tonesCode from '../../demos/notice/Tones.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import { NoticeVariants } from '../../demos/notice/Specimens.tsx'
+---
+
+<ComponentDoc
+  entry="notice"
+  lead="A message inside the page, next to what it is about, that stays until the situation changes. The hue sits in the tint and the icon; the text stays at a reading level."
+>
+  <Demo title="Tones" code={tonesCode} layout="list"><Tones /></Demo>
+  <SpecimenFigure slot="specimens" title="Tones and content"><NoticeVariants /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>For a state that lasts: overdue invoices, a changed carrier, a tip. For feedback on an action that just happened, use a toast.</li>
+      <li>A few bold words that name the situation, then one or two sentences. At most one action, as a text button.</li>
+      <li>Info and success are calm; warning asks to check something; danger means something is wrong and has a way out.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>The icon is decorative; the bold title says what kind of notice it is.</li>
+    <li>A notice that appears while someone works takes <code>role="status"</code>, or <code>role="alert"</code> when it is urgent, so it is announced.</li>
+    <li>Text is at the default level on every tint, so it passes AA in both themes.</li>
+  </ul>
+</ComponentDoc>

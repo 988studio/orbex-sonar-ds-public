@@ -1,0 +1,546 @@
+/* AI assistant: the floating chat on desktops and tablets, a bottom sheet on phones
+   Ported from the prototype’s CSS (Orbex · Prototype v38), rule by rule in its cascade order, scoped to .oxa.
+   The prototype’s custom properties resolve to the system’s tokens in app-tokens.css. */
+
+
+/* from app.css */
+.oxa .chatw {
+  position:absolute;
+  z-index:30;
+  display:flex;
+  flex-direction:column;
+  background:var(--surface-card);
+  overflow:hidden;
+}
+.oxa .cw-h {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 10px 12px 16px;
+  cursor:grab;
+  user-select:none;
+  touch-action:none;
+  outline-offset:-2px;
+}
+.oxa .cw-h:active {
+  cursor:grabbing;
+}
+.oxa .cw-av {
+  width:32px;
+  height:32px;
+  border-radius:var(--r-round);
+  background:var(--accent);
+  color:var(--on-accent);
+  display:grid;
+  place-items:center;
+  font:var(--t14m);
+  flex:none;
+}
+.oxa .cw-t {
+  flex:1;
+  min-width:0;
+  color:var(--text-strong);
+}
+.oxa .cw-t .grey {
+  display:flex;
+  align-items:center;
+  gap:5px;
+  margin-top:2px;
+}
+.oxa .cw-on {
+  width:6px;
+  height:6px;
+  border-radius:var(--r-round);
+  background:var(--accent);
+}
+.oxa .cw-b {
+  display:grid;
+  place-items:center;
+  color:var(--text-muted);
+  transition:background-color var(--d-fast) var(--ease-out),color var(--d-fast) var(--ease-out);
+}
+.oxa .cw-b:hover {
+  background:var(--surface-hover);
+  color:var(--text-strong);
+}
+.oxa .cw-list {
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  padding:14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  scrollbar-width:thin;
+  scrollbar-color:var(--scroll-thumb) transparent;
+}
+.oxa .cw-day {
+  align-self:center;
+  margin-bottom:2px;
+}
+.oxa .cw-m {
+  display:flex;
+  flex-direction:column;
+  max-width:80%;
+}
+.oxa .cw-m.them {
+  align-self:flex-start;
+}
+.oxa .cw-m.me {
+  align-self:flex-end;
+  align-items:flex-end;
+}
+.oxa .cw-bub {
+  line-height:1.4;
+  letter-spacing:0;
+  color:var(--text-strong);
+}
+.oxa .cw-m.me .cw-bub {
+  background:var(--accent);
+  color:var(--on-accent);
+}
+.oxa .cw-time {
+  font-size:10px;
+  margin-top:4px;
+}
+.oxa .cw-bub.typing {
+  display:flex;
+  gap:4px;
+  padding:12px;
+}
+.oxa .cw-bub.typing i {
+  width:5px;
+  height:5px;
+  border-radius:var(--r-round);
+  background:var(--fill-faint);
+  animation:cwdot 1s infinite var(--ease-io);
+}
+.oxa .cw-bub.typing i:nth-child(2) {
+  animation-delay:.15s;
+}
+.oxa .cw-bub.typing i:nth-child(3) {
+  animation-delay:.3s;
+}
+.oxa .cw-in {
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  padding:10px 12px 12px 16px;
+}
+.oxa .cw-in textarea {
+  flex:1;
+  resize:none;
+  border:0;
+  outline:none;
+  padding:9px 14px;
+  color:var(--text-strong);
+  font-family:var(--sans);
+  max-height:96px;
+}
+.oxa .cw-send {
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  flex:none;
+}
+.oxa .cw-send:hover {
+  filter:brightness(.94);
+}
+.oxa .cw-send:active {
+  transform:scale(var(--press-scale));
+}
+.oxa .cw-send:disabled {
+  background:var(--fill-subtle);
+  color:var(--text-dim);
+  cursor:default;
+  filter:none;
+  transform:none;
+}
+.oxa .cw-send .ms {
+  font-size:18px;
+}
+.oxa .cw-rs {
+  position:absolute;
+  z-index:3;
+  touch-action:none;
+}
+.oxa .cw-rs.n, .oxa .cw-rs.s {
+  left:24px;
+  right:24px;
+  height:6px;
+  cursor:ns-resize;
+}
+.oxa .cw-rs.n {
+  top:0;
+}
+.oxa .cw-rs.s {
+  bottom:0;
+}
+.oxa .cw-rs.e, .oxa .cw-rs.w {
+  top:24px;
+  bottom:24px;
+  width:6px;
+  cursor:ew-resize;
+}
+.oxa .cw-rs.e {
+  right:0;
+}
+.oxa .cw-rs.w {
+  left:0;
+}
+.oxa .cw-rs.ne, .oxa .cw-rs.nw, .oxa .cw-rs.sw {
+  width:24px;
+  height:24px;
+}
+.oxa .cw-rs.ne {
+  top:0;
+  right:0;
+  cursor:nesw-resize;
+}
+.oxa .cw-rs.nw {
+  top:0;
+  left:0;
+  cursor:nwse-resize;
+}
+.oxa .cw-rs.sw {
+  bottom:0;
+  left:0;
+  cursor:nesw-resize;
+}
+.oxa .cw-rs.se {
+  right:0;
+  bottom:0;
+  width:24px;
+  height:24px;
+  cursor:nwse-resize;
+}
+.oxa .cw-rs.se::after {
+  content:"";
+  position:absolute;
+  right:5px;
+  bottom:5px;
+  width:7px;
+  height:7px;
+  border-right:1.5px solid var(--border-control);
+  border-bottom:1.5px solid var(--border-control);
+  border-bottom-right-radius:2px;
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .chatw {
+    animation:none;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .cw-bub.typing i {
+    animation:none;
+  }
+}
+.oxa .cw-ai {
+  display:inline-flex;
+  align-items:center;
+  height:16px;
+  padding:0 5px;
+  margin-left:6px;
+  border-radius:8px;
+  /* Accent text, not the accent fill: #1a8838 on #fcfcfc was 4.42:1 at 10 px; dark keeps its green (1.0.0-alpha.20) */
+  color:var(--sonar-color-text-accent);
+  font-size:10px;
+  vertical-align:2px;
+}
+.oxa .cw-card {
+  margin-top:6px;
+  width:280px;
+  max-width:100%;
+  border:1px solid var(--divider);
+  padding:10px 12px 8px;
+  background:var(--surface-card);
+}
+.oxa .cw-ch {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  color:var(--text-strong);
+  margin-bottom:6px;
+}
+.oxa .cw-tag {
+  height:18px;
+  padding:0 6px;
+  display:inline-flex;
+  align-items:center;
+  border-radius:4px;
+  background:color-mix(in srgb,var(--warning) 18%,transparent);
+  color:var(--warning-text);
+  font-size:10px;
+}
+.oxa .cw-row {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:5px 0;
+  border-top:1px solid var(--divider);
+  letter-spacing:0;
+  color:var(--text-strong);
+}
+.oxa .cw-row b {
+  font-weight:600;
+  text-align:right;
+}
+.oxa .cw-row span {
+  white-space:nowrap;
+}
+.oxa .cw-act {
+  display:flex;
+  align-items:center;
+  gap:4px;
+  margin-top:6px;
+  /* Accent text: #1a8838 on the card was 4.42:1 at 12 px (1.0.0-alpha.20) */
+  color:var(--sonar-color-text-accent);
+}
+.oxa .cw-act .ms {
+  font-size:15px;
+}
+.oxa .cw-sug {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:6px;
+  padding:8px 16px 0;
+  flex:none;
+}
+.oxa .cw-sug button {
+  white-space:nowrap;
+  height:28px;
+  padding:0 11px;
+  letter-spacing:0;
+  transition:background-color var(--d-fast) var(--ease-out);
+}
+.oxa .cw-sug button:hover {
+  background:var(--state-hover);
+}
+.oxa .cw-sug button:disabled {
+  opacity:.5;
+  cursor:default;
+}
+.oxa .cw-sug+.cw-in {
+  border-top:0;
+}
+.oxa .cw-note {
+  padding:0 16px 10px;
+  font-size:10px;
+  text-align:center;
+}
+.oxa .cw-in {
+  padding-bottom:8px;
+}
+.oxa .cw-ai {
+  background:var(--surface-card);
+}
+.oxa .cw-rs.se::after {
+  transition:border-color var(--d-fast) var(--ease-out);
+}
+.oxa .cw-rs.se:hover::after {
+  border-color:var(--accent);
+}
+
+/* from m3e.css */
+.oxa .cw-send {
+  transition:border-radius var(--sp-fast-d) var(--sp-fast),background-color var(--fx-def-d) var(--fx-def),color var(--fx-def-d) var(--fx-def),box-shadow var(--fx-def-d) var(--fx-def),background-image var(--fx-def-d) var(--fx-def);
+}
+.oxa .cw-send:active {
+  transform:none;
+}
+.oxa .cw-send {
+  border-radius:50%;
+}
+.oxa .cw-send:hover {
+  filter:none;
+  background-image:linear-gradient(var(--overlay-on-accent-light),var(--overlay-on-accent-light));
+}
+.oxa .cw-send:active {
+  border-radius:12px;
+}
+.oxa .chatw {
+  border-radius:var(--r-panel);
+  box-shadow:var(--elevation-3);
+}
+/* The header takes the search's surface (1.0.0-alpha.16): in light the search field's and results header's tone, in
+   dark the results header's, a step below the bubbles, since there the search field shares the bubbles' tone. It no
+   longer reads as one of the assistant's bubbles, which keep the container surface */
+.oxa .cw-h {
+  background:var(--chat-head, var(--search-head));
+  border-bottom:0;
+}
+/* Dark (1.0.0-alpha.17): a stronger header, #2E392E, with its grey line in the icons' grey for AA */
+.oxa .cw-h .grey {
+  color:var(--chat-head-meta, var(--text-meta));
+}
+.oxa .cw-bub {
+  border-radius:var(--r-bubble);
+  padding:10px 14px;
+}
+.oxa .cw-m.them .cw-bub {
+  background:var(--surface-container);
+  border-bottom-left-radius:6px;
+}
+.oxa .cw-m.me .cw-bub {
+  border-bottom-right-radius:6px;
+}
+.oxa .cw-card {
+  border-radius:var(--r-menu);
+  border-color:var(--border-muted);
+}
+.oxa .cw-sug button {
+  border-radius:8px;
+  box-shadow:inset 0 0 0 1px var(--border-control);
+  color:var(--text);
+}
+.oxa .cw-sug button:hover {
+  background:color-mix(in srgb,var(--text) 8%,transparent);
+}
+.oxa .cw-in textarea {
+  border-radius:var(--r-input);
+  background:var(--surface-container);
+}
+.oxa .cw-in textarea:focus-visible {
+  box-shadow:inset 0 0 0 2px var(--accent);
+}
+.oxa .cw-act {
+  border-radius:999px;
+}
+.oxa .chatw.leaving {
+  animation:m-cwout 150ms linear forwards;
+  pointer-events:none;
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .chatw {
+    animation:m-fin var(--fx-def-d) linear!important;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .chatw.leaving {
+    animation:m-fin 100ms linear reverse forwards!important;
+  }
+}
+.oxa .cw-b {
+  border-radius:50%;
+}
+
+/* from polish.css */
+.oxa .chatw {
+  transform-origin:100% 100%;
+  animation:m-cwin2 var(--sp-def-d) var(--sp-def),m-fin var(--fx-def-d) var(--fx-def);
+}
+.oxa .chatw.leaving {
+  animation:m-cwout 150ms linear forwards;
+}
+.oxa .cw-list>* {
+  flex:none;
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .chatw {
+    animation:m-fin var(--fx-def-d) linear!important;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .chatw.leaving {
+    animation:m-fin 100ms linear reverse forwards!important;
+  }
+}
+.oxa .cw-b {
+  width:28px;
+  height:28px;
+  margin-right:-4px;
+}
+.oxa .cw-b .ms {
+  font-size:20px;
+}
+.oxa .cw-b {
+  margin-right:0;
+}
+.oxa .cw-b:hover {
+  background:var(--state-hover);
+}
+
+/* from mobile.css */
+.oxa.m-mob .chatw {
+  left:0!important;
+  right:0;
+  top:auto!important;
+  bottom:0;
+  width:auto!important;
+  height:min(86%,760px)!important;
+  border-radius:20px 20px 0 0;
+  transform-origin:50% 100%;
+  z-index:31;
+}
+.oxa.m-mob .chatw .cw-rs {
+  display:none;
+}
+.oxa.m-mob .chatw .cw-h {
+  cursor:default;
+}
+.oxa.m-mob .chatw {
+  height:calc(100% - 44px)!important;
+  max-height:none;
+  padding-top:0;
+  animation:m-up 420ms var(--sp-def,cubic-bezier(.2,0,0,1)),m-fin 200ms var(--fx-def,linear);
+  box-shadow:0 -12px 32px -8px rgba(0,0,0,.25);
+}
+.oxa.m-mob .chatw.leaving {
+  animation:m-down 150ms cubic-bezier(.4,0,1,1) forwards;
+}
+.oxa.m-mob .chatw::before {
+  content:"";
+  position:absolute;
+  top:8px;
+  left:50%;
+  width:36px;
+  height:4px;
+  margin-left:-18px;
+  border-radius:2px;
+  background:color-mix(in srgb,var(--text) 22%,transparent);
+  z-index:2;
+}
+.oxa.m-mob .chatw .cw-h {
+  padding-top:14px;
+}
+.oxa.m-mob .chatw .cw-h .cw-b:not(:last-of-type) {
+  display:none;
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa.m-mob .chatw {
+    animation:m-fin 120ms linear;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa.m-mob .chatw.leaving {
+    animation:m-fin 100ms linear reverse forwards;
+  }
+}
+
+/* from safe.css */
+.oxa.m-mob .chatw {
+  height:calc(100% - 44px - var(--sa-t))!important;
+  padding-bottom:var(--sa-b);
+}
+@keyframes cwdot {0%,60%,100%{opacity:.35;transform:none}30%{opacity:1;transform:translateY(-2px)}}
+@keyframes m-fin {from{opacity:0}}
+@keyframes m-cwout {to{opacity:0;transform:scale(.96)}}
+@keyframes m-cwin2 {from{transform:translateY(16px) scale(.94)}}
+@keyframes m-up {from{transform:translateY(100%)}}
+@keyframes m-down {to{transform:translateY(100%)}}
+
+/* 1.1 (pending #21, #23): the phone sheet's conversation scrolls on its own (no chaining to the page) and declares
+   vertical panning, so the touch goes to the list at once */
+.oxa.m-mob .cw-list {
+  overscroll-behavior:contain;
+  touch-action:pan-y;
+}
+
+/* A finger does not resize the window by its corners: on touch screens only the size button remains (1.0.0-alpha.21) */
+@media (pointer: coarse) {
+  .oxa .cw-rs {
+    display: none;
+  }
+}

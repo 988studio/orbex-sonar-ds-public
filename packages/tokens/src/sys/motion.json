@@ -1,0 +1,246 @@
+{
+  "motion": {
+    "$description": "Short, decelerating and without bounce by default. Springs are given as a duration (time to settle) and a bounce; the build turns them into CSS easing curves.",
+    "spatial": {
+      "$description": "For position, size and shape.",
+      "$type": "duration",
+      "fast": {
+        "$value": {
+          "value": 200,
+          "unit": "ms"
+        },
+        "$extensions": {
+          "sonar-ds": {
+            "spring": {
+              "bounce": 0
+            }
+          }
+        },
+        "$description": "Small elements: switches, chips, menus."
+      },
+      "default": {
+        "$value": {
+          "value": 320,
+          "unit": "ms"
+        },
+        "$extensions": {
+          "sonar-ds": {
+            "spring": {
+              "bounce": 0
+            }
+          }
+        },
+        "$description": "Most layout changes: accordions, cards settling, panels resizing."
+      },
+      "expressive": {
+        "$value": {
+          "value": 500,
+          "unit": "ms"
+        },
+        "$extensions": {
+          "sonar-ds": {
+            "spring": {
+              "bounce": 0.3
+            }
+          }
+        },
+        "$description": "Only when a dragged card is dropped and for success confirmations."
+      }
+    },
+    "effects": {
+      "$description": "For opacity and color.",
+      "$type": "duration",
+      "fast": {
+        "$value": {
+          "value": 138,
+          "unit": "ms"
+        },
+        "$extensions": {
+          "sonar-ds": {
+            "spring": {
+              "bounce": 0
+            }
+          }
+        }
+      },
+      "default": {
+        "$value": {
+          "value": 212,
+          "unit": "ms"
+        },
+        "$extensions": {
+          "sonar-ds": {
+            "spring": {
+              "bounce": 0
+            }
+          }
+        }
+      },
+      "slow": {
+        "$value": {
+          "value": 300,
+          "unit": "ms"
+        },
+        "$extensions": {
+          "sonar-ds": {
+            "spring": {
+              "bounce": 0
+            }
+          }
+        }
+      }
+    },
+    "easing": {
+      "$type": "cubicBezier",
+      "exit": {
+        "$value": [
+          0.3,
+          0,
+          0.8,
+          0.15
+        ],
+        "$description": "Leaving the screen: starts at once and accelerates."
+      },
+      "decelerate": {
+        "$value": [
+          0.23,
+          1,
+          0.32,
+          1
+        ],
+        "$description": "Entering elements that are not springs, such as panels."
+      },
+      "standard": {
+        "$value": [
+          0.25,
+          0.1,
+          0.25,
+          1
+        ],
+        "$description": "Continuous transforms such as the sidebar folding."
+      },
+      "accelerate": {
+        "$value": [
+          0.4,
+          0,
+          1,
+          1
+        ],
+        "$description": "Panels and sheets leaving: starts slow and leaves at speed."
+      },
+      "emphasized": {
+        "$value": [
+          0.2,
+          0,
+          0,
+          1
+        ],
+        "$description": "The theme switch’s knob and cards moving between columns."
+      },
+      "crossfade": {
+        "$value": [
+          0.4,
+          0,
+          0.2,
+          1
+        ],
+        "$description": "The page cross-fading from one theme to the other."
+      }
+    },
+    "duration": {
+      "$description": "Fixed timings of particular moments, read from the product. Springs above stay the default for anything else.",
+      "$type": "duration",
+      "state": {
+        "$value": {
+          "value": 160,
+          "unit": "ms"
+        },
+        "$description": "Hover and pressed colors of rows, pills and buttons, with easing.decelerate."
+      },
+      "panel-enter": {
+        "$value": {
+          "value": 420,
+          "unit": "ms"
+        },
+        "$description": "A side panel or a phone sheet arriving: its slide uses the spatial default spring stretched to this time."
+      },
+      "panel-exit": {
+        "$value": {
+          "value": 150,
+          "unit": "ms"
+        },
+        "$description": "A side panel leaving: 28 px and out of sight, with easing.accelerate."
+      },
+      "sheet-fade": {
+        "$value": {
+          "value": 200,
+          "unit": "ms"
+        },
+        "$description": "A phone sheet’s opacity while it rises."
+      },
+      "sheet-exit": {
+        "$value": {
+          "value": 220,
+          "unit": "ms"
+        },
+        "$description": "A phone sheet going down, with easing.accelerate."
+      },
+      "menu-exit": {
+        "$value": {
+          "value": 110,
+          "unit": "ms"
+        },
+        "$description": "A menu closing to 96 %, with easing.exit."
+      },
+      "dropdown": {
+        "$value": {
+          "value": 180,
+          "unit": "ms"
+        },
+        "$description": "The search results opening, with easing.decelerate."
+      },
+      "tooltip-delay": {
+        "$value": {
+          "value": 300,
+          "unit": "ms"
+        },
+        "$description": "The pointer rests this long before a tooltip opens."
+      },
+      "tooltip-enter": {
+        "$value": {
+          "value": 140,
+          "unit": "ms"
+        },
+        "$description": "A tooltip opening from 96 %, with easing.decelerate."
+      },
+      "tooltip-exit": {
+        "$value": {
+          "value": 90,
+          "unit": "ms"
+        },
+        "$description": "A tooltip fading out, with easing.exit."
+      },
+      "theme": {
+        "$value": {
+          "value": 700,
+          "unit": "ms"
+        },
+        "$description": "The cross-fade of the whole page when the theme changes, with easing.crossfade."
+      },
+      "theme-fallback": {
+        "$value": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "$description": "Color transitions when a browser cannot cross-fade the page."
+      },
+      "reflow": {
+        "$value": {
+          "value": 620,
+          "unit": "ms"
+        },
+        "$description": "Cards moving to new places when the number of columns changes, with easing.emphasized."
+      }
+    }
+  }
+}

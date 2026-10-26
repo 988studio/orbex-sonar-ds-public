@@ -1,0 +1,26 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Trend from '../../demos/charts/Trend.tsx'
+import trendCode from '../../demos/charts/Trend.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+---
+
+<ComponentDoc
+  entry="trend-chart"
+  lead="A month day by day as a line, with its running total dotted against a second axis. The legend turns each series off and on; hovering, touching or the arrow keys read a day."
+>
+  <Demo title="Daily shipments in April" code={trendCode}><Trend client:visible /></Demo>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>One series, and its running total when the month’s sum matters. Days still to come are null and leave the line open.</li>
+      <li>Label three days on the axis: the first, the middle and the last.</li>
+      <li>The width follows its container; the height is a prop.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>The chart is a group with a live region: the day being read is announced with both values.</li>
+  </ul>
+</ComponentDoc>

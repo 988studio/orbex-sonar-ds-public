@@ -1,0 +1,162 @@
+---
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import Docs from '../../layouts/Docs.astro'
+import { releases } from '../../lib/changelog.ts'
+
+const kinds = [
+  ['added', 'Added'],
+  ['changed', 'Changed'],
+  ['fixed', 'Fixed'],
+  ['deprecated', 'Deprecated'],
+] as const
+---
+
+<Docs title="Changelog" description="Every release of the Orbex Sonar-DB Design System, newest first: what was added, changed, fixed and deprecated.">
+  <PageHeader
+    title="Changelog"
+    lead="Tokens and components are released together, so one version names the whole system. Versions follow semantic versioning; until 1.0.0, a minor release may rename or remove what an earlier alpha added, and says so here."
+  />
+
+  <Section title="Releases" id="releases">
+    {
+      /* One release per fold, newest first; only the latest starts open */
+      releases.map((release, index) => (
+        <details class="release" open={index === 0} id={`v${release.version}`}>
+          <summary>
+            <span class="heading">
+              <span class="version">{release.version}</span>
+              <time>{release.date}</time>
+            </span>
+            <span class="summary">{release.summary}</span>
+          </summary>
+          <div class="body">
+            {kinds.map(([key, label]) =>
+              release[key]?.length ? (
+                <div class="kind" data-kind={key}>
+                  <h3>{label}</h3>
+                  <ul class="prose">{release[key]!.map((entry) => <li>{entry}</li>)}</ul>
+                </div>
+              ) : null,
+            )}
+          </div>
+        </details>
+      ))
+    }
+  </Section>
+
+  <p class="prose more">
+    How versions are numbered, and how a token is deprecated before it goes, is in
+    <a href="/foundations/principles/#versioning">Principles</a>.
+  </p>
+</Docs>
+
+<style>
+  .more {
+    margin-top: var(--sonar-space-32);
+  }
+
+  .release {
+    max-width: var(--site-measure);
+    border-bottom: 1px solid var(--sonar-color-divider);
+  }
+
+  .release:first-of-type {
+    border-top: 1px solid var(--sonar-color-divider);
+  }
+
+  :global(.section) > .release + .release {
+    margin-top: 0;
+  }
+
+  summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--sonar-space-4) var(--sonar-space-12);
+    align-items: center;
+    padding: var(--sonar-space-16) 0;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* A chevron that turns when the release opens */
+  summary::after {
+    content: '';
+    grid-row: 1;
+    grid-column: 2;
+    width: 8px;
+    height: 8px;
+    margin-right: var(--sonar-space-4);
+    border-right: 1.5px solid var(--sonar-color-text-strong);
+    border-bottom: 1.5px solid var(--sonar-color-text-strong);
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing);
+  }
+
+  .release[open] summary::after {
+    transform: translateY(2px) rotate(225deg);
+  }
+
+  summary:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: 2px;
+    border-radius: var(--sonar-shape-corner-small);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    summary::after {
+      transition: none;
+    }
+  }
+
+  .heading {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sonar-space-4) var(--sonar-space-12);
+    align-items: baseline;
+  }
+
+  .version {
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+  }
+
+  time {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  .summary {
+    grid-column: 1;
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-body-md);
+  }
+
+  .body {
+    display: grid;
+    gap: var(--sonar-space-16);
+    padding-bottom: var(--sonar-space-24);
+  }
+
+  .kind h3 {
+    margin: 0 0 var(--sonar-space-4);
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-overline);
+    letter-spacing: var(--sonar-type-overline-tracking);
+    text-transform: uppercase;
+  }
+
+  .kind[data-kind='deprecated'] h3 {
+    color: var(--sonar-color-text-warning);
+  }
+
+  .kind ul {
+    margin: 0;
+  }
+</style>

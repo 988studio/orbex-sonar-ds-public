@@ -1,0 +1,272 @@
+---
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import Docs from '../../layouts/Docs.astro'
+
+const principles = [
+  {
+    title: 'Figures first',
+    text: 'People open Sonar-DB to read quantities: pallets on hold, deliveries due, invoices overdue. Type stays small and steady, and hierarchy comes from weight and color, so a column of figures scans in one pass.',
+  },
+  {
+    title: 'Measured, not picked',
+    text: 'Neutrals come from one formula, text levels from contrast targets, springs from a duration and a bounce. A value that can be explained can be extended without guessing.',
+  },
+  {
+    title: 'Calm by default, expressive on purpose',
+    text: 'Motion settles without overshoot and color is reserved for meaning. The Material 3 Expressive character shows in shape and in two moments: dropping a card into place and a confirmed success.',
+  },
+  {
+    title: 'One system at every width',
+    text: 'From a 402 px phone to a five-column ultra-wide monitor, the same tokens and the same components. Layouts are derived from the desktop reading order rather than designed five times.',
+  },
+  {
+    title: 'Accessible by contract',
+    text: 'Contrast targets are written down and tested on every build. Touch targets are 48 px, status never relies on color alone, and reduced motion is respected.',
+  },
+]
+
+const naming = [
+  { name: '--sonar-palette-neutral-24', reads: 'palette-{family}-{tone}', note: 'Describes appearance. Never used by components.' },
+  { name: '--sonar-color-text-tertiary', reads: 'color-{role}-{level}', note: 'Describes purpose. Values change with the theme.' },
+  { name: '--sonar-color-on-accent-tonal', reads: 'color-on-{fill}', note: 'Content placed on a colored fill.' },
+  { name: '--sonar-color-state-hover', reads: 'color-state-{interaction}', note: 'Translucent layer added on interaction.' },
+  { name: '--sonar-type-title-lg', reads: 'type-{role}-{size}', note: 'A font shorthand; tracking is -tracking.' },
+  { name: '--sonar-motion-spatial-fast-easing', reads: 'motion-{kind}-{speed}-{part}', note: 'Duration and easing come in pairs.' },
+]
+
+---
+
+<Docs title="Principles and governance" description="What the Sonar-DB design system optimizes for, how its tokens are organized, named, versioned and tested.">
+  <PageHeader
+    title="Principles and governance"
+    lead="What the system optimizes for, and the rules that keep it coherent as it grows: how tokens are organized and named, how themes work, what is tested, and how changes are versioned."
+  />
+
+  <Section title="Principles" id="principles">
+    <ul class="principles" role="list">
+      {
+        principles.map(({ title, text }) => (
+          <li>
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section title="Three tiers" id="tiers">
+    <p class="prose">
+      Tokens are layered. Each tier only refers to the one below it, so a palette change reaches every component through the
+      roles, and a component never hard-codes a color.
+    </p>
+    <figure class="tiers">
+      <ol role="list">
+        <li>
+          <h3>Palette</h3>
+          <p>Raw colors, named by hue and tone. The same in both themes.</p>
+          <code>--sonar-palette-neutral-21</code>
+        </li>
+        <li>
+          <h3>Roles</h3>
+          <p>What a value is for. The themes are two sets of values for the same roles.</p>
+          <code>--sonar-color-text-default</code>
+        </li>
+        <li>
+          <h3>Components</h3>
+          <p>Components read roles. Component-specific tokens arrive with the components.</p>
+          <code>.row-label {'{'} color: var(…) {'}'}</code>
+        </li>
+      </ol>
+      <figcaption class="visually-hidden">Palette feeds roles, roles feed components.</figcaption>
+    </figure>
+  </Section>
+
+  <Section title="Naming" id="naming">
+    <div class="prose">
+      <p>
+        Every custom property starts with <code>--sonar-</code>, then goes from general to specific. Palette names describe
+        what a color looks like; every other name describes what it is for, so a role keeps its name when its value changes.
+        Names are in English, in full words, without abbreviations.
+      </p>
+    </div>
+    <div class="table-wrap" data-scroll-region data-label="Naming examples">
+      <table>
+        <caption class="visually-hidden">Naming examples</caption>
+        <thead>
+          <tr><th scope="col">Example</th><th scope="col">Pattern</th><th scope="col">Note</th></tr>
+        </thead>
+        <tbody>
+          {
+            naming.map(({ name, reads, note }) => (
+              <tr>
+                <th scope="row"><code>{name}</code></th>
+                <td><code>{reads}</code></td>
+                <td>{note}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section title="Themes" id="themes">
+    <div class="prose">
+      <p>
+        Light and dark define the same roles with different values. Without any attribute, the system follows the operating
+        system. <code>data-theme="light"</code> or <code>data-theme="dark"</code> forces a theme on the element and everything
+        inside it, which is how this site shows both themes side by side.
+      </p>
+      <p>
+        The dark theme is not an inversion. Its text levels are chosen to reach the same contrast on dark surfaces as the
+        light ones do on light surfaces, so a role reads with the same weight in both.
+      </p>
+    </div>
+  </Section>
+
+  <Section title="Accessibility" id="accessibility">
+    <p class="prose">
+      The system aims at WCAG 2.2 AA. Contrast is a contract in the tokens package, tested in both themes on every build;
+      focus, target sizes, motion, keyboard and screen readers are built into every component.
+      <a href="/foundations/accessibility/">Accessibility</a> sets out each commitment, the measured ratios and how they are checked.
+    </p>
+  </Section>
+
+  <Section title="Versioning" id="versioning">
+    <ul class="prose">
+      <li><strong>Patch</strong>: a value adjusted without a visible change (under 1 ΔE), or documentation.</li>
+      <li><strong>Minor</strong>: new tokens, new roles, new components.</li>
+      <li>
+        <strong>Major</strong>: a token renamed, removed or given a different meaning. The old name is kept for one minor
+        release, marked <code>$deprecated</code> in the token source, before it goes.
+      </li>
+    </ul>
+    <p class="prose">
+      What changed in each release is in the <a href="/resources/changelog/">changelog</a>; how to propose a token or a
+      component, in <a href="/resources/contributing/">Contributing</a>.
+    </p>
+  </Section>
+
+</Docs>
+
+<style>
+  .principles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: var(--sonar-space-32) var(--sonar-space-40);
+    padding: 0;
+    list-style: none;
+  }
+
+  .principles li {
+    padding-top: var(--sonar-space-16);
+    border-top: 2px solid var(--sonar-color-accent);
+  }
+
+  .principles h3,
+  .tiers h3 {
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+  }
+
+  .principles p {
+    margin-top: var(--sonar-space-8);
+    color: var(--sonar-color-text-secondary);
+    font: var(--site-prose);
+  }
+
+  /* Stacked by default; three in a row once each can be 240 px wide */
+  .tiers {
+    container-type: inline-size;
+  }
+
+  .tiers ol {
+    display: grid;
+    gap: var(--sonar-space-24);
+    padding: 0;
+    list-style: none;
+  }
+
+  .tiers li {
+    position: relative;
+    padding: var(--sonar-space-20) var(--sonar-space-24);
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  /* The arrow between tiers (palette → roles → components) only exists in a row, where it reads as one */
+  @container (width >= 784px) {
+    .tiers ol {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--sonar-space-32);
+    }
+
+    .tiers li + li::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: calc(-1 * var(--sonar-space-32) + 8px);
+      width: 16px;
+      border-top: 1px solid var(--sonar-color-border-emphasis);
+    }
+  }
+
+  .tiers p {
+    margin: var(--sonar-space-6) 0 var(--sonar-space-12);
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-body-md);
+  }
+
+  .tiers code {
+    color: var(--sonar-color-text-accent);
+    font-size: 11px;
+  }
+
+  .table-wrap {
+    /* One axis only: wide content scrolls sideways; nothing scrolls or bounces up and down */
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font: var(--sonar-type-body-md);
+  }
+
+  th,
+  td {
+    padding: var(--sonar-space-10) var(--sonar-space-16);
+    border-bottom: 1px solid var(--sonar-color-divider);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  thead th {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  tbody th {
+    font-weight: inherit;
+  }
+
+  td {
+    color: var(--sonar-color-text-secondary);
+  }
+
+  table code {
+    font: 500 12px/1.4 var(--sonar-font-family-mono);
+  }
+</style>

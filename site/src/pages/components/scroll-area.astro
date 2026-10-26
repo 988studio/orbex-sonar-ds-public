@@ -1,0 +1,34 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Inside from '../../demos/scroll-area/Inside.tsx'
+import insideCode from '../../demos/scroll-area/Inside.tsx?raw'
+import Invoices from '../../demos/scroll-area/Invoices.tsx'
+import invoicesCode from '../../demos/scroll-area/Invoices.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+---
+
+<ComponentDoc
+  entry="scroll-area"
+  lead="Content that scrolls inside a fixed height, as the product’s lists do: no scrollbar of the system, a fade at the edge that has more, and a thin indicator that shows while it scrolls and never covers a row or its buttons."
+>
+  <Demo title="The Invoices card: the indicator runs in the padding" code={invoicesCode} layout="card"><Invoices client:visible /></Demo>
+  <Demo title="No padding beside it: the indicator takes its own lane" code={insideCode}><Inside client:visible /></Demo>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>For every list that scrolls inside something else: the lists of the optional cards, the bodies of side panels and sheets, the System notifications. The page itself keeps the browser’s scroll.</li>
+      <li>A list stops on its rows, scrolling down or up. In a card, a row that stops at the top lies on the title’s rule, with as much room above its content as below it; the last stop mirrors the first, and every stop shows whole rows. The fades cover only the room inside a row (or between bands), never a row that has stopped.</li>
+      <li>The indicator is 2 px, in the scrollbar color of each theme, never shorter than 32 px. It shows while scrolling and fades out a second after; it flashes for 0.8 s when the pointer or the keyboard arrives, to say there is more.</li>
+      <li>Outside (the default): it runs 4 to 6 px past the end of the area, in the padding of the card or panel around it. Inside: when there is no padding, it takes a 12 px lane at the end of the area, and the content stops before it.</li>
+      <li>Never a system scrollbar over the content: on phones it was drawn over the download buttons, white in dark mode.</li>
+      <li>A card’s own list that gives way first is a Card scroll, built on the same behavior.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>While it scrolls, the area is a named group that takes focus, so the arrow keys, Page Up and Page Down scroll it. When everything fits, it adds no tab stop.</li>
+    <li>Label it with what it holds: “Invoices”, “System notifications”.</li>
+    <li>The indicator is decoration, hidden from assistive technology; with reduced motion it appears and goes without fading.</li>
+  </ul>
+</ComponentDoc>

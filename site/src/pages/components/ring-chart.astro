@@ -1,0 +1,27 @@
+---
+import '../../demos/charts/charts.css'
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Rings from '../../demos/charts/Rings.tsx'
+import ringsCode from '../../demos/charts/Rings.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+---
+
+<ComponentDoc
+  entry="ring-chart"
+  lead="Parts of a whole as a ring of ticks, 96 by default. The hole can hold the total; the parts run clockwise from the top, or counterclockwise toward a figure on their left."
+>
+  <Demo title="Two and three parts" code={ringsCode}><Rings /></Demo>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>Two or three parts of one whole, never values over time.</li>
+      <li>Set the width with CSS; the ring scales.</li>
+      <li><code>direction="counterclockwise"</code> when the first part’s figure sits on the left, as in Inventory.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>One name lists every part with its value, written by <code>format</code>.</li>
+  </ul>
+</ComponentDoc>

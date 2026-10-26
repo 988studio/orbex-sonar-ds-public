@@ -1,0 +1,148 @@
+/* Segmented control: native radios drawn as pills on a well. The chosen one takes the tonal accent; each pill turns
+   squarer while pressed, like a button. */
+@layer sonar.components {
+  /* Positioned, so the text kept for screen readers stays inside the component, even within a scrolling container */
+  .sonar-segmented {
+    --_height: var(--sonar-size-control-medium);
+    --_icon: var(--sonar-size-icon-medium);
+
+    position: relative;
+    display: inline-grid;
+    gap: var(--sonar-space-6);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .sonar-segmented[data-size='small'] {
+    --_height: var(--sonar-size-control-small);
+    --_icon: var(--sonar-size-icon-small);
+  }
+
+  .sonar-segmented-legend {
+    padding: 0;
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  .sonar-segmented-legend[data-hidden] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .sonar-segmented-track {
+    display: inline-flex;
+    gap: var(--sonar-space-2);
+    padding: var(--sonar-space-2);
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-surface-well);
+  }
+
+  .sonar-segmented-option {
+    position: relative;
+    display: inline-flex;
+    flex: 1 1 0;
+    gap: var(--sonar-space-6);
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
+    height: calc(var(--_height) - 2 * var(--sonar-space-2));
+    padding-inline: var(--sonar-space-12);
+    border-radius: var(--sonar-shape-corner-full);
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    white-space: nowrap;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      border-radius var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing),
+      background-color var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing),
+      color var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing);
+  }
+
+  .sonar-segmented-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: inherit;
+  }
+
+  .sonar-segmented-icon {
+    display: grid;
+    place-items: center;
+    width: var(--_icon);
+    height: var(--_icon);
+  }
+
+  .sonar-segmented-icon > svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .sonar-segmented[data-icon-only] .sonar-segmented-option {
+    padding-inline: var(--sonar-space-8);
+  }
+
+  .sonar-segmented[data-icon-only] .sonar-segmented-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  @media (hover: hover) {
+    .sonar-segmented-option:hover:not(:has(:checked, :disabled)) {
+      background-color: var(--sonar-color-state-hover);
+      color: var(--sonar-color-text-strong);
+    }
+  }
+
+  .sonar-segmented-option:active:not(:has(:disabled)) {
+    border-radius: var(--sonar-shape-corner-small);
+  }
+
+  .sonar-segmented-option:has(:checked) {
+    background-color: var(--sonar-color-accent-tonal);
+    color: var(--sonar-color-on-accent-tonal);
+  }
+
+  .sonar-segmented-option:has(:focus-visible) {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+  }
+
+  .sonar-segmented-option:has(:disabled) {
+    color: var(--sonar-color-text-disabled);
+    cursor: default;
+  }
+
+  @media (pointer: coarse) {
+    .sonar-segmented-option::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: max(100%, var(--sonar-layout-touch-target));
+      translate: 0 -50%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sonar-segmented-option {
+      transition-property: background-color, color;
+    }
+  }
+}

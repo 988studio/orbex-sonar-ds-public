@@ -1,0 +1,201 @@
+---
+import Section from '../components/Section.astro'
+import ToneSounding from '../components/ToneSounding.astro'
+import VersionChip from '../components/VersionChip.astro'
+import Docs from '../layouts/Docs.astro'
+import { componentEntries } from '../lib/components.ts'
+import { navigation } from '../lib/navigation.ts'
+import { releaseDate, version } from '../lib/release.ts'
+import { releases } from '../lib/changelog.ts'
+import { tokens } from '@orbex/sonar-tokens'
+
+/* Every section of the navigation: its index, what it holds, and a way straight to each of its pages */
+const contents = navigation.flatMap(({ label, href, description, items }) =>
+  href
+    ? [{ title: label, href, text: description, pages: items.map(({ label: page, href: pageHref }) => ({ label: page, href: pageHref })) }]
+    : items.filter((item) => item.href !== '/').map(({ label: page, href: pageHref, description: text }) => ({ title: page, href: pageHref, text: text ?? '', pages: [] })),
+)
+const tokenCount = tokens.length
+const foundationPages = navigation.find((section) => section.label === 'Foundations')?.items.length ?? 0
+
+const latest = releases[0]!
+---
+
+<Docs
+  title="Introduction"
+  description="The design system behind Sonar-DB, the Orbex dashboard for orders, deliveries and stock: tokens, foundations and live components."
+>
+  <header class="hero">
+    <p class="hero-version"><VersionChip /></p>
+    <h1>Orbex Sonar‑DB Design System</h1>
+    <p class="lead">
+      The design language of Sonar-DB, the Orbex dashboard where logistics teams follow orders, deliveries and stock on
+      desktop, tablet and phone. Built on Material 3 Expressive and measured for dense figures.
+    </p>
+  </header>
+
+  <figure class="feature">
+    <ToneSounding />
+    <figcaption class="prose">
+      Every neutral comes from one formula: the brand green’s hue at a chroma that fades towards black and white. Each bar
+      is a tone, placed by its lightness and raised by its contrast on a card. Text roles sit on the tones that clear their
+      threshold, in either theme.
+    </figcaption>
+  </figure>
+
+  <Section title="What’s inside" id="contents">
+    <ul class="contents" role="list">
+      {
+        contents.map(({ title, href, text, pages }) => (
+          <li>
+            <h3>
+              <a href={href}>{title}</a>
+            </h3>
+            <p>{text}</p>
+            {pages.length > 0 && (
+              <ul class="pages" role="list" aria-label={`Pages in ${title}`}>
+                {pages.map((page) => (
+                  <li>
+                    <a href={page.href}>{page.label}</a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section title="Start here" id="start">
+    <p class="prose">
+      <a href="/get-started/installation/">Installation</a> takes an app from nothing to a first component in five
+      steps: the packages, the cascade layers, the tokens, a component, and the data behind them.
+    </p>
+  </Section>
+
+  <Section title="This release" id="release">
+    <div class="prose">
+      <p>
+        <strong>{version}</strong>, {releaseDate}. {tokenCount} tokens, {foundationPages} foundation pages, the layout,
+        {' '}{componentEntries.length} components with their sizes, variants and states, and the patterns of the overview.
+        {' '}{latest.summary} Every change is in the <a href="/resources/changelog/">changelog</a>.
+      </p>
+    </div>
+  </Section>
+</Docs>
+
+<style>
+  .hero {
+    max-width: var(--site-content-width);
+  }
+
+  /* The version this site documents, above the title; it leads to the changelog */
+  .hero-version {
+    display: flex;
+    margin-bottom: var(--sonar-space-16);
+  }
+
+  /* Tablets and desktops show the version in the navigation (the side bar, or the drawer on tablets), so the cover
+     does not repeat it; phones keep it here (1.0.0-alpha.20, 988©STUDIO review) */
+  @media (width >= 600px) {
+    .hero-version {
+      display: none;
+    }
+  }
+
+  h1 {
+    max-width: 12ch;
+    font: var(--site-display);
+    letter-spacing: -0.015em;
+  }
+
+  .lead {
+    max-width: 60ch;
+    margin-top: var(--sonar-space-24);
+    color: var(--sonar-color-text-secondary);
+    font: var(--site-lead);
+  }
+
+  .feature {
+    max-width: var(--site-content-width);
+    margin-block: var(--sonar-space-48) 72px;
+    padding: var(--sonar-space-32) var(--sonar-space-32) var(--sonar-space-24);
+    border-radius: var(--sonar-shape-corner-large);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  .feature figcaption {
+    margin-top: var(--sonar-space-24);
+    color: var(--sonar-color-text-secondary);
+  }
+
+  .contents {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: var(--sonar-space-32) var(--sonar-space-40);
+    padding: 0;
+    list-style: none;
+  }
+
+  .contents > li {
+    padding-top: var(--sonar-space-16);
+    border-top: 1px solid var(--sonar-color-divider);
+  }
+
+  .contents h3 {
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+  }
+
+  .contents h3 a {
+    color: inherit;
+  }
+
+  .contents p {
+    margin-top: var(--sonar-space-6);
+    color: var(--sonar-color-text-secondary);
+    font: var(--site-prose);
+  }
+
+  /* The section’s pages, as small links: straight to any page from the home page */
+  .pages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sonar-space-6);
+    margin-top: var(--sonar-space-12);
+    padding: 0;
+  }
+
+  .pages a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 var(--sonar-space-10);
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-surface-container);
+    color: var(--sonar-color-text-default);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    text-decoration: none;
+    transition: background-color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);
+  }
+
+  .pages a:hover {
+    background: linear-gradient(var(--sonar-color-state-hover) 0 0) var(--sonar-color-surface-container);
+    color: var(--sonar-color-text-strong);
+  }
+
+  .pages a:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+  }
+
+  @container page (width < 608px) {
+    .feature {
+      margin-inline: calc(-1 * var(--sonar-space-8));
+      padding: var(--sonar-space-20) var(--sonar-space-16) var(--sonar-space-16);
+    }
+  }
+</style>

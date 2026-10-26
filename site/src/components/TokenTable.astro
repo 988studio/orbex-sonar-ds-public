@@ -1,0 +1,278 @@
+---
+/**
+ * A table of tokens with a live preview per theme. Previews read the CSS custom property itself inside a
+ * data-theme scope, so they always show what the stylesheet ships, never a copied value.
+ */
+import { contrast, type Hex } from '@orbex/sonar-tokens/color'
+import { formatRatio, hexOf, requiredContrast, shortName, THEMES, valueIn, type Theme, type TokenDocument } from '../lib/tokens.ts'
+import type { TokenName } from '@orbex/sonar-tokens'
+
+type Preview = 'fill' | 'text' | 'border' | 'shadow' | 'none'
+
+interface Props {
+  caption: string
+  tokens: TokenDocument[]
+  preview?: Preview
+  /** For text and border roles: show the contrast ratio against this background */
+  contrastWith?: TokenName
+}
+
+const { caption, tokens, preview = 'fill', contrastWith } = Astro.props
+/* Tokens that do not change with the theme get a single value column */
+const columns: Theme[] = tokens.some(({ themed }) => themed) ? THEMES : ['light']
+const columnLabel = (theme: Theme) => (columns.length === 1 ? 'Value' : theme === 'light' ? 'Light' : 'Dark')
+
+interface Layer { color: { components: number[]; alpha?: number; hex?: string }; offsetX: { value: number }; offsetY: { value: number }; blur: { value: number }; spread: { value: number }; inset?: boolean }
+const px = (value: number) => (value === 0 ? '0' : `${value}px`)
+const hexOfColor = ({ components, hex }: Layer['color']) => hex ?? `#${components.map((channel) => Math.round(channel * 255).toString(16).padStart(2, '0')).join('').toUpperCase()}`
+/* A shadow, one layer a line: offsets, blur, spread, color and opacity. A shadow that draws nothing says so */
+const formatShadow = (layers: Layer[]) => {
+  const drawn = layers.filter((layer) => (layer.color.alpha ?? 1) > 0)
+  if (!drawn.length) return 'none'
+  return drawn
+    .map((layer) => {
+      const alpha = layer.color.alpha ?? 1
+      return `${layer.inset ? 'inset ' : ''}${[layer.offsetX, layer.offsetY, layer.blur, layer.spread].map(({ value }) => px(value)).join(' ')} ${hexOfColor(layer.color)}${alpha < 1 ? ` ${+(alpha * 100).toFixed(1)}%` : ''}`
+    })
+    .join('\n')
+}
+
+/* Colors arrive as strings, dimensions as { value, unit }, counts as numbers, shadows as layers */
+const formatValue = (resolved: unknown): string | null => {
+  if (typeof resolved === 'string') return resolved
+  if (typeof resolved === 'number') return String(resolved)
+  if (Array.isArray(resolved) && resolved.every((layer) => layer && typeof layer === 'object' && 'offsetX' in layer)) return formatShadow(resolved as Layer[])
+  if (resolved && typeof resolved === 'object' && 'value' in resolved && 'unit' in resolved) return `${resolved.value}${resolved.unit}`
+  return null
+}
+
+const displayValue = (doc: TokenDocument, theme: Theme) => {
+  const { reference, resolved } = valueIn(doc, theme)
+  const literal = formatValue(resolved)
+  return { reference: reference && !reference.startsWith('palette.') ? shortName(reference) : reference, literal }
+}
+
+/* Inverse roles are measured, and previewed, on the inverse surface they are made for */
+const isInverse = (doc: TokenDocument) => doc.name.endsWith('.inverse')
+const backgroundFor = (doc: TokenDocument): TokenName | undefined => (contrastWith && isInverse(doc) ? 'color.surface.inverse' : contrastWith)
+/* A ratio is flagged only when it misses the minimum the accessibility contract sets for that pair */
+const isBelowContract = (doc: TokenDocument, measured: number) => {
+  const background = backgroundFor(doc)
+  const minimum = background && requiredContrast(doc.name as TokenName, background)
+  return minimum ? measured < minimum : false
+}
+
+const ratio = (doc: TokenDocument, theme: Theme) => {
+  const background = backgroundFor(doc)
+  if (!background) return null
+  const foreground = valueIn(doc, theme).resolved as string
+  if (foreground.length !== 7) return null
+  return contrast(foreground as Hex, hexOf(background, theme) as Hex)
+}
+---
+
+<div class="table-wrap" data-scroll-region data-label={`${caption}, table`}>
+  <table class:list={{ compact: columns.length === 1 && preview === 'none' }}>
+    <caption class="visually-hidden">{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Token</th>
+        {preview !== 'none' && <th scope="col" class="preview-head">Preview</th>}
+        {columns.map((theme) => <th scope="col">{columnLabel(theme)}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {
+        tokens.map((doc) => (
+          <tr>
+            <th scope="row">
+              <code>{doc.cssVar}</code>
+              {doc.deprecated && <span class="deprecated">Deprecated{typeof doc.deprecated === 'string' ? `: ${doc.deprecated}` : ''}</span>}
+              {doc.description && <p>{doc.description}</p>}
+            </th>
+            {preview !== 'none' && (
+              <td class="previews">
+                {THEMES.map((theme) => (
+                  <span
+                    class:list={['preview', preview, { inverse: isInverse(doc) }]}
+                    aria-hidden="true"
+                    data-theme={theme}
+                    style={`--token: var(${doc.cssVar})`}
+                    title={theme}
+                    data-exempt-contrast={doc.name === 'color.text.disabled' || undefined}
+                  >
+                    {preview === 'text' && doc.name !== 'color.text.disabled' && 'Aa'}
+                  </span>
+                ))}
+              </td>
+            )}
+            {columns.map((theme) => {
+              const { reference, literal } = displayValue(doc, theme)
+              const measured = ratio(doc, theme)
+              return (
+                <td>
+                  <div class="value">
+                    {reference && <span class="reference">{reference}</span>}
+                    {literal && <code class:list={{ layers: literal.includes('\n') }}>{literal}</code>}
+                    {measured !== null && <span class:list={['ratio', { low: isBelowContract(doc, measured) }]}>{formatRatio(measured)}</span>}
+                  </div>
+                </td>
+              )
+            })}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  code.layers {
+    white-space: pre;
+  }
+
+  .deprecated {
+    display: inline-block;
+    margin-top: var(--sonar-space-4);
+    padding: var(--sonar-space-2) var(--sonar-space-8);
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-warning-container);
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-label-sm);
+    letter-spacing: var(--sonar-type-label-sm-tracking);
+  }
+
+  .table-wrap {
+    /* One axis only: wide content scrolls sideways; nothing scrolls or bounces up and down */
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    font: var(--sonar-type-body-md);
+    letter-spacing: var(--sonar-type-body-md-tracking);
+  }
+
+  /* Name and value only: fits a phone without scrolling */
+  table.compact {
+    min-width: 0;
+  }
+
+  th,
+  td {
+    padding: var(--sonar-space-12) var(--sonar-space-16);
+    border-bottom: 1px solid var(--sonar-color-divider);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  thead th {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    white-space: nowrap;
+  }
+
+  tbody th {
+    width: 46%;
+    font-weight: inherit;
+  }
+
+  tbody th code {
+    font: 500 12px/1.4 var(--sonar-font-family-mono);
+    overflow-wrap: anywhere;
+  }
+
+  tbody th p {
+    margin-top: var(--sonar-space-4);
+    color: var(--sonar-color-text-secondary);
+  }
+
+  .previews {
+    white-space: nowrap;
+  }
+
+  .preview {
+    display: inline-grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--sonar-shape-corner-small);
+    vertical-align: top;
+  }
+
+  .preview + .preview {
+    margin-left: var(--sonar-space-6);
+  }
+
+  /* Fills sit on the card of their theme, so translucent roles read as they do in the product */
+  .preview.fill {
+    background: linear-gradient(var(--token), var(--token)), var(--sonar-color-surface-card);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sonar-color-text-strong) 10%, transparent);
+  }
+
+  .preview.text {
+    background: var(--sonar-color-surface-card);
+    box-shadow: inset 0 0 0 1px var(--sonar-color-divider);
+    color: var(--token);
+    font: var(--sonar-type-title-md);
+  }
+
+  .preview.text.inverse {
+    background: var(--sonar-color-surface-inverse);
+    box-shadow: none;
+  }
+
+  .preview.border {
+    background: var(--sonar-color-surface-card);
+    box-shadow: inset 0 0 0 2px var(--token);
+  }
+
+  .preview.shadow {
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--token);
+  }
+
+  .value {
+    display: grid;
+    gap: var(--sonar-space-2);
+    align-content: start;
+    min-width: 132px;
+  }
+
+  .value code {
+    color: var(--sonar-color-text-secondary);
+    font: 400 12px/1.4 var(--sonar-font-family-mono);
+  }
+
+  .reference {
+    color: var(--sonar-color-text-default);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  .ratio {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  .ratio.low {
+    color: var(--sonar-color-text-warning);
+  }
+
+  /* Disabled is exempt from contrast: its sample is drawn, not written, so checkers do not read it as text */
+  .preview.text[data-exempt-contrast]::before {
+    content: 'Aa';
+  }
+</style>

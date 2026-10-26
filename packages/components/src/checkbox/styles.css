@@ -1,0 +1,132 @@
+/* Checkbox: a native checkbox drawn as an 18 px box. The marks are in the markup and shown by state, so checking
+   needs no script. */
+@layer sonar.components {
+  .sonar-checkbox {
+    display: inline-grid;
+    gap: var(--sonar-space-2);
+    color: var(--sonar-color-text-default);
+  }
+
+  .sonar-checkbox-main {
+    position: relative;
+    display: inline-flex;
+    gap: var(--sonar-space-10);
+    align-items: flex-start;
+    min-height: 20px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .sonar-checkbox-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: inherit;
+  }
+
+  .sonar-checkbox-box {
+    display: grid;
+    flex: none;
+    place-items: center;
+    box-sizing: border-box;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    border-radius: var(--sonar-shape-corner-extra-small);
+    box-shadow: inset 0 0 0 2px var(--sonar-color-border-control);
+    color: var(--sonar-color-on-accent);
+    transition:
+      background-color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing),
+      box-shadow var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);
+  }
+
+  .sonar-checkbox-box > svg {
+    grid-area: 1 / 1;
+    width: 14px;
+    height: 14px;
+    stroke-width: 2.25;
+    opacity: 0;
+    scale: 0.6;
+    transition:
+      opacity var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing),
+      scale var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing);
+  }
+
+  .sonar-checkbox-input:is(:checked, :indeterminate) + .sonar-checkbox-box {
+    background: var(--sonar-color-accent);
+    box-shadow: none;
+  }
+
+  .sonar-checkbox-input:checked:not(:indeterminate) + .sonar-checkbox-box .sonar-checkbox-check,
+  .sonar-checkbox-input:indeterminate + .sonar-checkbox-box .sonar-checkbox-dash {
+    opacity: 1;
+    scale: 1;
+  }
+
+  @media (hover: hover) {
+    .sonar-checkbox-main:hover .sonar-checkbox-input:not(:disabled, :checked, :indeterminate) + .sonar-checkbox-box {
+      box-shadow: inset 0 0 0 2px var(--sonar-color-border-strong);
+    }
+  }
+
+  .sonar-checkbox-input:focus-visible + .sonar-checkbox-box {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+  }
+
+  .sonar-checkbox-label {
+    font: var(--sonar-type-label-lg);
+    letter-spacing: var(--sonar-type-label-lg-tracking);
+    line-height: 20px;
+  }
+
+  /* Aligned with the label, past the box */
+  .sonar-checkbox-description {
+    padding-left: calc(18px + var(--sonar-space-10));
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-body-md);
+    letter-spacing: var(--sonar-type-body-md-tracking);
+  }
+
+  .sonar-checkbox:has(.sonar-checkbox-input:disabled) {
+    color: var(--sonar-color-text-disabled);
+  }
+
+  .sonar-checkbox-main:has(.sonar-checkbox-input:disabled) {
+    cursor: default;
+  }
+
+  .sonar-checkbox:has(.sonar-checkbox-input:disabled) .sonar-checkbox-description {
+    color: var(--sonar-color-text-disabled);
+  }
+
+  .sonar-checkbox-input:disabled + .sonar-checkbox-box {
+    box-shadow: inset 0 0 0 2px var(--sonar-color-border-muted);
+  }
+
+  .sonar-checkbox-input:disabled:is(:checked, :indeterminate) + .sonar-checkbox-box {
+    background: var(--sonar-color-border-muted);
+  }
+
+  @media (pointer: coarse) {
+    .sonar-checkbox-main {
+      align-items: center;
+      min-height: var(--sonar-layout-touch-target);
+    }
+
+    .sonar-checkbox-box {
+      margin-top: 0;
+    }
+  }
+
+  /* Reduced motion: the check fades in without growing */
+  @media (prefers-reduced-motion: reduce) {
+    .sonar-checkbox-box > svg {
+      scale: 1;
+      transition-property: opacity;
+    }
+  }
+}

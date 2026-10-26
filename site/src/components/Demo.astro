@@ -1,0 +1,150 @@
+---
+/**
+ * A live example and its source. The preview is the component itself, rendered by React; the code under it is the
+ * same file, read at build time, with its icons imported from Material Symbols so it runs on its own. Examples that
+ * draw on the overview’s sample data show a self-contained version instead (src/snippets).
+ */
+import { assertSelfContained, selfContained } from '../lib/code.ts'
+import CodeBlock from './CodeBlock.astro'
+
+interface Props {
+  title: string
+  /** The demo’s source, imported with ?raw */
+  code: string
+  /** Row for buttons and chips; stack for fields and lists; card for one overview card at a column’s width; wide for
+   *  content that uses the whole width */
+  layout?: 'row' | 'stack' | 'list' | 'card' | 'wide'
+  /** The code is a self-contained version of the example, not its own source (src/snippets) */
+  snippet?: boolean
+}
+
+const { title, code, layout = 'row', snippet = false } = Astro.props
+const source = selfContained(code.trim())
+assertSelfContained(source, title)
+---
+
+<figure class="demo">
+  <figcaption>{title}</figcaption>
+  <div class:list={['preview', layout]}>
+    <slot />
+  </div>
+  <details class="code">
+    <summary>{snippet ? 'Code: a self-contained version' : 'Code'}</summary>
+    <CodeBlock code={source} language="tsx" />
+  </details>
+</figure>
+
+<style>
+  /* One track that never grows past the page: wide code scrolls inside its own block */
+  .demo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    margin: 0;
+    border-radius: var(--sonar-shape-corner-large);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  figcaption {
+    padding: var(--sonar-space-16) var(--sonar-space-20) 0;
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  .preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sonar-space-16);
+    align-items: center;
+    min-width: 0;
+    padding: var(--sonar-space-28) var(--sonar-space-24) var(--sonar-space-32);
+  }
+
+  .preview.stack {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+    gap: var(--sonar-space-20) var(--sonar-space-24);
+    align-items: start;
+  }
+
+  /* One column, for messages and rows that read best at a line’s length */
+  .preview.list {
+    display: grid;
+    grid-template-columns: minmax(0, 600px);
+    gap: var(--sonar-space-12);
+  }
+
+  /* Cards sit on the page surface, as in the product: one at the width of an overview column, or the whole overview */
+  .preview.card,
+  .preview.wide {
+    margin-top: var(--sonar-space-12);
+    background: var(--sonar-color-surface-page);
+  }
+
+  .preview.card {
+    display: grid;
+    grid-template-columns: minmax(0, 400px);
+  }
+
+  .preview.wide {
+    display: block;
+  }
+
+  .code {
+    border-top: 1px solid var(--sonar-color-divider);
+  }
+
+  summary {
+    display: flex;
+    gap: var(--sonar-space-8);
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--sonar-space-20);
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    rotate: -45deg;
+    transition: rotate var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing);
+  }
+
+  .code[open] summary::before {
+    rotate: 45deg;
+  }
+
+  summary:hover {
+    color: var(--sonar-color-text-strong);
+  }
+
+  summary:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: calc(-1 * var(--sonar-focus-width));
+    border-radius: var(--sonar-shape-corner-small);
+  }
+
+  .code :global(.code-block) {
+    max-width: none;
+    margin: 0 var(--sonar-space-8) var(--sonar-space-8);
+  }
+
+  @container page (width < 608px) {
+    .preview {
+      padding: var(--sonar-space-24) var(--sonar-space-16) var(--sonar-space-28);
+    }
+  }
+</style>

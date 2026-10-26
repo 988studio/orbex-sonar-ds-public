@@ -1,0 +1,24 @@
+/* Tick bar: a proportion as a row of fine ticks, in the chart roles. The ticks are a mask over one fill, so the parts
+   meet without a gap; where the browser can round lengths, each change of color is moved to the nearest gap between
+   ticks. */
+@layer sonar.components {
+  .sonar-tick-bar {
+    --_accent: var(--sonar-color-chart-primary);
+    --_strong: var(--sonar-color-chart-secondary);
+    --_muted: var(--sonar-color-chart-rest);
+    --_danger: var(--sonar-color-chart-alert);
+    --_warning: var(--sonar-color-warning);
+    --_pitch: 3px;
+    --_tick: 1.5px;
+
+    height: 14px;
+    background: var(--_fill, var(--_muted));
+    mask: repeating-linear-gradient(90deg, #000 0 var(--_tick), transparent var(--_tick) var(--_pitch));
+  }
+
+  @supports (width: round(nearest, 10%, 3px)) {
+    .sonar-tick-bar {
+      background: var(--_fill-snapped, var(--_fill, var(--_muted)));
+    }
+  }
+}

@@ -1,0 +1,1234 @@
+/* The side panels the cards open: delivery and invoice details (with the route map), New order and Reorder.
+   Loaded by the panels themselves, so they look the same wherever they open: a card or the search. */
+
+@import './typography.css';
+
+/* An alert mark: an incident on the way */
+.cal-alert {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  fill: var(--sonar-color-danger);
+}
+
+.cal-alert rect {
+  fill: var(--sonar-color-on-emphasis);
+}
+
+/* On a delivery row the mark blinks, as in the product's recordings (orbex-blink, 30 fps): in over 90 ms, on for
+   420 ms, out over 150 ms and off for the rest of a 1.2 s cycle. With reduced motion it stays on. */
+@keyframes cal-alert-blink {
+  0% {
+    opacity: 0;
+  }
+
+  7.5%,
+  42.5% {
+    opacity: 1;
+  }
+
+  55%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.cal-alert[data-blink] {
+  animation: cal-alert-blink 1.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cal-alert[data-blink] {
+    animation: none;
+  }
+}
+
+/* ---------- Side panels: details and orders ---------- */
+
+/* The head stays under the title while the rest scrolls, as in the product: the code and its status 12 px under the
+   title, the summary line 8 px under them in 14 px text, and the body 15 px below with no rule over the map */
+.details-panel .sonar-dialog-description {
+  display: grid;
+  gap: 6px;
+  margin: -6px 0 17px;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-body-md);
+}
+
+/* In the body the sections touch, each closed by its rule; the map stands 9 px above the first, as in the product */
+.details-panel .sonar-dialog-body {
+  gap: 0;
+}
+
+.details-panel .rmap {
+  margin-bottom: 9px;
+}
+
+.details-meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.details-meta strong {
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-title-md);
+}
+
+.details-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-font-weight-regular) 14px/1.2 var(--sonar-font-family-sans);
+  letter-spacing: 0;
+}
+
+.details-amount {
+  display: block;
+  margin: 0;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-headline-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sections, as in the product (1.0.0-alpha.17): a 51 px band with the name in 14 px semibold capitals centred in it,
+   the 22 px chevron at the end, and the rule under each section, not over it */
+.details-section {
+  border-bottom: 1px solid var(--sonar-color-divider);
+}
+
+.details-section summary {
+  display: flex;
+  gap: var(--sonar-space-8);
+  align-items: center;
+  justify-content: space-between;
+  height: 51px;
+  list-style: none;
+  color: var(--sonar-color-text-strong);
+  cursor: pointer;
+}
+
+.details-section summary::-webkit-details-marker {
+  display: none;
+}
+
+.details-section-title {
+  display: flex;
+  gap: var(--sonar-space-12);
+  align-items: center;
+  min-width: 0;
+}
+
+.details-section summary .card-heading {
+  font: var(--sonar-type-title-md);
+  letter-spacing: 0;
+}
+
+.details-section-chevron {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  transition: transform var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing);
+}
+
+.details-section[open] .details-section-chevron {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .details-section-chevron {
+    transition: none;
+  }
+}
+
+.details-section summary:focus-visible {
+  outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--sonar-shape-corner-small);
+}
+
+.details-section > :not(summary) {
+  margin: 0;
+}
+
+/* The itinerary: an 8 px dot a step, joined by a dotted line; a step done in the accent, an incident in red with its
+   row, a step to come as a small gray square */
+.details-steps {
+  display: grid;
+  gap: 12px;
+  padding: 4px 14px 16px 0;
+  list-style: none;
+}
+
+.details-steps li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  color: var(--sonar-color-text-default);
+}
+
+/* The steps in 12 px, as in the product: the label medium, the time regular */
+.details-steps :is(.card-figure, .card-meta) {
+  font: var(--sonar-font-weight-medium) 12px/1.2 var(--sonar-font-family-sans);
+  letter-spacing: 0;
+}
+
+.details-steps .card-meta {
+  font-weight: var(--sonar-font-weight-regular);
+}
+
+.details-steps li i {
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sonar-color-fill-muted);
+}
+
+.details-steps li:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 4.5px;
+  height: 20px;
+  border-left: 1px dotted var(--sonar-color-border-control);
+}
+
+.details-steps li[data-state='done'] i {
+  background: var(--sonar-color-accent);
+}
+
+.details-steps li[data-state='done'] .card-meta {
+  color: var(--sonar-color-text-meta);
+}
+
+.details-steps li[data-state='incident'],
+.details-steps li[data-state='incident'] :is(.card-figure, .card-meta) {
+  color: var(--sonar-color-text-danger);
+}
+
+.details-steps li[data-state='incident'] i {
+  background: var(--sonar-color-danger);
+}
+
+.details-steps li[data-state='pending'] i {
+  border-radius: 1px;
+}
+
+.details-steps li[data-state='pending'] :is(.card-figure, .card-meta) {
+  color: var(--sonar-color-text-meta);
+}
+
+/* Open sections: two columns, the label over its value, as in the product */
+.details-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px 20px;
+  margin: 0;
+  padding: 6px 0 18px;
+}
+
+.details-fields div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.details-fields dt {
+  color: var(--sonar-color-text-meta);
+  font: var(--sonar-font-weight-regular) 12px/1.2 var(--sonar-font-family-sans);
+  letter-spacing: -0.2px;
+}
+
+.details-fields dd {
+  min-width: 0;
+  margin: 0;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-font-weight-semibold) 12px/1.2 var(--sonar-font-family-sans);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* The driver: a 64 px row with the rule under it, the initials on a 46 px disc, the number and a 20 px call button */
+.details-driver {
+  display: flex;
+  gap: var(--sonar-space-12);
+  align-items: center;
+  height: 64px;
+  border-bottom: 1px solid var(--sonar-color-divider);
+}
+
+/* The name gives way before the phone number, which always stays on one line */
+.details-driver > span:nth-child(2) {
+  display: grid;
+  flex: 1;
+  gap: 3px;
+  min-width: 0;
+}
+
+.details-driver > span:nth-child(2) > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.details-initials {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--sonar-color-text-default);
+  color: var(--sonar-color-on-emphasis);
+  font: italic var(--sonar-font-weight-semibold) 15px/1 var(--sonar-font-family-condensed);
+}
+
+[data-theme='dark'] .details-initials:where(:not([data-theme="dark"] [data-theme="light"] *)) {
+  background: var(--sonar-color-fill-muted);
+  color: var(--sonar-color-text-strong);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .details-initials:where(:not([data-theme="light"] *)) {
+    background: var(--sonar-color-fill-muted);
+    color: var(--sonar-color-text-strong);
+  }
+}
+
+/* The whole number is the link: 44 px tall to the finger, drawn as the product's number and 20 px button */
+.details-call {
+  display: inline-flex;
+  flex: none;
+  gap: var(--sonar-space-12);
+  align-items: center;
+  min-height: 44px;
+  margin-left: auto;
+  white-space: nowrap;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-font-weight-medium) 14px/1.2 var(--sonar-font-family-sans);
+  text-decoration: none;
+}
+
+.details-call svg {
+  width: 20px;
+  height: 20px;
+  padding: 4px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: var(--sonar-color-accent);
+  color: var(--sonar-color-on-accent);
+}
+
+.details-call:focus-visible {
+  outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--sonar-shape-corner-full);
+}
+
+.details-lines {
+  width: 100%;
+  border-collapse: collapse;
+  font: var(--sonar-type-label-md);
+  font-variant-numeric: tabular-nums;
+}
+
+.details-lines th,
+.details-lines td {
+  padding: var(--sonar-space-6) 0;
+  border-bottom: 1px solid var(--sonar-color-divider);
+  color: var(--sonar-color-text-strong);
+  font-weight: inherit;
+  text-align: left;
+}
+
+/* The product takes the width that is left and wraps; quantities and amounts never wrap, align right and keep their
+   digits in columns */
+.details-lines th {
+  width: 100%;
+}
+
+.details-lines td {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.details-lines td.card-meta {
+  color: var(--sonar-color-text-meta);
+  padding: 0 var(--sonar-space-12);
+}
+
+.details-lines tfoot th,
+.details-lines tfoot td {
+  border-bottom: 0;
+}
+
+.details-lines tr[data-total] > * {
+  font: var(--sonar-type-title-sm);
+}
+
+.details-actions {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: var(--sonar-space-8);
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.details-actions .sonar-card-link {
+  margin: 0 auto 0 0;
+}
+
+/* ---------- New order and Confirm reorder, as the product draws them ---------- */
+
+/* The description at 12 px under the title, then a rule */
+.order-panel .sonar-dialog-description {
+  margin-top: -8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--sonar-color-divider);
+  color: var(--sonar-color-text-meta);
+  font: 400 12px/1.2 var(--sonar-font-family-sans);
+}
+
+.order-panel .sonar-field-label {
+  color: var(--sonar-color-text-meta);
+  font: 400 12px/1.2 var(--sonar-font-family-sans);
+  letter-spacing: -0.2px;
+}
+
+.order-panel .sonar-field-control {
+  border-radius: 12px;
+}
+
+.order-panel .sonar-field .sonar-field-input,
+.order-panel .sonar-field-suffix {
+  font-size: 12px;
+}
+
+.order-panel .sonar-field-suffix {
+  font-weight: 400;
+}
+
+/* Each product a row: the product, then its quantity, 128 px; the delivery month and the reference under a rule */
+.order-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 2px;
+}
+
+.order-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 128px;
+  column-gap: 10px;
+  align-items: end;
+}
+
+.order-meta {
+  padding-top: 14px;
+  border-top: 1px solid var(--sonar-color-divider);
+}
+
+.order-quantity-cell {
+  position: relative;
+}
+
+/* Remove: an 18 px red ring at the end of the quantity's label */
+.order-remove {
+  position: absolute;
+  top: -2px;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--sonar-color-danger);
+  box-shadow: inset 0 0 0 1px var(--sonar-color-danger);
+  cursor: pointer;
+  transition:
+    background-color var(--sonar-motion-duration-state) var(--sonar-motion-easing-decelerate),
+    color var(--sonar-motion-duration-state) var(--sonar-motion-easing-decelerate);
+}
+
+.order-remove::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+}
+
+.order-remove svg {
+  width: 12px;
+  height: 12px;
+}
+
+.order-remove:is(:hover, :focus-visible) {
+  background: var(--sonar-color-danger);
+  color: var(--sonar-color-on-emphasis);
+  box-shadow: none;
+  outline: 0;
+}
+
+/* Add product: green text with a plus */
+.order-add {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--sonar-color-text-accent);
+  font: var(--sonar-font-weight-medium) 12px/1.2 var(--sonar-font-family-sans);
+  letter-spacing: -0.2px;
+  cursor: pointer;
+}
+
+.order-add svg {
+  width: 18px;
+  height: 18px;
+}
+
+.order-add:focus-visible {
+  outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+  outline-offset: var(--sonar-focus-offset);
+  border-radius: var(--sonar-shape-corner-small);
+}
+
+/* The foot: Total on its own row, then Cancel, outlined in red, and the main action across the rest */
+.order-actions {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.order-total {
+  display: flex;
+  flex-basis: 100%;
+  justify-content: space-between;
+  margin: 0 0 2px;
+  color: var(--sonar-color-text-strong);
+  font: 400 12px/1.2 var(--sonar-font-family-sans);
+}
+
+.order-total span {
+  color: var(--sonar-color-text-meta);
+}
+
+.order-total strong {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.sonar-button.order-cancel {
+  --_edge: var(--sonar-color-danger);
+  --_ink: var(--sonar-color-text-danger);
+}
+
+.sonar-button.order-main {
+  flex: 1;
+}
+
+/* A product of the order: its thumbnail, name and packaging, and its quantity */
+.order-review {
+  display: grid;
+  margin: 6px 0 0;
+}
+
+.order-review li {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--sonar-color-divider);
+}
+
+.order-review li > span:nth-child(2) {
+  display: grid;
+  min-width: 0;
+}
+
+.order-review li .card-figure {
+  font-weight: var(--sonar-font-weight-medium);
+}
+
+.order-thumb {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--sonar-color-surface-well);
+  color: var(--sonar-color-text-default);
+}
+
+.order-thumb svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* The quantity keeps to one line, with its digits in columns */
+.order-review-quantity {
+  font: var(--sonar-font-weight-semibold) 12px/1.2 var(--sonar-font-family-sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.order-quantity {
+  width: 96px;
+}
+
+.order-quantity .sonar-field-input {
+  text-align: right;
+}
+
+.order-quantity .sonar-field-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The summary: two columns of small gray labels over their values */
+.order-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 20px;
+  margin: 14px 0 0;
+  padding: 6px 0 22px;
+}
+
+.order-summary div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.order-summary dt {
+  color: var(--sonar-color-text-meta);
+  font: 400 12px/1.2 var(--sonar-font-family-sans);
+  letter-spacing: -0.2px;
+}
+
+.order-summary dd {
+  margin: 0;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-font-weight-semibold) 12px/1.2 var(--sonar-font-family-sans);
+}
+
+.order-placed {
+  display: grid;
+  gap: var(--sonar-space-16);
+  justify-items: center;
+  padding-top: var(--sonar-space-16);
+  text-align: center;
+}
+
+.order-placed p {
+  margin: 0;
+  color: var(--sonar-color-text-secondary);
+}
+
+.order-placed .details-fields {
+  justify-self: stretch;
+  padding-top: var(--sonar-space-16);
+  border-top: 1px solid var(--sonar-color-divider);
+}
+
+.order-placed-mark {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--sonar-color-accent);
+  color: var(--sonar-color-on-accent);
+}
+
+.order-placed-mark svg {
+  width: 32px;
+  height: 32px;
+}
+
+
+/* ---------- Route map, in Delivery details ----------
+   Map colors come from the palette: they are a drawing, not roles of the interface. */
+
+.rmap {
+  --map-bg: var(--sonar-palette-neutral-92);
+  --map-road: var(--sonar-palette-gray-99);
+  --map-casing: var(--sonar-palette-neutral-85);
+  --map-park: var(--sonar-palette-green-89);
+  --map-water: var(--sonar-palette-blue-89);
+  --map-label: var(--sonar-palette-neutral-24);
+  --map-halo: rgb(253 254 252 / 0.9);
+  --map-pin: var(--sonar-palette-neutral-10);
+  --rm-pad: 16px;
+  --rm-c: 32px;
+
+  position: relative;
+  height: 320px;
+  margin: 0 calc(-1 * var(--sonar-space-28));
+  overflow: hidden;
+  background: var(--map-bg);
+  outline: none;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+[data-theme='dark'] .rmap:where(:not([data-theme="dark"] [data-theme="light"] *)) {
+  --map-bg: var(--sonar-palette-neutral-tinted-23);
+  --map-road: var(--sonar-palette-neutral-tinted-41);
+  --map-casing: var(--sonar-palette-neutral-16);
+  --map-park: var(--sonar-palette-green-37);
+  --map-water: var(--sonar-palette-blue-36);
+  --map-label: var(--sonar-palette-neutral-95);
+  --map-halo: rgb(34 43 35 / 0.92);
+  --map-pin: var(--sonar-palette-neutral-92);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .rmap:not([data-theme='light'] .rmap):where(:not([data-theme="light"] *)) {
+    --map-bg: var(--sonar-palette-neutral-tinted-23);
+    --map-road: var(--sonar-palette-neutral-tinted-41);
+    --map-casing: var(--sonar-palette-neutral-16);
+    --map-park: var(--sonar-palette-green-37);
+    --map-water: var(--sonar-palette-blue-36);
+    --map-label: var(--sonar-palette-neutral-95);
+    --map-halo: rgb(34 43 35 / 0.92);
+    --map-pin: var(--sonar-palette-neutral-92);
+  }
+}
+
+.rmap:focus-visible {
+  box-shadow: inset 0 0 0 var(--sonar-focus-width) var(--sonar-color-focus);
+}
+
+.rmap[data-pan] {
+  cursor: grab;
+  touch-action: none;
+}
+
+.rmap[data-dragging] {
+  cursor: grabbing;
+}
+
+.rm-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.rm-world,
+.rm-mk {
+  transition: transform var(--sonar-motion-spatial-default-duration) var(--sonar-motion-spatial-default-easing);
+}
+
+.rmap[data-dragging] :is(.rm-world, .rm-mk) {
+  transition: none;
+}
+
+.rm-cp {
+  fill: var(--sonar-color-surface-card);
+  stroke: var(--sonar-color-border-control);
+  stroke-width: 1.7;
+}
+
+.rm-cp[data-done] {
+  fill: var(--sonar-color-accent);
+  stroke: none;
+}
+
+.rm-lab {
+  font: 500 10.5px/1 var(--sonar-font-family-sans);
+  letter-spacing: -0.1px;
+  fill: var(--map-label);
+  stroke: var(--map-halo);
+  stroke-width: 3.6px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+  pointer-events: none;
+}
+
+.rm-pulse {
+  fill: var(--sonar-color-danger);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: rm-pulse 2.2s ease-out infinite;
+}
+
+@keyframes rm-pulse {
+  0% {
+    opacity: 0.34;
+    transform: scale(1);
+  }
+
+  80%,
+  100% {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+
+/* Compass at the top left, without a letter: the green needle points north */
+.rm-compass {
+  position: absolute;
+  top: var(--rm-pad);
+  left: var(--rm-pad);
+  width: var(--rm-c);
+  height: var(--rm-c);
+  border-radius: 50%;
+  background: var(--sonar-color-surface-card);
+  box-shadow: var(--sonar-elevation-2);
+  pointer-events: none;
+}
+
+.rm-compass svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Controls: one bar at the top right */
+.rm-tools {
+  position: absolute;
+  top: var(--rm-pad);
+  right: var(--rm-pad);
+  display: flex;
+  height: var(--rm-c);
+  border-radius: var(--sonar-shape-corner-medium);
+  background: var(--sonar-color-surface-card);
+  box-shadow: var(--sonar-elevation-2);
+}
+
+.rm-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--rm-c);
+  height: var(--rm-c);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--sonar-color-text-default);
+  cursor: pointer;
+}
+
+.rm-btn + .rm-btn::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 0;
+  width: 1px;
+  background: var(--sonar-color-border-faint);
+}
+
+.rm-btn:first-child {
+  border-radius: var(--sonar-shape-corner-medium) 0 0 var(--sonar-shape-corner-medium);
+}
+
+.rm-btn:last-child {
+  border-radius: 0 var(--sonar-shape-corner-medium) var(--sonar-shape-corner-medium) 0;
+}
+
+.rm-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (hover: hover) {
+  .rm-btn:not([aria-disabled]):hover {
+    background: var(--sonar-color-state-hover);
+  }
+}
+
+.rm-btn:not([aria-disabled]):active {
+  background: var(--sonar-color-state-pressed);
+}
+
+.rm-btn:focus-visible {
+  outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+  outline-offset: -2px;
+}
+
+.rm-btn[aria-disabled] {
+  color: var(--sonar-color-text-disabled);
+  cursor: default;
+}
+
+/* Scale: grows and rounds as the map zooms */
+.rm-scale {
+  position: absolute;
+  bottom: calc(var(--rm-pad) + 99px);
+  left: var(--rm-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--map-label);
+  font: 500 10px/1 var(--sonar-font-family-sans);
+  text-shadow:
+    0 0 3px var(--map-halo),
+    0 0 3px var(--map-halo);
+  pointer-events: none;
+}
+
+.rm-bar {
+  display: block;
+  height: 5px;
+  border: 1.5px solid var(--map-label);
+  border-top: 0;
+  border-radius: 0 0 1px 1px;
+  transition: width var(--sonar-motion-spatial-default-duration) var(--sonar-motion-spatial-default-easing);
+}
+
+/* The block at the foot: where the truck is, its last stop, the destination and the progress */
+.rm-info {
+  position: absolute;
+  right: var(--rm-pad);
+  bottom: var(--rm-pad);
+  left: var(--rm-pad);
+  border-radius: var(--sonar-shape-corner-medium);
+  background: var(--sonar-color-surface-card);
+  box-shadow: var(--sonar-elevation-1);
+  cursor: default;
+}
+
+.rm-row {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 1fr;
+  padding: 11px 0 10px;
+}
+
+.rm-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 0 12px;
+}
+
+.rm-row > div + div {
+  border-left: 1px solid var(--sonar-color-border-faint);
+}
+
+.rm-cl {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  color: var(--sonar-color-text-meta);
+  font: 400 11px/14px var(--sonar-font-family-sans);
+  white-space: nowrap;
+}
+
+.rm-g {
+  display: block;
+  flex: none;
+  width: 10px;
+  height: 10px;
+  overflow: visible;
+}
+
+.rm-cv {
+  overflow: hidden;
+  color: var(--sonar-color-text-strong);
+  font: 500 12.5px/16px var(--sonar-font-family-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rm-prog {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 8px 14px 10px 16px;
+  border-top: 1px solid var(--sonar-color-border-faint);
+}
+
+.rm-track {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 18px;
+  margin-right: 6px;
+}
+
+.rm-tl {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 0;
+  transform: translateY(-50%);
+}
+
+.rm-tl[data-part='rest'] {
+  right: 0;
+  border-top: 2px dotted var(--sonar-color-border-strong);
+}
+
+.rm-tl[data-part='done'] {
+  border-top: 3px solid var(--sonar-color-accent);
+  border-radius: 2px;
+}
+
+.rm-td {
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--sonar-color-surface-card);
+  box-shadow: inset 0 0 0 1.6px var(--sonar-color-border-control);
+}
+
+.rm-td[data-on] {
+  background: var(--sonar-color-accent);
+  box-shadow: 0 0 0 2px var(--sonar-color-surface-card);
+}
+
+.rm-tt {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: 50%;
+  background: var(--sonar-color-danger-solid);
+  box-shadow: 0 0 0 2px var(--sonar-color-surface-card);
+  color: var(--sonar-color-on-emphasis);
+}
+
+.rm-tt svg {
+  width: 11px;
+  height: 11px;
+}
+
+.rm-te {
+  position: absolute;
+  top: 50%;
+  right: -5px;
+  display: block;
+  width: 11px;
+  height: 15px;
+  margin-top: -11px;
+}
+
+.rm-te svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.rm-km {
+  color: var(--sonar-color-text-meta);
+  font: 400 11px/14px var(--sonar-font-family-sans);
+  white-space: nowrap;
+}
+
+.rm-km b {
+  color: var(--sonar-color-text-strong);
+  font-weight: var(--sonar-font-weight-semibold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rm-world,
+  .rm-mk,
+  .rm-bar {
+    transition: none;
+  }
+
+  .rm-pulse {
+    animation: none;
+  }
+}
+
+.order-panel .sonar-field {
+  --_height: 36px;
+}
+
+.order-panel .sonar-field .sonar-field-input {
+  font-weight: var(--sonar-font-weight-medium);
+}
+
+
+/* ---------- System notifications (the bell): the product's panel, 1.0.0-alpha.18 ---------- */
+.system-panel .sonar-dialog-description {
+  margin-top: calc(8px - var(--sonar-space-16));
+  color: var(--sonar-color-text-meta);
+  font: 400 12px/16px var(--sonar-font-family-sans);
+  letter-spacing: 0;
+}
+
+.system-panel .sonar-dialog-description .sep,
+.system-panel .sonar-dialog-description > span[aria-hidden] {
+  margin: 0 8px;
+}
+
+.system-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  /* Accent text, not the accent fill: #1a8838 on the panel's #fcfcfc was 4.42:1 at 12 px; the text accent passes AA
+     (1.0.0-alpha.20, accessibility audit #6). Dark keeps its green, which already passed */
+  color: var(--sonar-color-text-accent);
+  font: var(--sonar-font-weight-medium) 12px/16px var(--sonar-font-family-sans);
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .system-link:hover,
+  .system-more:hover,
+  .system-history:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
+.system-list {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--sonar-color-divider);
+  list-style: none;
+}
+
+.system-item {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--sonar-color-divider);
+}
+
+.system-icon {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--sonar-color-accent);
+}
+
+.system-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.system-item[data-read] .system-icon {
+  background: var(--sonar-color-accent);
+  color: var(--sonar-color-on-accent);
+  box-shadow: none;
+}
+
+.system-when {
+  color: var(--sonar-color-text-meta);
+  font: 400 12px/22px var(--sonar-font-family-sans);
+}
+
+.system-time {
+  padding-top: 3px;
+  color: var(--sonar-color-text-meta);
+  font: 400 12px/16px var(--sonar-font-family-sans);
+  text-align: right;
+}
+
+.system-body {
+  grid-column: 2 / span 2;
+}
+
+.system-title,
+.system-description {
+  margin: 0;
+  font: 400 12px/16px var(--sonar-font-family-sans);
+}
+
+.system-title {
+  color: var(--sonar-color-text-strong);
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.system-item:not([data-read]) .system-title::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 7px;
+  border-radius: 50%;
+  background: var(--sonar-color-danger);
+  vertical-align: 1px;
+}
+
+.system-description {
+  margin-top: 6px;
+  color: var(--sonar-color-text-default);
+}
+
+.system-actions {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.system-more,
+.system-history {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+  color: var(--sonar-color-text-accent);
+  font: var(--sonar-font-weight-medium) 12px/16px var(--sonar-font-family-sans);
+  text-decoration: none;
+}
+
+.system-more svg {
+  width: 15px;
+  height: 15px;
+  transition: translate var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing);
+}
+
+@media (hover: hover) {
+  .system-more:hover svg {
+    translate: 3px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .system-more svg {
+    transition: none;
+  }
+}
+
+.system-read {
+  color: var(--sonar-color-text-meta);
+  font: 400 12px/16px var(--sonar-font-family-sans);
+}
+
+.system-panel .sonar-dialog-actions {
+  justify-content: flex-end;
+}

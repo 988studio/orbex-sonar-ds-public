@@ -1,0 +1,22 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Legend from '../../demos/charts/Legend.tsx'
+import legendCode from '../../demos/charts/Legend.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+---
+
+<ComponentDoc entry="chart-legend" lead="The key to a chart’s colors: a dot in each part’s tone, then its name, and its value when the chart has none of its own.">
+  <Demo title="Names, and names with values" code={legendCode}><Legend /></Demo>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>Under the chart, in the order of the chart’s parts.</li>
+      <li>Hide it from assistive technology when the chart’s name already lists the parts.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>Every color has a name beside it, so no part depends on telling hues apart.</li>
+  </ul>
+</ComponentDoc>

@@ -1,0 +1,59 @@
+---
+/** The signature at the foot of every page */
+import { studio, version, year } from '../lib/release.ts'
+---
+
+<footer class="site-footer">
+  <p>
+    Design system by <strong>{studio}</strong>
+    <span aria-hidden="true">·</span>
+    <a href="/resources/changelog/">v{version}</a>
+    <span aria-hidden="true">·</span>
+    © {year}
+  </p>
+</footer>
+
+<style>
+  .site-footer {
+    max-width: var(--site-content-width);
+    margin-top: var(--sonar-space-48);
+    padding-top: var(--sonar-space-20);
+    border-top: 1px solid var(--sonar-color-divider);
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  p {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sonar-space-4) var(--sonar-space-8);
+    align-items: center;
+  }
+
+  strong {
+    color: var(--sonar-color-text-secondary);
+    font-weight: var(--sonar-font-weight-semibold);
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--sonar-color-border-muted);
+    text-underline-offset: 3px;
+  }
+
+  a:hover {
+    color: var(--sonar-color-text-strong);
+    text-decoration-color: currentColor;
+  }
+
+  a:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+    border-radius: var(--sonar-shape-corner-small);
+  }
+</style>

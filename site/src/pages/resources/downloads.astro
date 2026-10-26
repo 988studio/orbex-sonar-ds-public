@@ -1,0 +1,111 @@
+---
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import Docs from '../../layouts/Docs.astro'
+import { version } from '../../lib/release.ts'
+import { tokens } from '@orbex/sonar-tokens'
+import api from '@orbex/sonar-components/api.json'
+
+const files = [
+  { href: '/downloads/tokens.css', name: 'tokens.css', kind: 'CSS', text: `Every token as a CSS custom property, light and dark, in the sonar.tokens layer. ${tokens.length} tokens.`, from: '@orbex/sonar-tokens/tokens.css' },
+  { href: '/downloads/type.css', name: 'type.css', kind: 'CSS', text: 'The type roles as classes, for markup that is not a component.', from: '@orbex/sonar-tokens/type.css' },
+  { href: '/downloads/tokens.json', name: 'tokens.json', kind: 'JSON', text: 'Every token resolved in each theme, with its CSS variable, description and reference: for design tools and scripts.', from: '@orbex/sonar-tokens/tokens.json' },
+  { href: '/api.json', name: 'api.json', kind: 'JSON', text: `The props of every component part (${api.components.reduce((sum, { parts }) => sum + parts.length, 0)} parts), with types, defaults and descriptions, read from the source at build time.`, from: '@orbex/sonar-components/api.json' },
+  { href: '/sizes.json', name: 'sizes.json', kind: 'JSON', text: 'The gzipped weight of each entry point, script and styles, with its budget.', from: '@orbex/sonar-components/sizes.json' },
+  { href: '/llms.txt', name: 'llms.txt', kind: 'Text', text: 'The system for language models and coding agents: every page, and the API of every component.', from: 'llmstxt.org' },
+]
+---
+
+<Docs title="Downloads" description="The Orbex Sonar-DB tokens as CSS and JSON, and the API and sizes of every component as data.">
+  <PageHeader
+    title="Downloads"
+    lead={`The files the packages publish, at version ${version}, to open or link to without installing anything. In an app, import them from the packages instead, so they update with the version.`}
+  />
+
+  <Section title="Files" id="files">
+    <ul class="files" role="list">
+      {
+        files.map(({ href, name, kind, text, from }) => (
+          <li>
+            <a href={href} download={name}>
+              <span class="kind">{kind}</span>
+              <span class="name">{name}</span>
+            </a>
+            <p>{text}</p>
+            <p class="from">
+              <code>{from}</code>
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+</Docs>
+
+<style>
+  .files {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: var(--sonar-space-16);
+    max-width: var(--site-content-width);
+    padding: 0;
+  }
+
+  li {
+    display: grid;
+    align-content: start;
+    gap: var(--sonar-space-8);
+    padding: var(--sonar-space-20);
+    border-radius: var(--sonar-shape-corner-large);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  a {
+    display: flex;
+    gap: var(--sonar-space-12);
+    align-items: center;
+    justify-self: start;
+    min-height: var(--sonar-layout-touch-target);
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+    text-decoration: underline;
+    text-decoration-color: var(--sonar-color-border-muted);
+    text-underline-offset: 4px;
+  }
+
+  a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  a:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+    border-radius: var(--sonar-shape-corner-small);
+  }
+
+  .kind {
+    display: inline-grid;
+    place-items: center;
+    min-width: 44px;
+    height: 24px;
+    padding: 0 var(--sonar-space-8);
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-accent-tonal);
+    color: var(--sonar-color-on-accent-tonal);
+    font: var(--sonar-type-label-sm);
+    letter-spacing: var(--sonar-type-label-sm-tracking);
+    text-decoration: none;
+  }
+
+  li p {
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-body-md);
+  }
+
+  .from code {
+    color: var(--sonar-color-text-tertiary);
+    font: 400 12px/1.4 var(--sonar-font-family-mono);
+  }
+</style>

@@ -1,0 +1,58 @@
+{
+  "name": "@orbex/sonar-components",
+  "version": "1.1.4",
+  "description": "React components of the Orbex Sonar-DB Design System: native HTML first, Base UI for complex behavior, styled only with the design tokens.",
+  "author": "988©STUDIO",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./api.json": "./dist/api.json",
+    "./sizes.json": "./dist/sizes.json",
+    "./*.css": "./dist/*/styles.css",
+    "./*": {
+      "types": "./dist/*/index.d.ts",
+      "default": "./dist/*/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "node scripts/build.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.test.json"
+  },
+  "peerDependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "dependencies": {
+    "@base-ui/react": "1.8.0",
+    "@orbex/sonar-tokens": "1.1.4"
+  },
+  "devDependencies": {
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.7",
+    "@types/node": "^22.18.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "axe-core": "4.14.0",
+    "jsdom": "30.1.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "typescript": "^5.9.3",
+    "vitest": "5.0.3"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}

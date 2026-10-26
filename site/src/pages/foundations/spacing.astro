@@ -1,0 +1,197 @@
+---
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import Docs from '../../layouts/Docs.astro'
+import { group, toneOf, token } from '../../lib/tokens.ts'
+
+/* Uses taken from the product; steps without an entry are general-purpose */
+const uses: Record<string, string> = {
+  '6': 'Icon to label, status dot to its text. The most common gap inside rows.',
+  '12': 'Between related controls in a row.',
+  '20': 'Between cards: the layout gap.',
+  '28': 'Card padding, left and right, at every size.',
+  '32': 'Page margin on desktop.',
+  '48': 'Minimum touch target on tablets and phones.',
+}
+
+const steps = group('space').map((doc) => ({ value: Number(toneOf(doc.name)), cssVar: doc.cssVar }))
+const gap = token('layout.gap')
+---
+
+<Docs title="Spacing" description="The Sonar-DB spacing scale: fourteen steps on a 2 px base, and where each one is used.">
+  <PageHeader
+    title="Spacing"
+    lead="Fourteen steps on a 2 px base. The scale is fine at the small end, where figures, units and status dots need exact distances, and opens up for layout."
+  />
+
+  <Section title="Scale" id="scale">
+    <p class="prose">
+      Steps are named by their value in pixels, so <code>--sonar-space-12</code> is 12 px wherever you read it. Use the
+      closest step; if none fits, the design probably needs a different structure, not a new number.
+    </p>
+    <ol class="scale" role="list">
+      {
+        steps.filter(({ value }) => value > 0).map(({ value, cssVar }) => (
+          <li>
+            <span class="bar" style={`width: var(${cssVar})`} />
+            <span class="value">{value}</span>
+            <code>{cssVar}</code>
+            <span class="use">{uses[value]}</span>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <Section title="Cards on the grid" id="grid">
+    <p class="prose">
+      Cards keep 28 px of side padding at every size and sit {gap.light.css[gap.cssVar]!.replace('px', ' px')} apart, in columns and in rows.
+      Content inside a card aligns to the padding, so titles, rules and figures line up from card to card.
+    </p>
+    <figure class="grid-figure">
+      <div class="cards">
+        {
+          ['Orders', 'Deliveries'].map((title) => (
+            <div class="card">
+              <span class="pad left" aria-hidden="true">28</span>
+              <span class="pad right" aria-hidden="true">28</span>
+              <p class="sonar-type-title-lg">{title}</p>
+              <hr />
+              <p class="sonar-type-body-md">Content aligns to the padding.</p>
+            </div>
+          ))
+        }
+        <span class="gap" aria-hidden="true">20</span>
+      </div>
+      <figcaption class="visually-hidden">Two cards, each with 28 px side padding, separated by a 20 px gap.</figcaption>
+    </figure>
+  </Section>
+</Docs>
+
+<style>
+  .scale {
+    display: grid;
+    padding: 0;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  .scale li {
+    display: grid;
+    grid-template-columns: 56px 32px minmax(0, 200px) 1fr;
+    gap: var(--sonar-space-16);
+    align-items: center;
+    padding: var(--sonar-space-10) var(--sonar-space-20);
+    border-bottom: 1px solid var(--sonar-color-divider);
+  }
+
+  .scale li:last-child {
+    border-bottom: 0;
+  }
+
+  .bar {
+    height: 16px;
+    border-radius: 2px;
+    background: var(--sonar-color-accent);
+  }
+
+  .value {
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-title-sm);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .scale code {
+    color: var(--sonar-color-text-tertiary);
+    font-size: 11px;
+  }
+
+  .use {
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-body-md);
+  }
+
+  @container page (width < 608px) {
+    .scale li {
+      grid-template-columns: 56px 32px 1fr;
+    }
+
+    .scale code {
+      display: none;
+    }
+  }
+
+  .grid-figure {
+    padding: var(--sonar-space-32);
+    border-radius: var(--sonar-shape-corner-large);
+    background: var(--sonar-color-surface-page);
+    box-shadow: 0 0 0 1px var(--sonar-color-divider);
+  }
+
+  .cards {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sonar-layout-gap);
+    max-width: 620px;
+  }
+
+  .card {
+    position: relative;
+    padding: var(--sonar-space-24) var(--sonar-space-28);
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+    color: var(--sonar-color-text-default);
+  }
+
+  .card hr {
+    margin: var(--sonar-space-12) 0;
+    border: 0;
+    border-top: 1px solid var(--sonar-color-divider);
+  }
+
+  .pad,
+  .gap {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--sonar-color-accent) 12%, transparent);
+    color: var(--sonar-color-on-accent-tonal);
+    font: var(--sonar-type-label-sm);
+  }
+
+  .pad {
+    inset-block: 0;
+    width: var(--sonar-space-28);
+  }
+
+  /* The marks follow the card’s own corners */
+  .pad.left {
+    left: 0;
+    border-radius: var(--sonar-shape-corner-medium) 0 0 var(--sonar-shape-corner-medium);
+  }
+
+  .pad.right {
+    right: 0;
+    border-radius: 0 var(--sonar-shape-corner-medium) var(--sonar-shape-corner-medium) 0;
+  }
+
+  .gap {
+    inset-block: 0;
+    left: calc(50% - var(--sonar-layout-gap) / 2);
+    width: var(--sonar-layout-gap);
+  }
+
+  @container page (width < 608px) {
+    .cards {
+      grid-template-columns: 1fr;
+    }
+
+    .gap {
+      display: none;
+    }
+  }
+</style>

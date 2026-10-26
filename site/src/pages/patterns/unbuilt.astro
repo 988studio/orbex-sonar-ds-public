@@ -1,0 +1,49 @@
+---
+import '../../styles/global.css'
+import '@orbex/sonar-components/styles.css'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import AppDemo from '@orbex/sonar-patterns/app/AppDemo.tsx'
+import Docs from '../../layouts/Docs.astro'
+---
+
+<Docs title="Unbuilt modules" description="What the product shows for a section that has no screen yet: what happened, what works, and the way back to the overview.">
+  <PageHeader
+    title="Unbuilt modules"
+    lead="A section in the navigation that has no screen yet opens this page instead of a dead link: a 404 that says what happened, lists what does work and leads back to the Overview."
+  />
+
+  <Section title="Try it" id="demo">
+    <p class="prose">
+      Choose any sidebar section other than Overview, or one of the Support links. The chips open the sections that work;
+      Customize overview opens its sheet; Back to Overview, or Overview in the sidebar, returns.
+    </p>
+    <SpecimenFigure title="An unbuilt module at 1440 × 980"><AppDemo client:visible page="Orders" /></SpecimenFigure>
+  </Section>
+
+  <Section title="Anatomy" id="anatomy">
+    <ul class="prose">
+      <li><strong>Code</strong>: “404 · Prototype”, small, above the title.</li>
+      <li><strong>Title</strong>: the section’s name, as the sidebar says it, and that it isn’t built: “Orders isn’t part of this prototype”.</li>
+      <li><strong>Explanation</strong>: one sentence on why, and where the interactions are.</li>
+      <li><strong>What works</strong>: the sidebar options that work, as chips that go there, and the rest as a list.</li>
+      <li><strong>Way back</strong>: Back to Overview, the one filled button.</li>
+    </ul>
+  </Section>
+
+  <Section title="Rules" id="rules">
+    <ul class="prose">
+      <li>Every entry in the navigation leads somewhere. A section without a screen gets this page, never an empty one or a link that does nothing.</li>
+      <li>The sidebar stays as it is, with the section marked, so people know where they are.</li>
+      <li>In the product the same page serves any module not built yet; change the code line when it is not a prototype.</li>
+    </ul>
+  </Section>
+
+  <Section title="Accessibility" id="accessibility">
+    <ul class="prose">
+      <li>The page is the main landmark, named by its title.</li>
+      <li>The chips and the button are buttons; the list of other things that work is plain text.</li>
+    </ul>
+  </Section>
+</Docs>

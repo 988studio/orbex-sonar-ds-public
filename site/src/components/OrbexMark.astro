@@ -1,0 +1,29 @@
+---
+/** The Orbex sun: 24 rays, alternating between a short and a long inner radius. */
+interface Props {
+  size?: number
+}
+
+const { size = 22 } = Astro.props
+const rays = Array.from({ length: 24 }, (_, index) => {
+  const angle = (index / 24) * Math.PI * 2
+  const inner = index % 2 ? 4.5 : 3
+  const point = (radius: number) => [12 + Math.cos(angle) * radius, 12 + Math.sin(angle) * radius].map((n) => n.toFixed(2))
+  const [x1, y1] = point(inner)
+  const [x2, y2] = point(11)
+  return { x1, y1, x2, y2 }
+})
+---
+
+<svg class="mark" viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
+  {rays.map((ray) => <line {...ray} />)}
+</svg>
+
+<style>
+  .mark {
+    flex: none;
+    stroke: var(--sonar-color-accent);
+    stroke-width: 1.1;
+    stroke-linecap: round;
+  }
+</style>

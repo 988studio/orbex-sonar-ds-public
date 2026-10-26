@@ -1,0 +1,208 @@
+---
+/**
+ * Neutral tones plotted like soundings: each bar sits at its lightness (L*, 0–100) and rises to its
+ * contrast ratio against the card surface of the theme. The text roles are marked under the bars they use.
+ * Drawn once per theme; only the active theme’s chart is shown.
+ */
+import { contrast, type Hex } from '@orbex/sonar-tokens/color'
+import { group, hexOf, THEMES, toneOf, valueIn, type Theme } from '../lib/tokens.ts'
+
+interface Props {
+  family?: string
+}
+
+const { family = 'neutral' } = Astro.props
+const MAX_RATIO = 18
+const tones = group(`palette.${family}`).map((doc) => ({ tone: Number(toneOf(doc.name)), hex: doc.light.resolved as Hex, cssVar: doc.cssVar }))
+const roles = group('color.text').filter(({ name }) => /strong|default|secondary|tertiary|placeholder|disabled$/.test(name))
+
+const charts = THEMES.map((theme: Theme) => {
+  const card = hexOf('color.surface.card', theme) as Hex
+  return {
+    theme,
+    bars: tones.map((tone) => ({ ...tone, ratio: contrast(tone.hex, card) })),
+    markers: roles
+      .map((doc) => ({ role: toneOf(doc.name), reference: valueIn(doc, theme).reference }))
+      .filter(({ reference }) => reference?.startsWith(`palette.${family}.`))
+      .map(({ role, reference }) => ({ role, tone: Number(toneOf(reference!)) }))
+      .sort((a, b) => a.tone - b.tone)
+      /* Labels alternate between two rows so neighbors never collide, at any width */
+      .map((marker, index) => ({ ...marker, row: (index % 2) + 1 })),
+    /* Threshold labels go on the side where the bars are short: right in light, left in dark */
+    labelSide: theme === 'light' ? 'end' : 'start',
+  }
+})
+
+const y = (ratio: number) => `${((ratio - 1) / (MAX_RATIO - 1)) * 100}%`
+---
+
+{
+  charts.map(({ theme, bars, markers, labelSide }) => (
+    <figure class:list={['sounding', `only-${theme}`]} data-labels={labelSide}>
+      <div class="plot">
+        <span class="threshold" style={`--y: ${y(4.5)}`}>4.5:1 for text</span>
+        <span class="threshold faint" style={`--y: ${y(3)}`}>3:1 for marks</span>
+        <ol class="bars" aria-label={`${bars.length} ${family} tones and their contrast on the ${theme} card`}>
+          {bars.map(({ tone, hex, ratio, cssVar }) => (
+            <li class="bar" style={`--x: ${tone}%; --h: ${y(Math.max(ratio, 1.15))}; --swatch: var(${cssVar}); --delay: ${tone * 6}ms`}>
+              <span class="detail">
+                <b>Tone {tone}</b> {hex}, {ratio.toFixed(1)}:1
+              </span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <ul class="markers" aria-label={`Text roles in the ${theme} theme`}>
+        {markers.map(({ role, tone, row }) => (
+          <li style={`--x: ${tone}%`} data-row={row}>
+            <span>{role}</span>
+          </li>
+        ))}
+      </ul>
+      <figcaption class="axis" aria-hidden="true">
+        <span>Black</span>
+        <span>Lightness</span>
+        <span>White</span>
+      </figcaption>
+    </figure>
+  ))
+}
+
+<style>
+  .sounding {
+    --bar: 0.8%;
+    display: grid;
+    gap: var(--sonar-space-8);
+  }
+
+  .plot {
+    position: relative;
+    height: 240px;
+    overflow-x: clip;
+    border-bottom: 1px solid var(--sonar-color-border-control);
+  }
+
+  .threshold {
+    position: absolute;
+    inset: auto 0 var(--y) 0;
+    border-top: 1px dashed var(--sonar-color-border-emphasis);
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-sm);
+    letter-spacing: var(--sonar-type-label-sm-tracking);
+    text-align: right;
+    line-height: 18px;
+  }
+
+  [data-labels='start'] .threshold {
+    text-align: left;
+  }
+
+  .threshold.faint {
+    border-top-color: var(--sonar-color-border-muted);
+  }
+
+  .bars {
+    position: absolute;
+    inset: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .bar {
+    position: absolute;
+    bottom: 0;
+    left: calc(var(--x) - var(--bar) / 2);
+    width: var(--bar);
+    min-width: 3px;
+    height: var(--h);
+    border-radius: 2px 2px 0 0;
+    background: var(--swatch);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sonar-color-text-strong) 8%, transparent);
+    transform-origin: bottom;
+  }
+
+  .bar:hover,
+  .bar:focus-visible {
+    z-index: 1;
+    outline: 2px solid var(--sonar-color-accent);
+    outline-offset: 2px;
+  }
+
+  .detail {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    padding: var(--sonar-space-6) var(--sonar-space-8);
+    border-radius: var(--sonar-shape-corner-extra-small);
+    background: var(--sonar-color-surface-inverse);
+    color: var(--sonar-color-text-inverse);
+    font: var(--sonar-type-label-sm);
+    letter-spacing: var(--sonar-type-label-sm-tracking);
+    white-space: nowrap;
+    translate: -50% 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);
+  }
+
+  .bar:hover .detail,
+  .bar:focus-visible .detail {
+    opacity: 1;
+  }
+
+  .bar:nth-last-child(-n + 6) .detail {
+    left: auto;
+    right: 0;
+    translate: none;
+  }
+
+  .markers {
+    position: relative;
+    height: 52px;
+    padding: 0;
+    list-style: none;
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-label-sm);
+    letter-spacing: var(--sonar-type-label-sm-tracking);
+  }
+
+  .markers li {
+    position: absolute;
+    top: 0;
+    left: var(--x);
+    height: 100%;
+    border-left: 1px solid var(--sonar-color-border-emphasis);
+  }
+
+  .markers li[data-row='1'] {
+    height: 34px;
+  }
+
+  .markers span {
+    position: absolute;
+    bottom: 0;
+    left: 4px;
+    white-space: nowrap;
+  }
+
+  .axis {
+    display: flex;
+    justify-content: space-between;
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-sm);
+    letter-spacing: var(--sonar-type-label-sm-tracking);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .bar {
+      animation: rise var(--sonar-motion-spatial-default-duration) var(--sonar-motion-spatial-default-easing) backwards;
+      animation-delay: var(--delay);
+    }
+
+    @keyframes rise {
+      from {
+        scale: 1 0;
+      }
+    }
+  }
+</style>

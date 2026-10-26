@@ -1,0 +1,228 @@
+---
+import '../../styles/global.css'
+import '@orbex/sonar-components/styles.css'
+import '@orbex/sonar-patterns/patterns/edit.css'
+import A11yTables from '../../components/A11yTables.astro'
+import CodeBlock from '../../components/CodeBlock.astro'
+import Demo from '../../components/Demo.astro'
+import DoDont from '../../components/DoDont.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import ThemePair from '../../components/ThemePair.astro'
+import BalanceCard from '@orbex/sonar-patterns/patterns/BalanceCard.tsx'
+import { CardAnatomy, CardStates, EditAnatomy } from '@orbex/sonar-patterns/patterns/CardStates.tsx'
+import CardSizes, { cardSizes } from '@orbex/sonar-patterns/patterns/CardSizes.tsx'
+import { CardPartStates } from '../../demos/patterns/CardParts.tsx'
+import cardsCss from '@orbex/sonar-patterns/patterns/cards.css?raw'
+import DeliveriesCard from '@orbex/sonar-patterns/patterns/DeliveriesCard.tsx'
+import InventoryCard from '@orbex/sonar-patterns/patterns/InventoryCard.tsx'
+import OrdersCard from '@orbex/sonar-patterns/patterns/OrdersCard.tsx'
+import RecurringCard from '@orbex/sonar-patterns/patterns/RecurringCard.tsx'
+import ShipmentsCard from '@orbex/sonar-patterns/patterns/ShipmentsCard.tsx'
+import { Credits, Documents, Invoices, Notifications, Scheduled } from '@orbex/sonar-patterns/patterns/OptionalCards.tsx'
+import balanceCode from '../../snippets/BalanceCard.tsx?raw'
+import deliveriesCode from '../../snippets/DeliveriesCard.tsx?raw'
+import inventoryCode from '../../snippets/InventoryCard.tsx?raw'
+import ordersCode from '../../snippets/OrdersCard.tsx?raw'
+import recurringCode from '../../snippets/RecurringCard.tsx?raw'
+import shipmentsCode from '../../snippets/ShipmentsCard.tsx?raw'
+import Docs from '../../layouts/Docs.astro'
+import { gridMetrics } from '../../lib/layout-metrics.ts'
+
+/* Each card in every size, with the lines that render them */
+const sizeDemos = Object.entries(cardSizes).map(([id, { title, card, sizes }]) => ({
+  id,
+  title: `${title} · ${sizes.map((size) => size.toUpperCase()).join(', ')}`,
+  code: sizes.map((size) => `<${card.name} size="${size}" />`).join('\n'),
+}))
+---
+
+<Docs title="Cards" description="The cards of the Sonar-DB overview: their anatomy, sizes, states and rules, the six cards of the default overview and the five optional ones, live.">
+  <PageHeader
+    title="Cards"
+    lead="The overview is made of cards. Each sums up one part of the business, a figure first and the detail after, and leads to the page where the work is done. They are built only from the system’s components and tokens: Card, Card link, Card scroll and Unit menu, with the charts."
+  />
+
+  <Section title="Anatomy" id="anatomy">
+    <div class="anatomy">
+      <CardAnatomy />
+      <ol class="anatomy-keys" role="list">
+        <li><span><strong>Title</strong>, which also names the card as a region of the page.</span></li>
+        <li><span><strong>Unit menu</strong>: the card’s only setting, the unit its figures are shown in. Changing it converts every figure in the card. See <a href="/components/unit-menu/">Unit menu</a>.</span></li>
+        <li><span><strong>Summary</strong>: one figure that sums the card up, a label and a value over a rule.</span></li>
+        <li><span><strong>Content</strong>: the detail, at most two levels deep: sections with a small heading, rows, a chart.</span></li>
+        <li><span><strong>Scrolling list</strong>, optional: the part of the content that gives way first when the size leaves no room. See <a href="/components/card-scroll/">Card scroll</a>.</span></li>
+        <li><span><strong>Footer</strong>: the way to the full page, and at most one action, such as New order. See <a href="/components/card-link/">Card link</a>.</span></li>
+      </ol>
+    </div>
+    <h3 class="sub">In edit mode</h3>
+    <div class="anatomy">
+      <EditAnatomy />
+      <ol class="anatomy-keys" role="list">
+        <li><span><strong>Move handle</strong>: a pill centered on the top edge. Drag it to move the card; with the keyboard, Space picks the card up and drops it.</span></li>
+        <li><span><strong>Remove</strong>: a red ring outside the top end corner. The card leaves the overview and can be added back from New element.</span></li>
+        <li><span><strong>Dashed edge</strong> in accent: the card is part of a draft until Save layout.</span></li>
+        <li><span><strong>Resize handle</strong>: a pill centered on the bottom edge. Pull it, or use the up and down arrows, to step through the sizes the card offers.</span></li>
+        <li><span><strong>Size</strong>: S, M, L or XL, in a ring beside the resize handle.</span></li>
+      </ol>
+    </div>
+  </Section>
+
+  <Section title="The six cards of the overview" id="cards">
+    <Demo title="Orders · M" code={ordersCode} snippet layout="card"><OrdersCard client:visible={{ rootMargin: '400px' }} /></Demo>
+    <Demo title="Inventory · S" code={inventoryCode} snippet layout="card"><InventoryCard client:visible={{ rootMargin: '400px' }} /></Demo>
+    <Demo title="Daily shipments · XL" code={shipmentsCode} snippet layout="card"><ShipmentsCard client:visible={{ rootMargin: '400px' }} /></Demo>
+    <Demo title="Balance · M" code={balanceCode} snippet layout="card"><BalanceCard client:visible={{ rootMargin: '400px' }} /></Demo>
+    <Demo title="Deliveries · L" code={deliveriesCode} snippet layout="card"><DeliveriesCard client:visible={{ rootMargin: '400px' }} /></Demo>
+    <Demo title="Recurring orders · L" code={recurringCode} snippet layout="card"><RecurringCard client:visible={{ rootMargin: '400px' }} /></Demo>
+    <details class="styles">
+      <summary>The layout styles the cards share</summary>
+      <CodeBlock code={cardsCss.trim()} language="css" />
+    </details>
+  </Section>
+
+  <Section title="Optional cards" id="optional">
+    <p class="prose">
+      Five more modules can join the overview, from New element while editing or from <a href="/patterns/customize/">Customize overview</a>:
+      Invoices, Credit notes, Notifications, Latest documents and Scheduled orders. They come in one size, L
+      ({gridMetrics.heights.l} px), and are built like the six: a title, a list that scrolls between header and footer, and
+      a link to their page. A new module goes to the foot of the shortest column.
+    </p>
+    <SpecimenFigure title="Invoices · L">
+      <p class="prose optional-note">The latest invoices, newest first: date, number, the order it bills and the customer, each with a download button.</p>
+      <div class="edit-card optional-specimen" data-size="L"><div class="edit-body"><div class="edit-scale"><Invoices client:visible={{ rootMargin: '400px' }} /></div></div></div>
+    </SpecimenFigure>
+    <SpecimenFigure title="Credit notes · L">
+      <p class="prose optional-note">Credits issued to the account: date, number, the order and the reason, such as “Damaged pallets” or “Late delivery”.</p>
+      <div class="edit-card optional-specimen" data-size="L"><div class="edit-body"><div class="edit-scale"><Credits client:visible={{ rootMargin: '400px' }} /></div></div></div>
+    </SpecimenFigure>
+    <SpecimenFigure title="Notifications · L">
+      <p class="prose optional-note">Delivery alerts and updates by day and time: arrived, left its origin, and the delayed 04-127C with its red mark.</p>
+      <div class="edit-card optional-specimen" data-size="L"><div class="edit-body"><div class="edit-scale"><Notifications client:visible={{ rootMargin: '400px' }} /></div></div></div>
+    </SpecimenFigure>
+    <SpecimenFigure title="Latest documents · L">
+      <p class="prose optional-note">Documents grouped by order, each group with its count (“4 DOCS”) and its date; a group opens to list the files with a download button each.</p>
+      <div class="edit-card optional-specimen" data-size="L"><div class="edit-body"><div class="edit-scale"><Documents client:visible={{ rootMargin: '400px' }} /></div></div></div>
+    </SpecimenFigure>
+    <SpecimenFigure title="Scheduled orders · L">
+      <p class="prose optional-note">Upcoming orders grouped by day, each day with its count and total in pallets; a day opens to list its orders.</p>
+      <div class="edit-card optional-specimen" data-size="L"><div class="edit-body"><div class="edit-scale"><Scheduled client:visible={{ rootMargin: '400px' }} /></div></div></div>
+    </SpecimenFigure>
+  </Section>
+
+  <Section title="Sizes" id="sizes">
+    <p class="prose">
+      In the overview a card is {gridMetrics.heights.s}, {gridMetrics.heights.m}, {gridMetrics.heights.l} or
+      {' '}{gridMetrics.heights.xl} px high and as wide as its column. Each card is designed for the sizes where its content
+      reads well, and offers only those when people edit the overview. A larger size shows more of the same content,
+      never different content.
+    </p>
+    {sizeDemos.map(({ id, title, code }) => (
+      <Demo title={title} code={code} layout="wide"><CardSizes card={id} client:visible={{ rootMargin: '400px' }} /></Demo>
+    ))}
+  </Section>
+
+  <Section title="States" id="states">
+    <p class="prose">
+      At rest a card is a region with its own controls. While the overview is edited it gains a dashed edge, a handle
+      to move it, a button to remove it and a handle to resize it; it lifts while it is dragged and leaves a drop
+      placeholder where it will land. The live version is in <a href="/patterns/editing/#desktop">Editing the overview</a>.
+    </p>
+    <SpecimenFigure title="A card while the overview is edited, in light and dark">
+      <ThemePair label="The states of a card while the overview is edited, in light and dark"><CardStates /></ThemePair>
+    </SpecimenFigure>
+    <ul class="prose states-notes">
+      <li><strong>Edit</strong>: a 1 px dashed edge in accent. The handles are pills of 36 × 16 px with an accent ring on the card’s surface; remove is a 22 px ring in danger outside the top end corner. Each is a button with a name: “Move Orders”, “Remove Orders from the overview”, “Resize Orders”.</li>
+      <li><strong>Hover and focus</strong> fill the handle with accent and turn its icon to on-accent; remove fills with danger.</li>
+      <li><strong>Lifted</strong>: the card rises to elevation 4 at 103 % and loses its dashed edge, and its move handle stays solid while it is held.</li>
+      <li><strong>Drop placeholder</strong>: the slot the card leaves, as tall as the card, with a dashed accent edge on the accent container.</li>
+      <li><strong>Resizing</strong> steps through the sizes the card offers, never in between. A label over the handle names the size and its height, and says when the columns end level.</li>
+    </ul>
+    <SpecimenFigure title="The unit menu and the card link"><CardPartStates /></SpecimenFigure>
+  </Section>
+
+  <Section title="Rules" id="rules">
+    <ul class="prose">
+      <li><strong>A figure first.</strong> The summary says the one number someone opens the overview for; the content explains it.</li>
+      <li><strong>Figures align.</strong> They use tabular numerals, and a figure keeps its unit beside it: 1,420 plt, never a bare 1,420.</li>
+      <li><strong>Status in words.</strong> Rows show state with the Status component, a dot and a word, never color alone.</li>
+      <li><strong>A card summarizes; the page acts.</strong> Long tasks open their panel or page; the card keeps at most one action.</li>
+      <li><strong>Header and footer stay put.</strong> When content does not fit a size, it scrolls between them: a list marked with CardScroll gives way first (the deliveries of a day, the products to reorder), and the whole content scrolls only if that is not enough. A fade at the edge says there is more; a thin indicator shows while scrolling.</li>
+      <li><strong>Days of another month are not shown</strong> in a card’s month grid: their cells stay empty. The week strip runs on across months, since the chosen day always sits in its middle.</li>
+      <li><strong>A card that opens grows.</strong> The month view of a calendar and the payment calendar of Balance take the height they need; they fold back to the card’s size.</li>
+      <li><strong>Rows open their details beside the overview.</strong> View, New order and Reorder open a side panel; the row whose details are open stays marked.</li>
+    </ul>
+  </Section>
+
+  <DoDont page="cards" />
+
+  <Section title="Accessibility" id="accessibility">
+    <A11yTables entry="card" />
+    <h3 class="notes">Notes</h3>
+    <ul class="prose">
+      <li>Buttons repeated in rows carry names that say what they act on: “View delivery 04-127C”, not “View” six times.</li>
+      <li>What changes when a step button is used is announced: the day of a delivery list, the due date in Balance, the month in Daily shipments.</li>
+      <li>The faded next day in Deliveries (XL, and the month view) is a preview: it is hidden from assistive technology and takes no focus.</li>
+      <li>In the week strip only the chosen day is in the tab order; the arrow keys move the day and focus follows it. Each day is named in full: “Saturday, May 16, no deliveries”.</li>
+      <li>Where the same card shows in several sizes, as on this page, each copy is named with its size, so no two regions share a name.</li>
+      <li>See <a href="/patterns/charts/#accessibility">Charts</a> for the charts inside the cards.</li>
+    </ul>
+  </Section>
+
+  <Section title="Built with" id="built-with">
+    <p class="prose">
+      The cards are built from <a href="/components/card/">Card</a>, <a href="/components/card-link/">Card link</a>,
+      <a href="/components/card-scroll/">Card scroll</a> and <a href="/components/unit-menu/">Unit menu</a>, with
+      <a href="/components/tick-bar/">Tick bar</a>, <a href="/components/ring-chart/">Ring chart</a>,
+      <a href="/components/trend-chart/">Trend chart</a> and <a href="/components/chart-legend/">Chart legend</a>. Each
+      page has its API.
+    </p>
+  </Section>
+</Docs>
+
+<style>
+  .optional-note {
+    margin-block-end: var(--sonar-space-16);
+  }
+
+  .optional-specimen {
+    width: min(370px, 100%);
+  }
+</style>
+
+<style>
+  .notes {
+    margin: var(--sonar-space-28) 0 var(--sonar-space-8);
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+  }
+
+  .sub {
+    margin: var(--sonar-space-40) 0 var(--sonar-space-16);
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+  }
+
+  .states-notes {
+    margin-block: var(--sonar-space-20);
+  }
+
+  .styles {
+    border-radius: var(--sonar-shape-corner-large);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  .styles summary {
+    padding: var(--sonar-space-12) var(--sonar-space-20);
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-label-md);
+    cursor: pointer;
+  }
+
+  .styles :global(.code-block) {
+    max-width: none;
+    margin: 0 var(--sonar-space-8) var(--sonar-space-8);
+  }
+</style>

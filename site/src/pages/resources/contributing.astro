@@ -1,0 +1,41 @@
+---
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import Docs from '../../layouts/Docs.astro'
+---
+
+<Docs title="Contributing" description="How tokens and components of the Orbex Sonar-DB Design System are proposed, built, tested and released.">
+  <PageHeader
+    title="Contributing"
+    lead="The system grows from needs in the product, not from ideas about it. Every change starts with where it is used, reuses what exists when it nearly fits, and arrives with its tests and its documentation."
+  />
+
+  <Section title="A token" id="tokens">
+    <ol class="prose">
+      <li>Start from the need: where the value is used and which existing role nearly fits.</li>
+      <li>Prefer reusing a role. Add one only when the purpose is new, not when the color is.</li>
+      <li>Edit the token source in <code>packages/tokens/src</code>, in the W3C Design Tokens format, then run <code>npm test</code>: contrast is checked in both themes.</li>
+      <li>Describe the token in its <code>$description</code>: this site and <code>tokens.json</code> are generated from it.</li>
+      <li>Renaming or removing a token: mark the old one <code>$deprecated</code> with what to use instead, and keep it for one minor release.</li>
+    </ol>
+  </Section>
+
+  <Section title="A component" id="components">
+    <ol class="prose">
+      <li>Native HTML first. Reach for Base UI only for behavior the platform does not offer everywhere: positioning, focus management, typeahead.</li>
+      <li>One folder in <code>packages/components/src</code>: the component, its <code>index.ts</code> and one <code>styles.css</code> in the <code>sonar.components</code> layer, styled with role tokens only.</li>
+      <li>Document every prop in its JSDoc: the API tables, <code>api.json</code> and <code>llms.txt</code> are read from it.</li>
+      <li>Test roles, names, keyboard and states with Testing Library, and run axe on what it renders.</li>
+      <li>Stay within 3 KB gzipped, script and styles. A larger budget is named in the build with its reason.</li>
+      <li>Add its page under Components: examples, sizes, variants and states, do and don’t, accessibility and its keyboard table in <code>site/src/lib/a11y.ts</code>.</li>
+    </ol>
+  </Section>
+
+  <Section title="Releasing" id="releasing">
+    <ul class="prose">
+      <li>Every change carries a changeset that says what it adds, changes, fixes or deprecates. Both packages are released together, under one version.</li>
+      <li>The <a href="/resources/changelog/">changelog</a> is written for the people who use the system: what they can now do, what behaves differently and what to replace.</li>
+      <li>A release is cut only when the tests, the type check, the size budgets and the contrast contract all pass.</li>
+    </ul>
+  </Section>
+</Docs>

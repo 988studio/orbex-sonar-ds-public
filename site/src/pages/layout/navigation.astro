@@ -1,0 +1,159 @@
+---
+import NavigationSpecimen from '../../components/NavigationSpecimen.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import TokenTable from '../../components/TokenTable.astro'
+import Docs from '../../layouts/Docs.astro'
+import { gridMetrics as metrics, measure } from '../../lib/layout-metrics.ts'
+import { designedOverview, layoutFor } from '../../lib/overview-grid.ts'
+import { token } from '../../lib/tokens.ts'
+
+const layout = (count: number) => layoutFor(count, designedOverview, metrics)
+const touchTarget = measure('layout.touch-target')
+
+const navigationTokens = [
+  token('layout.sidebar'),
+  token('layout.rail'),
+  token('layout.drawer'),
+  token('layout.bar.top.compact'),
+  token('layout.bar.top.medium'),
+  token('layout.bar.bottom'),
+  token('layout.bar.footer'),
+  token('layout.touch-target'),
+]
+---
+
+<Docs title="Navigation by device" description="Where Sonar-DB navigation and panels live on phones, tablets and desktops, and how they behave.">
+  <PageHeader
+    title="Navigation by device"
+    lead="The same destinations in every size class, placed where the hand or the pointer already is: a bottom bar on phones, a rail on tablets, a sidebar on desktops. Panels follow the same logic."
+  />
+
+  <Section title="Phones" id="phones">
+    <div class="pair">
+      <NavigationSpecimen kind="bar" sizeClass="compact" width={390} height={844} columns={layout(1)} maxZoom={0.62} label="Compact, 390 × 844" />
+      <ul class="prose">
+        <li>
+          <strong>Bottom app bar</strong>, {metrics.bottomBar} px plus the safe area: Alerts, Assistant, Edit, Account and
+          Menu, at the end. Alerts carries the count of new notices; a red dot on Menu says something inside it needs a
+          look.
+        </li>
+        <li>
+          <strong>Menu opens the whole sidebar as a drawer</strong> from the left, {measure('layout.drawer')} px wide and
+          never more than 84% of the window, over a scrim. Choosing a destination or touching the scrim closes it.
+        </li>
+        <li>
+          <strong>Panels are bottom sheets</strong> with a handle, from under the top bar: details, new orders,
+          notifications and the assistant. There is no scrim. They close by swiping down from the handle or the header,
+          with the close button, or with Escape.
+        </li>
+        <li>
+          <strong>The top bar is compact</strong>, {measure('layout.bar.top.compact')} px: the brand, All accounts and
+          search. Search opens across the whole bar, with Cancel. The page title moves to a header at the top of the page.
+        </li>
+      </ul>
+    </div>
+  </Section>
+
+  <Section title="Tablets" id="tablets">
+    <div class="pair">
+      <NavigationSpecimen kind="rail" sizeClass="medium" width={834} height={1194} columns={layout(2)} maxZoom={0.42} label="Medium, 834 × 1194" />
+      <ul class="prose">
+        <li>
+          <strong>A rail</strong>, {metrics.rail} px, always in place: icons only, with the destination’s name on touch
+          and hold.
+        </li>
+        <li>
+          <strong>Expanding the rail opens the full sidebar over the content</strong>, with a scrim. The columns do not
+          move. Choosing a destination or touching the scrim folds it back.
+        </li>
+        <li>
+          <strong>Panels are side sheets</strong> from the right, 402 px, under the top bar and with no scrim: the overview
+          stays in view and the row they came from stays marked. They slide in from the right edge, all the way, on the
+          default spatial spring, and slide back out the same way. They fit from 768 px up, so tablets and desktops share
+          them. All six are in <a href="/patterns/panels/">Patterns › Panels</a>.
+        </li>
+        <li>
+          <strong>The top bar keeps one line.</strong> Search gives up width first, down to 150 px, and its results open
+          toward the left at no less than 320 px.
+        </li>
+      </ul>
+    </div>
+  </Section>
+
+  <Section title="Desktops" id="desktops">
+    <div class="stacked">
+      <NavigationSpecimen kind="sidebar" sizeClass="expanded" width={1440} height={900} columns={layout(3)} maxZoom={0.62} label="Expanded, 1440 × 900. Large and extra-large work the same way, with more columns." />
+      <ul class="prose">
+        <li>
+          <strong>The sidebar sits beside the content</strong>, {metrics.sidebar} px, with labels and account details.
+        </li>
+        <li>
+          <strong>Collapsing it leaves the rail</strong>, {metrics.rail} px, and gives its width to the columns: every
+          card widens, and the cards move with the same spring as the sidebar. The choice is remembered.
+        </li>
+        <li><strong>Panels are side sheets</strong> from the right, under the top bar and with no scrim, as on tablets.</li>
+      </ul>
+    </div>
+  </Section>
+
+  <Section title="Changing size class" id="changing">
+    <ul class="prose">
+      <li>
+        <strong>Navigation changes place at once.</strong> When the window crosses a breakpoint, the sidebar becomes a
+        rail or a bottom bar without animating: motion between two layouts that never coexist explains nothing.
+      </li>
+      <li>
+        <strong>Each class starts from its resting state.</strong> The tablet rail is folded, the phone drawer closed, and
+        a layout edit in progress ends without saving.
+      </li>
+      <li>
+        <strong>One mechanism decides the class:</strong> the breakpoints in the tokens, through CSS media queries or{' '}
+        <code>sizeClasses</code> in scripts. Nothing measures the window on its own.
+      </li>
+    </ul>
+  </Section>
+
+  <Section title="Touch" id="touch">
+    <ul class="prose">
+      <li>
+        Every target is at least {touchTarget} px on touch screens, even where the visible control is smaller: the hit
+        area grows, the drawing does not.
+      </li>
+      <li>
+        Nothing depends on hover. On screens without it (<code>hover: none</code>), tooltips open on touch and the hover
+        highlight does not stick after a tap.
+      </li>
+      <li>
+        Drag handles get a larger hit area, and the handles of two neighboring cards share the gap between them so they
+        never overlap.
+      </li>
+    </ul>
+  </Section>
+
+  <Section title="Tokens" id="tokens">
+    <TokenTable caption="Navigation tokens" tokens={navigationTokens} preview="none" />
+  </Section>
+</Docs>
+
+<style>
+  .pair {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--sonar-space-40);
+    align-items: start;
+  }
+
+  .stacked {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sonar-space-28);
+  }
+
+  @media (width < 840px) {
+    .pair {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--sonar-space-28);
+    }
+  }
+</style>

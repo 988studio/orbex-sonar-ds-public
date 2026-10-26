@@ -1,0 +1,29 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import Links from '../../demos/card/Links.tsx'
+import linksCode from '../../demos/card/Links.tsx?raw'
+import { CardPartStates } from '../../demos/patterns/CardParts.tsx'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+---
+
+<ComponentDoc
+  entry="card-link"
+  lead="The way out of a card: a link to the page the card sums up, with the arrow in a filled circle. It sits at the foot of the card, beside at most one action."
+>
+  <Demo title="Links to the pages of the overview" code={linksCode}><Links /></Demo>
+  <SpecimenFigure slot="specimens" title="At rest, hovered, focused and pressed"><CardPartStates only="link" /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>“Go to” and the name of the page: Go to Orders, Go to Deliveries.</li>
+      <li>One per card, in the footer. Rows open their details; the card link leaves the card.</li>
+      <li>It is a link, not a button: it navigates, opens in a new tab and can be copied.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>The text alone names the destination, so the link reads well in a screen reader’s list of links.</li>
+  </ul>
+</ComponentDoc>

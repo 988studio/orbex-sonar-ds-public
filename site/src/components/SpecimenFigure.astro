@@ -1,0 +1,55 @@
+---
+/**
+ * A specimen of a component: every size, variant or state side by side, on a card like the live examples. It has no
+ * code toggle: it is a picture for reference, and the live examples above carry the code.
+ */
+interface Props {
+  title: string
+}
+
+const { title } = Astro.props
+---
+
+<figure class="specimen-figure">
+  <figcaption>{title}</figcaption>
+  <div class="body"><slot /></div>
+</figure>
+
+<style>
+  .specimen-figure {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    /* The browser's figure margins off; the space above is the section's, between any two of its blocks (24 px), so
+       a specimen keeps its distance from the text before it and from the specimen before it */
+    margin-inline: 0;
+    margin-bottom: 0;
+    border-radius: var(--sonar-shape-corner-large);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  figcaption {
+    padding: var(--sonar-space-16) var(--sonar-space-20) 0;
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  .body {
+    min-width: 0;
+    padding: var(--sonar-space-24) var(--sonar-space-24) var(--sonar-space-28);
+  }
+
+  .body :global(.specimen-frame:focus-visible) {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+    border-radius: var(--sonar-shape-corner-small);
+  }
+
+  @container page (width < 608px) {
+    .body {
+      padding: var(--sonar-space-20) var(--sonar-space-16) var(--sonar-space-24);
+    }
+  }
+</style>

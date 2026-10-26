@@ -1,0 +1,64 @@
+{
+  "type": {
+    "$type": "typography",
+    "$description": "Fourteen roles, named as in Material 3. Sizes are small and steady because the interface is dense with figures; hierarchy comes from weight and color more than from size.",
+    "headline-sm": {
+      "$description": "Amounts in detail panels.",
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": { "value": 26, "unit": "px" }, "fontWeight": "{font.weight.semibold}", "lineHeight": 1.1, "letterSpacing": { "value": -0.26, "unit": "px" } }
+    },
+    "title-lg": {
+      "$description": "Card and panel titles.",
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": { "value": 18, "unit": "px" }, "fontWeight": "{font.weight.semibold}", "lineHeight": 1.2, "letterSpacing": { "value": -0.27, "unit": "px" } }
+    },
+    "title-md": {
+      "$description": "Highlighted figures and section titles inside panels.",
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": { "value": 14, "unit": "px" }, "fontWeight": "{font.weight.semibold}", "lineHeight": 1.4, "letterSpacing": { "value": -0.21, "unit": "px" } }
+    },
+    "title-sm": {
+      "$description": "Summary lines, month names, document numbers.",
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": { "value": 12, "unit": "px" }, "fontWeight": "{font.weight.semibold}", "lineHeight": 1.2, "letterSpacing": { "value": 0, "unit": "px" } }
+    },
+    "body-lg": {
+      "$description": "Dialog and empty-state text.",
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": { "value": 14, "unit": "px" }, "fontWeight": "{font.weight.regular}", "lineHeight": 1.45, "letterSpacing": { "value": 0, "unit": "px" } }
+    },
+    "body-md": {
+      "$description": "Rows, descriptions, list items.",
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": { "value": 12, "unit": "px" }, "fontWeight": "{font.weight.regular}", "lineHeight": 1.33, "letterSpacing": { "value": 0, "unit": "px" } }
+    },
+    "label-lg": {
+      "$description": "Account selector, legend labels.",
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": { "value": 14, "unit": "px" }, "fontWeight": "{font.weight.medium}", "lineHeight": 1.2, "letterSpacing": { "value": 0, "unit": "px" } }
+    },
+    "label-md": {
+      "$description": "Figures in tables and lists, form labels, navigation items. The most used role.",
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": { "value": 12, "unit": "px" }, "fontWeight": "{font.weight.medium}", "lineHeight": 1.2, "letterSpacing": { "value": -0.18, "unit": "px" } }
+    },
+    "label-md-condensed": {
+      "$description": "Weekday initials in calendars and charts.",
+      "$value": { "fontFamily": "{font.family.condensed}", "fontSize": { "value": 12, "unit": "px" }, "fontWeight": "{font.weight.regular}", "lineHeight": 1.2, "letterSpacing": { "value": 0, "unit": "px" } }
+    },
+    "label-sm": {
+      "$description": "Status chips, inline actions such as View, tooltips.",
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": { "value": 11, "unit": "px" }, "fontWeight": "{font.weight.medium}", "lineHeight": 1.2, "letterSpacing": { "value": -0.17, "unit": "px" } }
+    },
+    "button": {
+      "$description": "Filled and outlined buttons.",
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": { "value": 13, "unit": "px" }, "fontWeight": "{font.weight.semibold}", "lineHeight": 1.2, "letterSpacing": { "value": -0.13, "unit": "px" } }
+    },
+    "caption": {
+      "$description": "Units in pills (PLT, KG). Always uppercase.",
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": { "value": 10, "unit": "px" }, "fontWeight": "{font.weight.regular}", "lineHeight": 1.2, "letterSpacing": { "value": 0, "unit": "px" } },
+      "$extensions": { "sonar-ds": { "textTransform": "uppercase" } }
+    },
+    "overline": {
+      "$description": "Section headings in the navigation. Always uppercase.",
+      "$value": { "fontFamily": "{font.family.mono}", "fontSize": { "value": 12, "unit": "px" }, "fontWeight": "{font.weight.medium}", "lineHeight": 1.2, "letterSpacing": { "value": 0, "unit": "px" } },
+      "$extensions": { "sonar-ds": { "textTransform": "uppercase" } }
+    },
+    "data": {
+      "$description": "Chart axes and scales.",
+      "$value": { "fontFamily": "{font.family.mono}", "fontSize": { "value": 10, "unit": "px" }, "fontWeight": "{font.weight.regular}", "lineHeight": 1.2, "letterSpacing": { "value": -0.3, "unit": "px" } }
+    }
+  }
+}

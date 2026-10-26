@@ -1,0 +1,143 @@
+/* Switch: the Material 3 switch drawn after a native checkbox. Off, a small thumb inside an outlined track; on, a
+   larger thumb on the accent track. The thumb grows while pressed. */
+@layer sonar.components {
+  .sonar-switch {
+    display: inline-grid;
+    gap: var(--sonar-space-2);
+    color: var(--sonar-color-text-default);
+  }
+
+  .sonar-switch-main {
+    position: relative;
+    display: inline-flex;
+    gap: var(--sonar-space-12);
+    align-items: center;
+    min-height: 24px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* The input stays in the accessibility tree and keeps the keyboard; it is drawn by the track */
+  .sonar-switch-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: inherit;
+  }
+
+  .sonar-switch-track {
+    position: relative;
+    flex: none;
+    width: 40px;
+    height: 24px;
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-surface-container-low);
+    box-shadow: inset 0 0 0 2px var(--sonar-color-border-control);
+    transition:
+      background-color var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing),
+      box-shadow var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing);
+  }
+
+  .sonar-switch-track::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--sonar-color-fill-faint);
+    transition:
+      inset var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing),
+      width var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing),
+      height var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing),
+      background-color var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing);
+  }
+
+  .sonar-switch-input:active + .sonar-switch-track::after {
+    top: 4px;
+    left: 4px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .sonar-switch-input:checked + .sonar-switch-track {
+    background: var(--sonar-color-accent);
+    box-shadow: none;
+  }
+
+  .sonar-switch-input:checked + .sonar-switch-track::after {
+    top: 3px;
+    left: 19px;
+    width: 18px;
+    height: 18px;
+    background: var(--sonar-color-on-accent);
+  }
+
+  .sonar-switch-input:checked:active + .sonar-switch-track::after {
+    top: 1px;
+    left: 17px;
+    width: 22px;
+    height: 22px;
+  }
+
+  @media (hover: hover) {
+    .sonar-switch-main:hover .sonar-switch-input:not(:disabled) + .sonar-switch-track {
+      background-image: linear-gradient(var(--sonar-color-state-hover), var(--sonar-color-state-hover));
+    }
+  }
+
+  .sonar-switch-input:focus-visible + .sonar-switch-track {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+  }
+
+  .sonar-switch-label {
+    font: var(--sonar-type-label-lg);
+    letter-spacing: var(--sonar-type-label-lg-tracking);
+  }
+
+  /* Aligned with the label, past the track */
+  .sonar-switch-description {
+    padding-left: calc(40px + var(--sonar-space-12));
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-body-md);
+    letter-spacing: var(--sonar-type-body-md-tracking);
+  }
+
+  .sonar-switch:has(.sonar-switch-input:disabled) {
+    color: var(--sonar-color-text-disabled);
+  }
+
+  .sonar-switch-main:has(.sonar-switch-input:disabled) {
+    cursor: default;
+  }
+
+  .sonar-switch:has(.sonar-switch-input:disabled) .sonar-switch-description {
+    color: var(--sonar-color-text-disabled);
+  }
+
+  .sonar-switch-input:disabled + .sonar-switch-track {
+    background: var(--sonar-color-surface-hover);
+    box-shadow: inset 0 0 0 2px var(--sonar-color-border-muted);
+  }
+
+  .sonar-switch-input:disabled + .sonar-switch-track::after {
+    background: var(--sonar-color-text-disabled);
+  }
+
+  @media (pointer: coarse) {
+    .sonar-switch-main {
+      min-height: var(--sonar-layout-touch-target);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sonar-switch-track::after {
+      transition-property: background-color;
+    }
+  }
+}

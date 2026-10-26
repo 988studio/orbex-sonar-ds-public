@@ -1,0 +1,67 @@
+---
+import OrbexMark from './OrbexMark.astro'
+
+interface Props {
+  /** Show “Design system” after the product wordmark (the top bar). The sidebar heads its outline with it instead. */
+  system?: boolean
+}
+
+const { system = true } = Astro.props
+---
+
+<!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/">
+  <OrbexMark size={22} />
+  <span class="wordmark-product">
+    <b>Orbex</b>
+    <small>Sonar-DB</small>
+  </span>
+  {system && <span class="wordmark-system">Design system</span>}
+  <span class="visually-hidden">, home</span>
+</a>
+
+<style>
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sonar-space-6);
+    color: var(--sonar-color-accent);
+    text-decoration: none;
+  }
+
+  /* The words take the accent text role, which passes AA on every surface; the mark keeps the brand fill */
+  .wordmark-product {
+    color: var(--sonar-color-text-accent);
+  }
+
+  /* The product wordmark, as drawn in the application */
+  .wordmark-product {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--sonar-font-family-condensed);
+    font-style: italic;
+    font-weight: var(--sonar-font-weight-semibold);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  b {
+    font-size: 19.8px;
+    font-weight: inherit;
+  }
+
+  small {
+    font-size: 10px;
+  }
+
+  .wordmark-system {
+    margin-left: var(--sonar-space-6);
+    padding-left: var(--sonar-space-12);
+    border-left: 1px solid var(--sonar-color-divider);
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-label-lg);
+    letter-spacing: var(--sonar-type-label-lg-tracking);
+    line-height: 26px;
+  }
+</style>

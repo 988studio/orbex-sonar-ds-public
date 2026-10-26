@@ -1,0 +1,48 @@
+---
+import '../../styles/global.css'
+import '@orbex/sonar-components/styles.css'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import AppDemo from '@orbex/sonar-patterns/app/AppDemo.tsx'
+import Docs from '../../layouts/Docs.astro'
+---
+
+<Docs title="Customize overview" description="Choosing which modules the overview shows: a sheet that hangs from the top bar, with switches, the basic set and predefined layouts.">
+  <PageHeader
+    title="Customize overview"
+    lead="Which modules the overview shows. A sheet hangs from the top bar over a scrim, with a switch per module, the basic set that turns the three essentials on together, and layouts made for a role. Moving and resizing cards belong to Edit layout."
+  />
+
+  <Section title="Try it" id="demo">
+    <p class="prose">
+      Open it from Customize overview in the sidebar’s Support group. Switch a module on and close the sheet: the module
+      goes to the foot of the shortest column and the overview scrolls to it. Save layout keeps the choice; Reset to default goes back to the last saved one.
+    </p>
+    <SpecimenFigure title="Customize overview at 1440 × 980"><AppDemo client:visible open="customize" /></SpecimenFigure>
+  </Section>
+
+  <Section title="Anatomy" id="anatomy">
+    <ul class="prose">
+      <li><strong>Header</strong>: “Customize overview”, one line on what it does, and ×.</li>
+      <li><strong>Basic set</strong>: Orders + Inventory + Shipments, one switch for the three.</li>
+      <li><strong>Modules</strong>: “6 of 11 on” in green, then a switch per module in two columns: the six cards of the default overview and the five <a href="/patterns/cards/#optional">optional cards</a>.</li>
+      <li><strong>Predefined layouts</strong>: a field with the role’s layout, Save layout, and Reset to default.</li>
+    </ul>
+  </Section>
+
+  <Section title="Behavior" id="behavior">
+    <ul class="prose">
+      <li>It is not modal: the top bar stays usable. Escape, ×, a click on the scrim or the sidebar link close it.</li>
+      <li>On tablets it hangs from the top bar the same way; on phones Customize lives in Edit, in the bottom bar.</li>
+      <li>The switches apply at once, so the overview behind the scrim already shows the change.</li>
+    </ul>
+  </Section>
+
+  <Section title="Accessibility" id="accessibility">
+    <ul class="prose">
+      <li>The sheet is a dialog named by its title and described by its first line; focus moves into it and back to where it was when it closes.</li>
+      <li>Each module is a switch labeled with the module’s name, so “Invoices, switch, off” is read as one control.</li>
+    </ul>
+  </Section>
+</Docs>

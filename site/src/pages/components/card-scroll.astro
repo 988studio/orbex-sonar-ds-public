@@ -1,0 +1,27 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Scroll from '../../demos/card/Scroll.tsx'
+import scrollCode from '../../demos/card/Scroll.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+---
+
+<ComponentDoc
+  entry="card-scroll"
+  lead="The part of a card’s content that gives way first when the card’s size leaves no room: it keeps its full height while it fits, and scrolls when it does not, while the rest of the card stays in place."
+>
+  <Demo title="Deliveries in size S: the day’s list scrolls" code={scrollCode} layout="card"><Scroll client:visible /></Demo>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>Wrap the list that can give way: the deliveries of a day, the products to reorder. Never the summary or a chart.</li>
+      <li>One per card. If it is not enough, the card’s whole content scrolls as well.</li>
+      <li>No scrollbar: a fade at the edge that has more, and a thin indicator while scrolling.</li>
+      <li>Label it with what the list is: “Deliveries of May 12”.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>It takes focus only while it scrolls, so a list that fits adds no tab stop.</li>
+  </ul>
+</ComponentDoc>

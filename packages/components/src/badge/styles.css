@@ -1,0 +1,46 @@
+/* Badge: a count in a circle that grows into a pill, or a dot. Figures in the mono face, as everywhere numbers
+   are compared. The solid danger fill keeps white text at 4.5:1 in both themes. */
+@layer sonar.components {
+  /* Positioned, so the text kept for screen readers stays inside the component, even within a scrolling container */
+  .sonar-badge {
+    --_fill: var(--sonar-color-danger-solid);
+    --_ink: var(--sonar-color-on-emphasis);
+
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    box-sizing: border-box;
+    min-width: 20px;
+    height: 20px;
+    padding-inline: var(--sonar-space-6);
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--_fill);
+    color: var(--_ink);
+    font: var(--sonar-font-weight-medium) 11px / 1 var(--sonar-font-family-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+
+  .sonar-badge[data-tone='accent'] {
+    --_fill: var(--sonar-color-accent);
+    --_ink: var(--sonar-color-on-accent);
+  }
+
+  .sonar-badge[data-dot] {
+    min-width: 0;
+    width: 8px;
+    height: 8px;
+    padding: 0;
+  }
+
+  /* The label replaces the bare number for assistive technology; it is never drawn */
+  .sonar-badge-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

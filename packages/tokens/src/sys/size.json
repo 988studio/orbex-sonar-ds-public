@@ -1,0 +1,16 @@
+{
+  "size": {
+    "$type": "dimension",
+    "$description": "Sizes shared by components. The system is dense: controls stay small, and on touch screens their hit area grows to the touch target instead.",
+    "control": {
+      "$description": "Height of buttons, fields and segmented controls.",
+      "small": { "$value": { "value": 28, "unit": "px" }, "$description": "Card actions and toolbars." },
+      "medium": { "$value": { "value": 36, "unit": "px" }, "$description": "Forms, panels and dialogs." }
+    },
+    "icon": {
+      "$description": "Icon box sizes. Icons inherit the color of the text beside them.",
+      "small": { "$value": { "value": 16, "unit": "px" } },
+      "medium": { "$value": { "value": 20, "unit": "px" } }
+    }
+  }
+}

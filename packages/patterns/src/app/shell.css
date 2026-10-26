@@ -1,0 +1,1990 @@
+/* App shell: sidebar, rail, top bar, the phone bars and the drawer
+   Ported from the prototype’s CSS (Orbex · Prototype v38), rule by rule in its cascade order, scoped to .oxa.
+   The prototype’s custom properties resolve to the system’s tokens in app-tokens.css. */
+
+
+/* from overview.css */
+.oxa .side {
+  background:var(--surface-sidebar);
+  box-shadow:var(--shadow-sidebar);
+  height:980px;
+  display:flex;
+  flex-direction:column;
+  padding:0 20px 0 20px;
+}
+.oxa .brand {
+  position:relative;
+  height:var(--top-h);
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:32px;
+}
+.oxa .brand svg {
+  width:22px;
+  height:22px;
+}
+.oxa .brand .wm {
+  display:flex;
+  flex-direction:column;
+  color:var(--accent);
+  font-family:var(--cond);
+  font-style:italic;
+  font-weight:600;
+}
+.oxa .brand .wm b {
+  font-size:19.8px;
+  font-weight:600;
+  letter-spacing:-.02em;
+  line-height:1;
+}
+.oxa .brand .wm small {
+  font-size:10px;
+  letter-spacing:-.02em;
+  line-height:1;
+}
+.oxa .collapse {
+  position:absolute;
+  right:-30px;
+  top:24.5px;
+  box-shadow:0 0 0 1px var(--border-faint);
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:var(--surface-raised);
+  display:grid;
+  place-items:center;
+  color:var(--accent);
+}
+.oxa .collapse .ms {
+  font-size:16px;
+}
+.oxa .nav {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--text-soft);
+  position:relative;
+}
+.oxa .nav .ms {
+  color:var(--text-soft);
+  width:20px;
+  font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20;
+}
+.oxa .nav .ms.f {
+  font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 20;
+}
+.oxa .nav.on::after {
+  content:"";
+  position:absolute;
+  right:-20px;
+  top:0;
+  width:3px;
+  height:33px;
+  background:var(--accent);
+}
+.oxa .nav .badge {
+  line-height:1;
+  border-radius:50%;
+  background:var(--danger);
+  color:var(--on-accent-fixed);
+  display:grid;
+  place-items:center;
+  font-family:var(--mono);
+  letter-spacing:.64px;
+}
+.oxa .side h6 {
+  margin:22px 0 8.8px;
+  font-family:var(--mono);
+  font-size:12px;
+  font-weight:500;
+  color:var(--text-secondary);
+  letter-spacing:0;
+  text-transform:uppercase;
+}
+.oxa .side .spacer {
+  flex:1;
+  min-height:24px;
+}
+.oxa .sup {
+  display:flex;
+  align-items:center;
+  height:24px;
+  color:var(--text);
+}
+.oxa .sup .ms {
+  font-size:13px;
+  color:var(--accent);
+}
+.oxa .viewmode {
+  display:flex;
+  align-items:center;
+  border-top:1px solid var(--border-muted);
+  margin-top:19px;
+  padding:16px 0 17px;
+}
+.oxa .toggle {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:var(--text-secondary);
+}
+.oxa .toggle .ms {
+  font-size:14px;
+}
+.oxa .switch {
+  width:22px;
+  height:12px;
+  border-radius:6px;
+  background:var(--accent);
+  position:relative;
+}
+.oxa .switch::after {
+  content:"";
+  position:absolute;
+  right:1px;
+  top:1px;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--surface-raised);
+}
+.oxa .top {
+  height:var(--top-h);
+  background:var(--surface-raised);
+  display:flex;
+  align-items:center;
+  padding:0 32px 0 var(--gutter);
+  box-shadow:var(--shadow-topbar);
+  position:relative;
+  z-index:4;
+}
+.oxa .user {
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+.oxa .av {
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:var(--accent);
+  color:var(--on-accent-fixed);
+  display:grid;
+  place-items:center;
+  font-size:18px;
+  font-weight:300;
+  letter-spacing:-.015em;
+}
+.oxa .user .name {
+  color:var(--text-strong);
+  line-height:1.15;
+}
+.oxa .user .role {
+  color:var(--text-meta);
+  margin-top:2px;
+}
+.oxa .top .right {
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+}
+.oxa .accts {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:var(--accent);
+  padding-right:14px;
+}
+.oxa .accts .ms {
+  color:var(--text-strong);
+  font-size:22px;
+}
+.oxa .vr {
+  height:32px;
+  margin-right:18px;
+}
+.oxa .circ {
+  height:40px;
+  display:grid;
+  place-items:center;
+  position:relative;
+}
+.oxa .circ .ms {
+  font-size:22px;
+}
+.oxa .circ .dot {
+  position:absolute;
+  top:9px;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--danger);
+}
+.oxa .search {
+  height:39px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:0 12px;
+  color:var(--text-soft);
+  /* 1.1: a SearchField variant="top-bar" inside the pill takes the pill's soft text for its placeholder */
+  --sonar-search-placeholder-color:var(--text-soft);
+  line-height:34px;
+  letter-spacing:-.02em;
+}
+.oxa .search .ms {
+  font-size:22px;
+  color:var(--text);
+}
+.oxa .sup.t11m, .oxa .viewmode.t11m {
+  font-size:12px;
+}
+.oxa .accts .achev {
+  display:block;
+  width:14px;
+  height:14px;
+  fill:none;
+  stroke-width:1.6;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  transform:translateY(1px);
+}
+.oxa .nav, .oxa .sup, .oxa .circ {
+  transition:color .16s cubic-bezier(.23,1,.32,1),background-color .16s cubic-bezier(.23,1,.32,1),border-color .16s cubic-bezier(.23,1,.32,1),box-shadow .16s cubic-bezier(.23,1,.32,1),transform .16s cubic-bezier(.23,1,.32,1);
+}
+.oxa .nav:hover {
+  color:var(--text-strong);
+}
+.oxa .circ {
+  background:transparent;
+  color:var(--accent);
+  width:30px;
+  margin-right:9px;
+}
+.oxa .circ .dot {
+  right:7px;
+  box-shadow:0 0 0 1.5px var(--surface-raised);
+}
+.oxa .search {
+  margin-left:4px;
+}
+.oxa .accts .achev {
+  stroke:var(--accent);
+}
+.oxa .vr {
+  display:none;
+}
+.oxa .nav .badge {
+  padding:0 0 0 .7px;
+}
+.oxa .nav .badge>span {
+  display:block;
+  line-height:1;
+}
+@supports (text-box:trim-both cap alphabetic) {
+  .oxa .nav .badge>span {
+    text-box:trim-both cap alphabetic;
+  }
+}
+.oxa .sup .sico {
+  width:13px;
+  height:13px;
+  fill:var(--accent);
+  flex:none;
+}
+.oxa .sup .ms.qm {
+  font-variation-settings:"FILL" 0,"wght" 600,"GRAD" 0,"opsz" 20;
+}
+[data-theme="dark"] .oxa .switch:where(:not([data-theme="dark"] [data-theme="light"] *))::after {
+  right:auto;
+  left:1px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .oxa .switch:where(:not([data-theme="light"] *))::after {
+    right:auto;
+    left:1px;
+  }
+}
+[data-theme="dark"] .oxa .toggle .ms:first-child:where(:not([data-theme="dark"] [data-theme="light"] *)) {
+  font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 20;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .oxa .toggle .ms:first-child:where(:not([data-theme="light"] *)) {
+    font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 20;
+  }
+}
+[data-theme="dark"] .oxa .toggle .ms.f:where(:not([data-theme="dark"] [data-theme="light"] *)) {
+  font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .oxa .toggle .ms.f:where(:not([data-theme="light"] *)) {
+    font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20;
+  }
+}
+.oxa .switch {
+  cursor:pointer;
+}
+.oxa.s-col .side {
+  padding:0 20px;
+  align-items:stretch;
+}
+.oxa.s-col .brand {
+  justify-content:flex-start;
+}
+.oxa.s-col .brand svg {
+  flex:none;
+  margin-left:-1px;
+}
+.oxa.s-col .collapse {
+  right:-30px;
+}
+.oxa.s-col .nav .ms {
+  font-size:20px;
+  text-align:center;
+}
+.oxa.s-col .side h6 {
+  font-size:12px;
+}
+.oxa.s-col .nav:hover .ms, .oxa.s-col .nav.hov .ms {
+  color:var(--text-strong);
+}
+.oxa .stip {
+  position:absolute;
+  left:calc(100% + 30px);
+  top:50%;
+  transform:translateY(-50%);
+  height:28px;
+  padding:0 11px;
+  align-items:center;
+  white-space:nowrap;
+  background:var(--surface-inverse);
+  color:var(--text-inverse);
+  font-size:12px;
+  filter:var(--pop-shadow);
+  z-index:7;
+}
+.oxa .stip::before {
+  content:"";
+  position:absolute;
+  left:-4px;
+  top:50%;
+  width:8px;
+  height:8px;
+  background:inherit;
+  transform:translateY(-50%) rotate(45deg);
+}
+.oxa.s-col .viewmode .toggle::before, .oxa.s-col .viewmode .toggle::after {
+  position:absolute;
+  top:50%;
+  width:3px;
+  height:3px;
+  margin-top:-1.5px;
+  border-radius:50%;
+}
+.oxa.s-col .viewmode .toggle::before {
+  left:-7px;
+  background:var(--viewmode-moon-dot);
+}
+.oxa.s-col .viewmode .toggle::after {
+  right:-7px;
+  background:var(--viewmode-sun-dot);
+}
+.oxa.s-col .viewmode .toggle::before, .oxa.s-col .viewmode .toggle::after {
+  transition:width .2s cubic-bezier(.23,1,.32,1),height .2s cubic-bezier(.23,1,.32,1),margin .2s cubic-bezier(.23,1,.32,1),left .2s cubic-bezier(.23,1,.32,1),right .2s cubic-bezier(.23,1,.32,1);
+}
+[data-theme="light"] .oxa.s-col .viewmode .toggle:where(:not([data-theme="light"] [data-theme="dark"] *))::after {
+  width:5px;
+  height:5px;
+  margin-top:-2.5px;
+  right:-9px;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .oxa.s-col .viewmode .toggle:where(:not([data-theme="dark"] *))::after {
+    width:5px;
+    height:5px;
+    margin-top:-2.5px;
+    right:-9px;
+  }
+}
+[data-theme="dark"] .oxa.s-col .viewmode .toggle:where(:not([data-theme="dark"] [data-theme="light"] *))::before {
+  width:5px;
+  height:5px;
+  margin-top:-2.5px;
+  left:-9px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .oxa.s-col .viewmode .toggle:where(:not([data-theme="light"] *))::before {
+    width:5px;
+    height:5px;
+    margin-top:-2.5px;
+    left:-9px;
+  }
+}
+.oxa .stip {
+  display:none;
+}
+.oxa.s-col .nav:hover .stip, .oxa.s-col .nav.hov .stip {
+  display:flex;
+}
+.oxa.s-col .nav {
+  position:relative;
+}
+.oxa .sgrp {
+  margin-left:4px;
+  display:flex;
+  align-items:center;
+}
+.oxa .sgrp .search {
+  width:334px;
+  flex:none;
+  white-space:nowrap;
+}
+.oxa .lbtn {
+  position:relative;
+  flex:none;
+  margin-left:-6px;
+  margin-right:8px;
+  min-width:32px;
+  height:32px;
+  cursor:pointer;
+  background:none;
+  border:0;
+  padding:0 6px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  --lb-bg:var(--accent);
+  --lb-fg:var(--on-accent-fixed);
+  --lb-ring:transparent;
+}
+.oxa .lbtn.on {
+  --lb-bg:var(--accent);
+}
+.oxa .lbtn:hover, .oxa .lbtn:focus-visible, .oxa .lbtn.hov {
+  z-index:6;
+}
+.oxa .lbtn {
+  transition:margin-left .22s cubic-bezier(.23,1,.32,1);
+}
+.oxa .lbtn:hover, .oxa .lbtn:focus-visible, .oxa .lbtn.hov {
+  margin-left:4px;
+}
+.oxa .lbtn .lb {
+  position:relative;
+  height:20px;
+  display:flex;
+  align-items:center;
+  color:var(--lb-fg);
+  transition:color .16s cubic-bezier(.23,1,.32,1);
+}
+.oxa .lbtn .lb::before {
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:20px;
+  background:var(--lb-bg);
+  transition:inset .2s cubic-bezier(.23,1,.32,1),background-color .16s cubic-bezier(.23,1,.32,1),box-shadow .2s cubic-bezier(.23,1,.32,1);
+}
+.oxa .lbtn .lt {
+  position:relative;
+  max-width:0;
+  overflow:hidden;
+  white-space:nowrap;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:-.15px;
+  line-height:20px;
+  padding-left:0;
+  transition:max-width .22s cubic-bezier(.23,1,.32,1),padding .22s cubic-bezier(.23,1,.32,1);
+}
+.oxa .lbtn svg {
+  position:relative;
+  display:block;
+  width:20px;
+  height:20px;
+  flex:none;
+}
+.oxa .lbtn rect {
+  fill:currentColor;
+  transition:opacity .16s cubic-bezier(.23,1,.32,1);
+}
+.oxa .lbtn .t1 {
+  opacity:.62;
+}
+.oxa .lbtn:hover .lb::before, .oxa .lbtn:focus-visible .lb::before, .oxa .lbtn.hov .lb::before {
+  inset:-6px -10px -6px -10px;
+  background:var(--lb-bg);
+}
+.oxa .lbtn:hover .lt, .oxa .lbtn:focus-visible .lt, .oxa .lbtn.hov .lt {
+  max-width:120px;
+  padding-left:2px;
+  padding-right:8px;
+}
+.oxa .lbtn:active .lb::before {
+  inset:-4px -7px -4px -9px;
+  transition-duration:.08s;
+}
+.oxa .lbtn .lb::after {
+  content:"";
+  position:absolute;
+  right:-2px;
+  top:-3px;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--danger);
+  box-shadow:0 0 0 1.5px var(--surface-raised);
+  transform:scale(0);
+  transition:transform .2s cubic-bezier(.23,1,.32,1);
+}
+.oxa .lbtn.on .lb::after {
+  transform:scale(1);
+}
+.oxa .lbtn.on:hover .lb::after, .oxa .lbtn.on:focus-visible .lb::after, .oxa .lbtn.on.hov .lb::after {
+  transform:scale(0);
+}
+.oxa .lbtn .ck {
+  position:relative;
+  max-width:0;
+  overflow:hidden;
+  font-size:16px;
+  line-height:20px;
+  font-variation-settings:"FILL" 0,"wght" 600,"GRAD" 0,"opsz" 20;
+  opacity:0;
+  margin-right:0;
+  transition:max-width .22s cubic-bezier(.23,1,.32,1),opacity .16s cubic-bezier(.23,1,.32,1),margin .22s cubic-bezier(.23,1,.32,1);
+}
+.oxa .lbtn.ok .ck {
+  max-width:18px;
+  opacity:1;
+  margin-right:6px;
+}
+.oxa .lbtn.ok .lt {
+  padding-right:3px;
+}
+.oxa .lbtn:focus-visible {
+  outline:none;
+}
+.oxa .lbtn:focus-visible .lb::before {
+  box-shadow:0 0 0 2px var(--surface-page),0 0 0 3px var(--accent);
+}
+.oxa .sup:hover .ms, .oxa .sup:hover .sico, .oxa .sup:focus-visible .ms, .oxa .sup:focus-visible .sico {
+  transform:translateX(-4px);
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .sup .ms, .oxa .sup .sico {
+    transition:none;
+  }
+}
+
+/* from screens.css */
+.oxa .circ.on {
+  background:transparent!important;
+}
+.oxa .circ.on::before {
+  content:"";
+  position:absolute;
+  left:0;
+  top:5px;
+  width:30px;
+  height:30px;
+  border-radius:50%;
+}
+.oxa .circ.on .ms {
+  position:relative;
+}
+.oxa .sup.on {
+  color:var(--accent);
+  font-weight:600;
+}
+
+/* from modules.css */
+.oxa .success .top {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.oxa .nit.al {
+  background:var(--notice-alert-bg);
+}
+.oxa .nit.al .nic {
+  background:var(--danger);
+}
+.oxa .nit.al .nic {
+  color:var(--on-accent-fixed);
+}
+.oxa .nit.al .nic .ms {
+  font-size:15px;
+  font-variation-settings:"FILL" 0,"wght" 600,"GRAD" 0,"opsz" 20;
+}
+.oxa .nit.al .help .nic.or {
+  background:var(--warning);
+  color:var(--on-accent-fixed);
+}
+
+/* from app.css */
+.oxa .nit.al {
+  cursor:pointer;
+}
+.oxa .circ:hover {
+  background:transparent;
+}
+.oxa .circ::before {
+  content:"";
+  position:absolute;
+  left:0;
+  top:5px;
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:transparent;
+  transition:background-color var(--d-fast) var(--ease-out);
+}
+.oxa .circ:hover::before {
+  background:var(--state-hover);
+}
+.oxa .circ.on::before {
+  background:var(--state-pressed);
+}
+.oxa .circ .ms {
+  position:relative;
+}
+.oxa .circ.chat .ms {
+  font-size:19px;
+}
+.oxa .sgrp .search {
+  overflow:visible;
+  position:relative;
+  cursor:text;
+}
+.oxa .search .sinput {
+  flex:1;
+  min-width:0;
+  height:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--text-strong);
+  font:inherit;
+  line-height:39px;
+  letter-spacing:-.02em;
+  padding:0;
+}
+.oxa .search .sinput::placeholder {
+  color:var(--text-soft);
+  opacity:1;
+}
+.oxa .search:focus-within {
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 55%,transparent);
+}
+.oxa .search .sclear {
+  border:0;
+  background:none;
+  padding:0;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  color:var(--text-soft);
+}
+.oxa .search .sclear .ms {
+  font-size:18px;
+}
+.oxa .collapse .stip {
+  display:none;
+}
+.oxa .collapse:hover .stip, .oxa .collapse:focus-visible .stip {
+  display:flex;
+}
+.oxa .collapse .stip {
+  left:auto;
+  right:-6px;
+  top:calc(100% + 9px);
+  transform:none;
+}
+.oxa .collapse .stip::before {
+  left:auto;
+  right:12px;
+  top:-4px;
+  transform:rotate(45deg);
+}
+.oxa.s-col .collapse .stip {
+  left:calc(100% + 10px);
+  right:auto;
+  top:50%;
+  transform:translateY(-50%);
+}
+.oxa.s-col .collapse .stip::before {
+  left:-4px;
+  right:auto;
+  top:50%;
+  transform:translateY(-50%) rotate(45deg);
+}
+.oxa .collapse .stip {
+  background:var(--surface-inverse);
+  filter:var(--pop-shadow);
+  box-shadow:none;
+  font-family:var(--sans);
+  font-size:12px;
+  height:auto;
+}
+.oxa .collapse .stip::before {
+  display:none;
+}
+.oxa .collapse .stip {
+  font-weight:400;
+  letter-spacing:-.2px;
+}
+.oxa .collapse .stip {
+  align-items:flex-start;
+  text-align:left;
+  padding:10px 12px 10px;
+  line-height:1.35;
+  white-space:nowrap;
+}
+
+/* from m3e.css */
+.oxa .search {
+  background:var(--surface-search);
+  border-radius:var(--r-search);
+  box-shadow:var(--shadow-search);
+}
+.oxa .nav.on {
+  color:var(--on-accent-tonal);
+  font-weight:600;
+}
+.oxa .nav.on::after {
+  display:none;
+}
+.oxa .nav.on .ms {
+  color:var(--on-accent-tonal);
+}
+.oxa .circ {
+  border-radius:50%;
+}
+.oxa .collapse .stip {
+  border-radius:10px;
+  color:color-mix(in srgb,var(--text-inverse) 72%,transparent);
+}
+.oxa .nav {
+  height:36px;
+}
+.oxa.s-col .side h6 {
+  margin-bottom:8.8px;
+}
+.oxa.s-col .nav .rip {
+  display:none;
+}
+.oxa.s-col .nav:focus-visible .stip, .oxa.s-col .sup:hover .stip, .oxa.s-col .sup:focus-visible .stip {
+  display:flex;
+}
+.oxa.s-col .nav .stip, .oxa.s-col .sup .stip {
+  left:calc(100% + 30px);
+  right:auto;
+  top:50%;
+  transform:translateY(-50%);
+  height:auto;
+  padding:10px 12px;
+  line-height:1.35;
+  border-radius:10px;
+  font-family:var(--sans);
+  font-size:12px;
+  font-weight:400;
+  letter-spacing:-.2px;
+  white-space:nowrap;
+  background:var(--surface-inverse);
+  color:color-mix(in srgb,var(--text-inverse) 72%,transparent);
+  filter:var(--pop-shadow);
+  box-shadow:none;
+  pointer-events:none;
+}
+.oxa.s-col .nav .stip::before, .oxa.s-col .sup .stip::before {
+  display:none;
+}
+.oxa.s-col .sup:hover .ms, .oxa.s-col .sup:hover .sico, .oxa.s-col .sup:focus-visible .ms, .oxa.s-col .sup:focus-visible .sico {
+  transform:scale(1.35);
+}
+.oxa .brand svg {
+  flex:none;
+  margin-left:-1px;
+}
+
+/* from cards/cards.css */
+.oxa .nit.al:focus-visible {
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+/* from polish.css */
+.oxa .side {
+  overflow:visible;
+  position:relative;
+  z-index:6;
+}
+.oxa .side .slbl, .oxa .side .viewmode>span:first-child, .oxa .side .brand .wm {
+  flex:1 1 auto;
+  min-width:0;
+  overflow:hidden;
+  white-space:nowrap;
+  opacity:1;
+  transition:opacity 220ms var(--fx-def) 140ms;
+}
+.oxa .side .brand .wm {
+  flex:0 1 auto;
+  /* 1.1.1 (988©STUDIO review 20261026-1337): the italic M of «TM» leans 2 px past the end of its own text box (measured at
+     1440 and 390), and this box clips to fade the logo when the sidebar folds. 3 px of room inside the clip, so the M
+     is whole and the fade is unchanged */
+  padding-inline-end:3px;
+}
+.oxa.s-col .side .slbl, .oxa.s-col .side .viewmode>span:first-child, .oxa.s-col .side .brand .wm {
+  display:flex;
+  width:auto;
+  color:inherit;
+  opacity:0;
+  transition:opacity 90ms linear;
+}
+.oxa.s-col .side .viewmode>span:first-child {
+  display:block;
+}
+.oxa.s-col .side .nav {
+  font-size:14px;
+}
+.oxa.s-col .side .sup {
+  font-size:12px;
+}
+.oxa .side .collapse {
+  transition:right var(--side-d) var(--side-e),box-shadow var(--fx-def-d) var(--fx-def),background-color var(--fx-def-d) var(--fx-def);
+}
+.oxa .side .nav {
+  margin:0 -6px 0 -10px;
+  padding:0 6px 0 10px;
+  background:none;
+  border-radius:0;
+  overflow:visible;
+  isolation:isolate;
+  justify-content:flex-start;
+  transition:margin var(--side-d) var(--side-e),padding var(--side-d) var(--side-e),gap var(--side-d) var(--side-e),color var(--fx-def-d) var(--fx-def);
+}
+.oxa.s-col .side .nav {
+  margin:0;
+  padding:0;
+  gap:0;
+}
+.oxa .side .nav .rip {
+  display:none;
+}
+.oxa .side .nav::before {
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:0;
+  top:0;
+  right:auto;
+  bottom:auto;
+  width:200px;
+  height:36px;
+  margin:0;
+  border-radius:18px;
+  background:transparent;
+  box-shadow:none;
+  transition:left var(--side-d) var(--side-e),top var(--side-d) var(--side-e),width var(--side-d) var(--side-e),height var(--side-d) var(--side-e),border-radius var(--side-d) var(--side-e),background-color var(--sp-fast-d) var(--sp-fast);
+}
+.oxa.s-col .side .nav::before {
+  left:-5px;
+  top:3px;
+  width:30px;
+  height:30px;
+  border-radius:9px;
+}
+.oxa .side .nav.on::before {
+  background:var(--accent-tonal);
+}
+.oxa .side .nav:not(.on):hover::before {
+  background:color-mix(in srgb,var(--text) 8%,transparent);
+}
+.oxa .side .nav:not(.on):active::before {
+  background:color-mix(in srgb,var(--text) 14%,transparent);
+}
+.oxa .side .nav:focus-visible {
+  outline:none;
+}
+.oxa .side .nav:focus-visible::before {
+  box-shadow:0 0 0 2px var(--accent);
+}
+.oxa .side .nav .badge {
+  position:absolute;
+  margin:0;
+  left:173.5px;
+  top:8px;
+  width:20px;
+  height:20px;
+  font-size:10.23px;
+  scale:1;
+  z-index:1;
+  box-shadow:0 0 0 0 var(--surface-sidebar);
+  transition:left var(--side-d) var(--side-e),top var(--side-d) var(--side-e),scale var(--side-d) var(--side-e),font-size var(--side-d) var(--side-e),box-shadow var(--side-d) var(--side-e);
+}
+.oxa.s-col .side .nav .badge {
+  left:12px;
+  top:1.5px;
+  scale:.8;
+  font-size:11.25px;
+  box-shadow:0 0 0 2.5px var(--surface-sidebar);
+}
+.oxa .side h6 {
+  position:relative;
+  height:14.4px;
+  line-height:1.2;
+  overflow:hidden;
+  white-space:nowrap;
+  margin-left:0;
+  margin-right:0;
+  background:none;
+  transition:color 220ms var(--fx-def) 140ms;
+}
+.oxa.s-col .side h6 {
+  color:transparent;
+  transition:color 110ms linear;
+}
+.oxa .side h6::after {
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:7px;
+  border-top:1px solid var(--border-muted);
+  opacity:0;
+  transition:opacity 140ms linear;
+}
+.oxa.s-col .side h6::after {
+  opacity:1;
+  transition:opacity 220ms var(--fx-def) 120ms;
+}
+.oxa .side .sup {
+  justify-content:flex-start;
+  position:relative;
+}
+.oxa .side .sup>.ms, .oxa .side .sup>.sico {
+  position:absolute;
+  top:50%;
+  translate:0 -50%;
+  margin:0;
+  left:171px;
+  transition:left var(--side-d) var(--side-e),transform var(--sp-fast-d) var(--sp-fast);
+}
+.oxa.s-col .side .sup>.ms, .oxa.s-col .side .sup>.sico {
+  left:3.5px;
+}
+.oxa .side .viewmode {
+  position:relative;
+  justify-content:flex-start;
+}
+.oxa .side .viewmode .toggle {
+  position:absolute;
+  top:23.2px;
+  translate:0 -50%;
+  margin:0;
+  left:122px;
+  transition:left var(--side-d) var(--side-e);
+}
+.oxa.s-col .side .viewmode .toggle {
+  left:-21px;
+}
+.oxa .side .viewmode .toggle::before, .oxa .side .viewmode .toggle::after {
+  content:none;
+}
+.oxa .side .toggle .ms {
+  display:block;
+  position:relative;
+  transition:color 220ms var(--fx-def) 140ms;
+}
+.oxa.s-col .side .toggle .ms {
+  display:block;
+  color:transparent!important;
+  transition:color 110ms linear;
+}
+.oxa .side .toggle .ms::after {
+  content:"";
+  position:absolute;
+  top:50%;
+  width:3px;
+  height:3px;
+  margin-top:-1.5px;
+  border-radius:50%;
+  opacity:0;
+  transition:opacity 90ms linear;
+}
+.oxa .side .toggle .ms:first-child::after {
+  right:-2px;
+  background:var(--viewmode-moon-dot);
+}
+.oxa .side .toggle .ms:last-child::after {
+  left:-2px;
+  background:var(--viewmode-sun-dot);
+}
+.oxa.s-col .side .toggle .ms::after {
+  opacity:1;
+  transition:opacity 220ms var(--fx-def) 140ms;
+}
+[data-theme="light"] .oxa .side .toggle .ms:last-child:where(:not([data-theme="light"] [data-theme="dark"] *))::after {
+  width:5px;
+  height:5px;
+  margin-top:-2.5px;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .oxa .side .toggle .ms:last-child:where(:not([data-theme="dark"] *))::after {
+    width:5px;
+    height:5px;
+    margin-top:-2.5px;
+  }
+}
+[data-theme="dark"] .oxa .side .toggle .ms:first-child:where(:not([data-theme="dark"] [data-theme="light"] *))::after {
+  width:5px;
+  height:5px;
+  margin-top:-2.5px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .oxa .side .toggle .ms:first-child:where(:not([data-theme="light"] *))::after {
+    width:5px;
+    height:5px;
+    margin-top:-2.5px;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .side *, .oxa .side *::before, .oxa .side *::after {
+    transition-duration:0s!important;
+    transition-delay:0s!important;
+  }
+}
+.oxa .vr {
+  width:0;
+  background:none;
+  border-left:1px solid var(--border-subtle);
+}
+.oxa .circ.chat .ms {
+  top:1px;
+}
+.oxa .side .sup>.ms {
+  width:13px;
+  height:13px;
+  line-height:13px;
+}
+.oxa .side .toggle .ms {
+  width:14px;
+  flex:none;
+}
+.oxa .switch::after {
+  right:1px;
+  left:auto;
+  transition:transform 200ms cubic-bezier(.2,0,0,1);
+}
+[data-theme="dark"] .oxa .switch:where(:not([data-theme="dark"] [data-theme="light"] *))::after {
+  right:1px;
+  left:auto;
+  transform:translateX(-10px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .oxa .switch:where(:not([data-theme="light"] *))::after {
+    right:1px;
+    left:auto;
+    transform:translateX(-10px);
+  }
+}
+[data-theme="light"] .oxa .sw-go .switch:where(:not([data-theme="light"] [data-theme="dark"] *))::after {
+  transform:translateX(-10px);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .oxa .sw-go .switch:where(:not([data-theme="dark"] *))::after {
+    transform:translateX(-10px);
+  }
+}
+[data-theme="dark"] .oxa .sw-go .switch:where(:not([data-theme="dark"] [data-theme="light"] *))::after {
+  transform:none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .oxa .sw-go .switch:where(:not([data-theme="light"] *))::after {
+    transform:none;
+  }
+}
+
+/* from tablet.css */
+.oxa.t-tab .side {
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  height:auto;
+  width:var(--side-w);
+  z-index:30;
+}
+.oxa.t-tab .top {
+  padding:0 var(--pad-r) 0 var(--gutter);
+}
+.oxa .t-scrim {
+  position:absolute;
+  inset:0;
+  z-index:29;
+  background:var(--scrim, rgba(0,0,0,.32));
+  opacity:0;
+  pointer-events:none;
+  transition:opacity var(--side-d) var(--side-e);
+}
+.oxa.t-tab.s-over .t-scrim {
+  opacity:1;
+  pointer-events:auto;
+}
+.oxa.t-tab .top {
+  gap:16px;
+}
+.oxa.t-tab .user {
+  flex:none;
+}
+.oxa.t-tab .user .name, .oxa.t-tab .user .role, .oxa.t-tab .accts {
+  white-space:nowrap;
+}
+.oxa.t-tab .top .right {
+  flex:1 1 auto;
+  min-width:0;
+  justify-content:flex-end;
+}
+.oxa.t-tab .sgrp {
+  flex:1 1 auto;
+  min-width:0;
+  justify-content:flex-end;
+}
+.oxa.t-tab .sgrp .search {
+  width:auto;
+  flex:1 1 auto;
+  min-width:150px;
+  max-width:334px;
+}
+.oxa.t-tab .sgrp {
+  flex:0 1 auto;
+}
+.oxa.t-tab .sgrp .search {
+  flex:0 1 334px;
+  width:334px;
+}
+.oxa.t-tab .top.t-topA {
+  gap:12px;
+}
+.oxa .t-topA .accts {
+  flex:0 1 auto;
+  min-width:0;
+  max-width:220px;
+  margin:0;
+  padding:0;
+  display:flex;
+  align-items:center;
+}
+.oxa .t-topA .accts .al {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.oxa .t-topA .accts .achev {
+  flex:none;
+}
+.oxa .t-topA .t-sg {
+  flex:1 1 auto;
+  min-width:0;
+  max-width:440px;
+  margin-left:8px;
+}
+.oxa.t-tab .t-topA .t-sg .search {
+  flex:1 1 auto;
+  width:auto;
+  min-width:0;
+  max-width:none;
+  margin-left:0;
+}
+.oxa .t-topA .t-acts {
+  flex:none;
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+}
+.oxa .t-topA .t-acts .lbtn {
+  margin-left:0;
+  margin-right:10px;
+}
+.oxa .t-topA .t-acts .circ:last-of-type {
+  margin-right:12px;
+}
+.oxa .t-avb .av {
+  width:34px;
+  height:34px;
+  font-size:15px;
+}
+.oxa .t-avb[data-state="open"] .av, .oxa .t-avb:focus-visible .av {
+  box-shadow:0 0 0 2px var(--surface-raised),0 0 0 4px var(--accent);
+}
+.oxa .umenu .name {
+  color:var(--text-strong);
+  line-height:1.25;
+  overflow-wrap:anywhere;
+}
+.oxa .umenu .role {
+  color:var(--text-meta);
+  margin-top:2px;
+  line-height:1.3;
+  overflow-wrap:anywhere;
+}
+
+/* from mobile.css */
+.oxa.m-mob .top.m-top {
+  flex:none;
+  height:56px;
+  padding:0 8px 0 12px;
+  gap:2px;
+}
+.oxa .m-top .m-brand {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-right:auto;
+  min-width:0;
+}
+.oxa .m-top .m-brand svg {
+  width:22px;
+  height:22px;
+  flex:none;
+}
+.oxa .m-top .m-wm {
+  font-family:var(--cond);
+  font-style:italic;
+  font-weight:600;
+  font-size:19px;
+  letter-spacing:-.02em;
+  color:var(--accent);
+  line-height:1;
+}
+.oxa .m-top .m-act {
+  display:flex;
+  align-items:center;
+  gap:0;
+}
+.oxa .m-ib {
+  position:relative;
+  flex:none;
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border-radius:20px;
+  color:var(--accent);
+  transition:background-color var(--fx-def-d) var(--fx-def);
+}
+.oxa .m-ib .ms {
+  font-size:22px;
+}
+.oxa .m-ib.on {
+  background:var(--accent-tonal);
+  color:var(--on-accent-tonal);
+}
+.oxa .m-ib:active {
+  background:color-mix(in srgb,var(--text) 10%,transparent);
+}
+.oxa .m-ib .dot {
+  position:absolute;
+  top:9px;
+  right:10px;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--danger);
+  box-shadow:0 0 0 1.5px var(--surface-raised);
+}
+.oxa .m-top>.m-ib:first-child {
+  color:var(--text-strong);
+  margin-right:2px;
+}
+.oxa .m-top .m-av {
+  width:32px;
+  height:32px;
+  font-size:14px;
+  margin-left:6px;
+  flex:none;
+}
+.oxa .m-top.srch {
+  padding:0 8px 0 12px;
+  gap:8px;
+}
+.oxa .m-top.srch .search {
+  flex:1 1 auto;
+  width:auto;
+  min-width:0;
+  margin:0;
+}
+.oxa.m-mob .top.m-top.srch {
+  padding:0 8px 0 12px;
+  gap:8px;
+}
+/* Cancel beside the open search (v38 mobile.css .m-cancel) */
+.oxa .m-cancel {
+  flex:none;
+  height:40px;
+  padding:0 6px;
+  border:0;
+  background:none;
+  color:var(--accent);
+  cursor:pointer;
+}
+.oxa .m-accts {
+  margin-top:6px;
+  padding:0;
+  gap:4px;
+}
+/* 1.1.1 · The phone's bottom bar floats (988©STUDIO, 26/10, after the prototype's A/B): the same items, icons, labels, active
+   pill and badges, drawn as a capsule that does not touch the edges. 12 px from each side and 12 px above the safe
+   area, 64 px tall, the system's «full» corner, 8 px inside each end so the first and last active pills keep clear of
+   the round ends, and elevation 2 instead of the hairline.
+   It is the same capsule in both themes: the bar is a dark-theme scope (data-theme="dark" on the nav, PhoneNav's
+   default), so its surface, icons, labels, active pill and badges are the dark theme's tokens on a light page too.
+   Its shadow is the page's (--m-nav-shadow, app-tokens.css): it falls on the page, not on the bar. */
+.oxa .m-nav {
+  position:absolute;
+  right:12px;
+  bottom:calc(12px + var(--sa-b));
+  left:12px;
+  z-index:3;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  height:64px;
+  padding:0 var(--sonar-space-8);
+  border-radius:var(--sonar-shape-corner-full);
+  background:var(--surface-container);
+  box-shadow:var(--m-nav-shadow);
+}
+.oxa .m-tab {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  color:var(--text-muted);
+  min-width:0;
+}
+.oxa .m-tab .t11m {
+  white-space:nowrap;
+  letter-spacing:0;
+}
+.oxa .m-ti {
+  position:relative;
+  width:56px;
+  height:30px;
+  border-radius:15px;
+  display:grid;
+  place-items:center;
+  transition:background-color var(--fx-def-d) var(--fx-def);
+}
+.oxa .m-ti .ms {
+  font-size:22px;
+}
+.oxa .m-tab.on {
+  color:var(--text-strong);
+}
+.oxa .m-tab.on .m-ti {
+  background:var(--accent-tonal);
+  color:var(--on-accent-tonal);
+}
+.oxa .m-badge {
+  position:absolute;
+  top:1px;
+  left:31px;
+  min-width:16px;
+  height:16px;
+  padding:0 4px;
+  border-radius:8px;
+  /* 1.1.1: the solid danger fill, as the system's Badge: white reads 4.53:1 on it in both themes (on the dark theme's
+     brighter danger, #F04B4B, it read 3.61:1, under AA for its 10 px numeral) */
+  background:var(--sonar-color-danger-solid);
+  color:#fff;
+  font-size:10px;
+  font-weight:600;
+  line-height:16px;
+  text-align:center;
+  box-shadow:0 0 0 2px var(--surface-container);
+}
+.oxa.m-mob .side {
+  position:absolute;
+  z-index:30;
+  height:auto;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  box-shadow:none;
+  transition:transform 320ms var(--sp-def,cubic-bezier(.2,0,0,1)),box-shadow 320ms linear;
+}
+.oxa.m-mob .side .collapse {
+  display:none;
+}
+.oxa.m-drawer .side {
+  left:0;
+  top:0;
+  bottom:0;
+  width:min(304px,84vw);
+  transform:translateX(-102%);
+}
+.oxa.m-drawer.s-over .side {
+  transform:none;
+  box-shadow:var(--shadow-panel);
+}
+.oxa.m-bar .side {
+  left:0;
+  right:0;
+  bottom:0;
+  top:auto;
+  width:auto;
+  max-height:calc(100% - 56px);
+  border-radius:20px 20px 0 0;
+  padding-top:12px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  transform:translateY(102%);
+}
+.oxa.m-bar.s-over .side {
+  transform:none;
+  box-shadow:0 -12px 32px -8px rgba(0,0,0,.25);
+}
+.oxa.m-bar .side .brand {
+  height:14px;
+  margin-bottom:6px;
+}
+.oxa.m-bar .side .brand>* {
+  display:none;
+}
+.oxa.m-bar .side .brand::before {
+  content:"";
+  position:absolute;
+  top:-6px;
+  left:50%;
+  width:36px;
+  height:4px;
+  margin-left:-18px;
+  border-radius:2px;
+  background:var(--border-subtle);
+}
+.oxa.m-bar .side .spacer {
+  flex:0 0 20px;
+}
+.oxa.m-mob.s-over .t-scrim {
+  opacity:1;
+  pointer-events:auto;
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa.m-mob .side, .oxa .m-ti {
+    transition:none;
+  }
+}
+.oxa.m-mob .side .nav::before {
+  width:auto;
+  right:-6px;
+}
+.oxa.m-mob .side .nav .badge {
+  left:auto;
+  right:6px;
+}
+.oxa.m-mob .side .sup>.ms, .oxa.m-mob .side .sup>.sico {
+  left:auto;
+  right:3px;
+}
+.oxa.m-mob .side .viewmode .toggle {
+  left:auto;
+  right:0;
+}
+.oxa.m-mob .side .nav, .oxa.m-mob .side .sup {
+  width:auto;
+}
+.oxa .m-top .m-brand {
+  margin-right:0;
+  flex:none;
+  gap:8px;
+}
+.oxa .m-top .m-wm {
+  display:flex;
+  flex-direction:column;
+  gap:1px;
+  font-family:var(--cond);
+  font-style:italic;
+  font-weight:600;
+  color:var(--accent);
+}
+.oxa .m-top .m-wm b {
+  font-size:19px;
+  font-weight:600;
+  letter-spacing:-.02em;
+  line-height:1;
+}
+.oxa .m-top .m-wm small {
+  font-size:10px;
+  letter-spacing:-.02em;
+  line-height:1;
+}
+.oxa .m-top .m-accts {
+  flex:0 1 auto;
+  min-width:0;
+  margin:0 auto 0 4px;
+  padding:0 4px 0 13px;
+  height:40px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  position:relative;
+}
+.oxa .m-top .m-accts::before {
+  content:"";
+  position:absolute;
+  left:0;
+  top:10px;
+  bottom:10px;
+  border-left:1px solid var(--divider);
+}
+.oxa .m-top .m-accts .al {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.oxa .m-top .m-accts .achev {
+  flex:none;
+}
+.oxa.m-mob .top.m-top {
+  gap:6px;
+  padding:0 6px 0 14px;
+}
+.oxa .m-dot {
+  position:absolute;
+  top:3px;
+  left:33px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--danger);
+  box-shadow:0 0 0 2px var(--surface-container);
+}
+.oxa .m-top .m-brand svg {
+  width:26px;
+  height:26px;
+}
+.oxa .m-top .m-accts {
+  margin-left:6px;
+  padding-left:15px;
+}
+.oxa .m-top .m-ib .ms {
+  font-size:26px;
+}
+.oxa .m-top .m-ib[aria-label="Search"] {
+  width:48px;
+  height:48px;
+  border-radius:24px;
+  margin-right:-4px;
+}
+
+/* from fluid.css */
+.oxa.d-fluid .side {
+  height:100%;
+  min-height:0;
+}
+.oxa.mode-sw .side, .oxa.mode-sw .t-scrim {
+  transition:none!important;
+}
+
+/* from touch.css */
+@media (hover:none) {
+  .oxa .stip, .oxa .collapse .stip {
+    display:none!important;
+  }
+}
+@media (hover:none) {
+  .oxa .lbtn:hover:not(:focus-visible):not(.ok) .lt {
+    max-width:0;
+    padding-left:0;
+    padding-right:0;
+  }
+}
+@media (hover:none) {
+  .oxa .lbtn:hover:not(:focus-visible) .lb::before {
+    inset:0;
+  }
+}
+@media (hover:none) {
+  .oxa .lbtn.on:hover:not(:focus-visible) .lb::after {
+    transform:scale(1);
+  }
+}
+
+/* from safe.css */
+.oxa.m-mob .top.m-top {
+  height:calc(56px + var(--sa-t));
+  padding-top:var(--sa-t);
+}
+.oxa.m-drawer .side {
+  padding-top:var(--sa-t);
+  padding-bottom:var(--sa-b);
+}
+.oxa.t-tab .top {
+  height:calc(var(--top-h) + var(--sa-t));
+  padding-top:var(--sa-t);
+}
+.oxa.t-tab .side {
+  padding-top:var(--sa-t);
+}
+
+/* The app frame: the 1440 × 980 canvas, its main column and stage */
+
+
+/* from overview.css */
+.oxa.app {
+  display:grid;
+  grid-template-columns:var(--side-w) 1fr;
+  width:1440px;
+  height:980px;
+  background:var(--surface-page);
+  position:absolute;
+  left:0;
+  top:0;
+  transform-origin:0 0;
+  overflow:hidden;
+}
+.oxa .fit {
+  position:relative;
+  width:1440px;
+  height:980px;
+  overflow:hidden;
+}
+.oxa .main {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+.oxa .stage {
+  padding:32px 32px 32px var(--gutter);
+  flex:1;
+}
+.oxa .stage {
+  position:relative;
+}
+
+/* from app.css */
+.oxa .fit {
+  margin:0;
+}
+.oxa.app {
+  grid-template-rows:100%;
+}
+.oxa .main {
+  min-height:0;
+  height:100%;
+  position:relative;
+}
+.oxa .stage {
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-width:thin;
+}
+.oxa .stage.notice {
+  display:grid;
+  place-items:center;
+  overflow:auto;
+}
+
+/* from polish.css */
+.oxa.app {
+  transition:--side-w var(--side-d) var(--side-e),--col var(--side-d) var(--side-e);
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa.app {
+    transition-duration:0s!important;
+    transition-delay:0s!important;
+  }
+}
+
+/* from tablet.css */
+.oxa .t-fit {
+  position:fixed;
+  inset:0;
+  width:auto;
+  height:auto;
+  overflow:hidden;
+}
+.oxa.app.t-tab {
+  width:100%;
+  height:100%;
+  grid-template-columns:60px minmax(0,1fr);
+  --gutter:24px;
+  --pad-r:24px;
+}
+
+/* from mobile.css */
+.oxa.app.m-mob {
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  --gutter:16px;
+  --pad-r:16px;
+}
+.oxa .t-fit, .oxa.app.m-mob, .oxa.app.t-tab {
+  overflow:clip;
+}
+
+/* Registered so the sidebar’s width and the columns can animate together */
+@property --side-w{syntax:'<length>';inherits:true;initial-value:224px}
+@property --col{syntax:'<length>';inherits:true;initial-value:370px}
+/* The footer of the main column, and the veil behind phone sheets
+   Also ported from the prototype’s CSS (Orbex · Prototype v38), rule by rule in its cascade order, scoped to .oxa.
+   The prototype’s custom properties resolve to the system’s tokens in app-tokens.css. */
+
+
+/* from overview.css */
+.oxa .footer {
+  height:46px;
+  display:flex;
+  align-items:center;
+  padding:0 32px 0 var(--gutter);
+  gap:31px;
+  color:var(--text-strong);
+}
+.oxa .footer .r {
+  margin-left:auto;
+}
+.oxa .footer {
+  background:var(--surface-footer);
+}
+
+/* from tablet.css */
+.oxa.t-tab .footer {
+  padding:0 var(--pad-r) 0 var(--gutter);
+}
+
+/* from mobile.css */
+.oxa.m-mob .footer {
+  display:none;
+}
+.oxa .m-veil {
+  position:absolute;
+  inset:0;
+  z-index:5;
+  background:var(--scrim,rgba(0,0,0,.32));
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 220ms linear;
+}
+.oxa .m-veil.on {
+  opacity:1;
+  pointer-events:auto;
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .m-veil {
+    transition:none;
+  }
+}
+
+/* from safe.css */
+.oxa.t-tab .footer {
+  height:calc(46px + var(--sa-b));
+  padding-bottom:var(--sa-b);
+}
+
+/* from overview.css: the rail and the wider columns that come with it */
+.oxa.app.s-col {
+  --side-w: 60px;
+  --col: 425px;
+}
+
+
+
+/* from tablet.css */
+.oxa.t-tab .main {
+  grid-column:2;
+}
+.oxa.t-tab .stage {
+  padding:24px var(--pad-r) 24px var(--gutter);
+}
+
+/* from mobile.css */
+.oxa.m-mob .main {
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+.oxa.m-mob .stage {
+  padding:0 16px 24px;
+  /* 1.1.1: the page runs under the floating bar; the last card scrolls fully above it (24 + 64 + 12 + safe area) */
+  padding-bottom:calc(100px + var(--sa-b));
+}
+/* Edit layout: its own bar takes the foot of the screen; the capsule steps aside while editing */
+.oxa.m-mob.s-edit .m-nav {
+  visibility:hidden;
+}
+.oxa.m-mob .main {
+  overflow:clip;
+}
+
+
+
+/* from tablet.css */
+.oxa .t-avb {
+  flex:none;
+  width:44px;
+  height:44px;
+  margin-right:-2px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:none;
+  border:0;
+  padding:0;
+  cursor:pointer;
+}
+.oxa .t-avb .av {
+  width:34px;
+  height:34px;
+  font-size:15px;
+}
+.oxa .t-avb[data-state="open"] .av, .oxa .t-avb:focus-visible .av {
+  box-shadow:0 0 0 2px var(--surface-raised),0 0 0 4px var(--accent);
+}
+.oxa .t-avb:focus-visible {
+  outline:none;
+}
+
+/* from mobile.css */
+.oxa .m-head {
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  padding:16px 2px 14px;
+}
+.oxa .m-h1 {
+  margin:0;
+  font-size:24px;
+  font-weight:600;
+  letter-spacing:-.02em;
+  line-height:1.15;
+  color:var(--text-strong);
+}
+.oxa .m-sub {
+  margin:6px 0 0;
+  color:var(--text-meta);
+  letter-spacing:0;
+  max-width:30ch;
+}
+.oxa .m-head {
+  padding:18px 2px 14px;
+}
+
+
+/* =====================================================================================================================
+   1.1.0 · the sidebar keeps its rows and scrolls (prototype round 2, note 1; DS 1.1 pending #14 and #15)
+   ===================================================================================================================== */
+
+/* The sidebar is as tall as the app (the 980 px canvas, or the window when the shell is the page) */
+.oxa.app .side {
+  height:auto;
+  min-height:0;
+}
+
+/* Everything under the logo is one column that scrolls when the window is too short for it. Each row keeps its v38
+   height (before, the rows shrank to fit: on an iPad Pro 10.9" in landscape, about 1180 × 740 in Safari, the logo was
+   pressed against the top edge and the Support icons were crushed into each other). The logo and the collapse button
+   stay at the top. No scrollbar of the system in a 60 px rail; a wheel, a trackpad or a finger scrolls it. */
+.oxa .side>.brand {
+  flex-shrink:0;
+}
+.oxa .side-in {
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  margin:0 -20px;
+  padding:0 20px;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:none;
+}
+.oxa .side-in::-webkit-scrollbar {
+  display:none;
+}
+.oxa .side-in>* {
+  flex-shrink:0;
+}
+.oxa .side-in>.spacer {
+  flex:1 0 24px;
+}
+
+/* 1.1.2 · Where the rows disappear when the column scrolls: level with the foot of the top bar (988©STUDIO, 26/10 14:46).
+   The column used to start under the logo's 32 px margin, so rows vanished 32 px below the top bar (at 101 px, the bar
+   ends at 69). The logo row is as tall as the top bar (both --top-h; on a tablet both add the same --sa-t), and its
+   32 px of air now sits inside the column: at rest every row is where it was; scrolled, the rows run up to the line
+   of the top bar. Phones are not concerned: there the drawer scrolls whole, logo included. */
+.oxa:not(.m-mob) .side>.brand {
+  margin-bottom:0;
+}
+.oxa:not(.m-mob) .side-in {
+  padding-top:32px;
+}
+
+/* The rail's tooltips hang outside the 60 px rail. A scrolling column would cut them off, so they are placed from the
+   sidebar itself (layout containment makes it their containing block), level with their row (Shell.tsx, tipAt) */
+.oxa:not(.m-mob) .side {
+  contain:layout;
+}
+.oxa:not(.m-mob) .side .side-in .stip {
+  position:fixed;
+  top:var(--tip-y,50%);
+  left:calc(100% + 10px);
+}
+
+/* Phones: the drawer is the column that scrolls, the logo with it, as before (round 1 of the prototype) */
+.oxa.m-mob .side-in {
+  display:contents;
+}
+
+/* ---------- The phone drawer (prototype round 1, notes 2 and 5; pending #14) ----------
+   Its rows keep their v38 heights (in a 645 px window they shrank to fit: the logo row from 69 to 30 px, clipped at
+   the top; the active Overview row from 29 to 20 px, its label high in its pill; group headings to 0; Support rows from
+   24 to 14 px) and the drawer scrolls instead. */
+.oxa.m-mob .side>*,
+.oxa.m-mob .side-in>* {
+  flex-shrink:0;
+}
+/* It runs to the foot of the screen, under the bottom app bar; its end leaves room for the floating bar (below). */
+.oxa.m-drawer .side {
+  padding-bottom:0;
+}
+.oxa.m-drawer .side::after {
+  content:'';
+  position:sticky;
+  bottom:0;
+  z-index:1;
+  flex:none;
+  /* 1.1.1: room, not a surface: View mode scrolls fully above the floating bar (64 + 12 + safe area, after the 16 px
+     margin) and the list shows round the capsule's ends, as the page does */
+  height:calc(76px + var(--sa-b));
+  margin:16px -20px 0;
+  background:none;
+  pointer-events:none;
+}
+/* While the drawer is open (and while it slides), the capsule floats whole over the drawer and the scrim, with its own
+   surface and shadow. No new motion: it does not move. */
+.oxa.m-drawer.s-over .m-nav,
+.oxa.m-drawer.s-anim .m-nav {
+  z-index:31;
+}
+
+/* ---------- Safe areas (pending #15) ----------
+   Inside a documentation frame they are 0 (app-tokens.css). When the shell is the page (data-shell="window" on the
+   .oxa or an ancestor), it reads the window's real insets, as v38 safe.css: 0 in Safari's normal tab, not 0 on a
+   home-screen web app or in landscape. */
+[data-shell='window'] .oxa,
+.oxa[data-shell='window'] {
+  --sa-t:env(safe-area-inset-top, 0px);
+  --sa-b:env(safe-area-inset-bottom, 0px);
+}

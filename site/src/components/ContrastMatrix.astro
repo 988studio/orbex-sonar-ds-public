@@ -1,0 +1,145 @@
+---
+/**
+ * Contrast of every text role on the main surfaces, per theme, measured from the built tokens.
+ * Each cell is judged against the minimum the accessibility contract sets for that pair.
+ */
+import type { TokenName } from '@orbex/sonar-tokens'
+import { contrastOf, formatRatio, requiredContrast, shortName, THEMES } from '../lib/tokens.ts'
+
+const foregrounds: TokenName[] = [
+  'color.text.strong', 'color.text.default', 'color.text.secondary', 'color.text.muted', 'color.text.meta', 'color.text.tertiary', 'color.text.placeholder',
+  'color.text.accent', 'color.text.danger', 'color.text.warning', 'color.text.disabled',
+]
+const backgrounds: TokenName[] = ['color.surface.card', 'color.surface.page', 'color.surface.menu', 'color.surface.container']
+
+const cell = (foreground: TokenName, background: TokenName, theme: (typeof THEMES)[number]) => {
+  const ratio = contrastOf(foreground, background, theme)
+  const minimum = requiredContrast(foreground, background)
+  const verdict = minimum === null ? 'not paired' : ratio >= minimum ? `passes ${minimum}:1` : `below ${minimum}:1`
+  return { ratio, minimum, verdict, state: minimum === null ? 'unpaired' : ratio >= minimum ? 'pass' : 'fail' }
+}
+---
+
+<div class="matrices">
+  {
+    THEMES.map((theme) => (
+      <div class="table-wrap" data-scroll-region data-label={theme === 'light' ? 'Contrast, light theme' : 'Contrast, dark theme'}>
+        <table>
+          <caption>{theme === 'light' ? 'Light theme' : 'Dark theme'}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Text role</th>
+              {backgrounds.map((background) => <th scope="col">{shortName(background).replace('surface.', '')}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {foregrounds.map((foreground) => (
+              <tr>
+                <th scope="row">{shortName(foreground).replace('text.', '')}</th>
+                {backgrounds.map((background) => {
+                  const { ratio, verdict, state } = cell(foreground, background, theme)
+                  return (
+                    <td class={state} title={verdict}>
+                      {formatRatio(ratio)}
+                      <span class="visually-hidden">, {verdict}</span>
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .matrices {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: var(--sonar-space-20);
+  }
+
+  .table-wrap {
+    min-width: 0;
+    /* One axis only: wide content scrolls sideways; nothing scrolls or bounces up and down */
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    font-variant-numeric: tabular-nums;
+  }
+
+  caption {
+    padding: var(--sonar-space-16) var(--sonar-space-16) var(--sonar-space-8);
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+    text-align: left;
+  }
+
+  th,
+  td {
+    padding: var(--sonar-space-8) var(--sonar-space-16);
+    border-top: 1px solid var(--sonar-color-divider);
+    text-align: right;
+  }
+
+  th:first-child {
+    text-align: left;
+  }
+
+  thead th {
+    color: var(--sonar-color-text-tertiary);
+    font-weight: var(--sonar-font-weight-medium);
+  }
+
+  tbody th {
+    color: var(--sonar-color-text-strong);
+    font-weight: var(--sonar-font-weight-medium);
+  }
+
+  td {
+    color: var(--sonar-color-text-default);
+  }
+
+  /* Phones: tighter cells so both matrices fit without scrolling */
+  @container page (width < 608px) {
+    th,
+    td {
+      padding-inline: var(--sonar-space-8);
+    }
+
+    th:first-child {
+      padding-left: var(--sonar-space-16);
+    }
+
+    caption {
+      padding-inline: var(--sonar-space-16);
+    }
+  }
+
+  /* Pairs the system does not use: on containers, status is shown with an icon or a chip, not colored text */
+  td.unpaired {
+    color: var(--sonar-color-text-tertiary);
+  }
+
+  td.fail {
+    color: var(--sonar-color-text-danger);
+    font-weight: var(--sonar-font-weight-semibold);
+  }
+
+  /* Disabled is held to 3:1, not 4.5:1: its row recedes */
+  tbody tr:last-child th {
+    color: var(--sonar-color-text-tertiary);
+  }
+</style>

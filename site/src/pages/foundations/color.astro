@@ -1,0 +1,291 @@
+---
+import ContrastMatrix from '../../components/ContrastMatrix.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import PaletteStrip from '../../components/PaletteStrip.astro'
+import Section from '../../components/Section.astro'
+import TokenTable from '../../components/TokenTable.astro'
+import CodeBlock from '../../components/CodeBlock.astro'
+import Docs from '../../layouts/Docs.astro'
+import type { TokenName } from '@orbex/sonar-tokens'
+import { contrastOf, formatRatio, group, shortName, THEMES, token } from '../../lib/tokens.ts'
+
+const formula = `hue(tone)    = 144° − 0.09 × tone
+chroma(tone) = 8.2 − 0.00125 × (tone − 55)²
+
+neutral          chroma(tone)
+neutral-tinted   chroma(tone) + 2.4
+neutral-subdued  chroma(tone) × 0.5`
+
+const accent = [token('color.accent'), ...group('color.accent'), ...group('color.on')]
+const status = [token('color.danger'), ...group('color.danger'), token('color.warning'), ...group('color.warning'), ...group('color.success')]
+const productPairs: { role: TokenName; use: string; minimum: number | null }[] = [
+  { role: 'color.text.secondary', use: 'Secondary text and icons', minimum: 4.5 },
+  { role: 'color.text.muted', use: 'Quieter body text', minimum: 4.5 },
+  { role: 'color.text.meta', use: 'Dates, units, supporting figures', minimum: 4.5 },
+  { role: 'color.text.danger', use: 'Red text', minimum: 4.5 },
+  { role: 'color.text.accent', use: 'Green text', minimum: 4.5 },
+  { role: 'color.text.warning', use: 'Orange text', minimum: 4.5 },
+  { role: 'color.danger', use: 'Alert icons and marks', minimum: 3 },
+  { role: 'color.border.control', use: 'Field and pill outlines', minimum: 3 },
+  { role: 'color.chart.primary', use: 'Daily line (dashed)', minimum: 3 },
+  { role: 'color.chart.secondary', use: 'Running total (dotted)', minimum: 3 },
+  { role: 'color.text.disabled', use: 'Disabled controls', minimum: null },
+]
+const families = ['neutral', 'neutral-tinted', 'neutral-subdued', 'neutral-dark', 'neutral-light', 'gray', 'green', 'red', 'orange', 'blue']
+---
+
+<Docs title="Color" description="How the Sonar-DB palette is built, the semantic color roles and their measured contrast in both themes.">
+  <PageHeader
+    title="Color"
+    lead="A brand green, three status hues and a family of green-tinted neutrals. Components never use the palette directly: they use roles, and every role that carries text is measured against the surfaces it sits on."
+  />
+
+  <Section title="How the palette is built" id="palette">
+    <div class="prose">
+      <p>
+        Brand and status colors are <strong>anchors</strong>, exact values chosen by design. When a role needs another
+        tone of an anchor, for instance red text that must reach 4.5:1, that tone is <strong>derived</strong>: same hue
+        and chroma, different lightness. Derived tones are outlined below.
+      </p>
+      <p>
+        Neutrals are <strong>generated</strong>. They are the brand green at very low chroma, from one formula. The hue
+        drifts slightly from dark to light, as the hand-picked originals did, and the chroma eases off near black and
+        white, where tint reads as dirt. Every tone is named by its CIELAB lightness L*, from 0 (black) to 100 (white),
+        so the distance between two names predicts their contrast.
+      </p>
+      <p>
+        Two neutral families are anchors instead: <strong>neutral-dark</strong> holds the product’s exact dark surfaces,
+        lines and grays, and <strong>neutral-light</strong> the few light-theme grays that do not fall on the formula.
+      </p>
+    </div>
+    <CodeBlock code={formula} language="text" />
+    <div class="families">
+      {
+        families.map((family) => (
+          <div class="family">
+            <h3>{family}</h3>
+            <p>{group(`palette.${family}`)[0]?.group}</p>
+            <PaletteStrip family={family} />
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section title="Accent" id="accent">
+    <p class="prose">
+      The brand green marks what can be acted on and what is selected. Its tonal version fills selected navigation items
+      and segments; white text on the solid green reaches 4.5:1. Its container tint fills
+      <a href="/patterns/cards/#states">drop placeholders</a>, the slot a card lands in while the overview is edited.
+    </p>
+    <TokenTable caption="Accent roles" tokens={accent} />
+  </Section>
+
+  <Section title="Text and icons" id="text">
+    <div class="prose">
+      <p>
+        Emphasis levels, defined by contrast so both themes read alike. <strong>Every level meant to be read passes WCAG
+        AA (4.5:1) on every surface</strong>, containers, selected rows and menus included. Icons use the same levels as
+        the text beside them.
+      </p>
+      <p>
+        <strong>Placeholder</strong> text is text: WCAG makes no exception for it, so it reads at the tertiary level. It
+        keeps a role of its own so fields can change it without touching tertiary. <strong>Disabled</strong> is exempt
+        in WCAG and takes the product’s own gray; the control keeps its outline or shape, so it still reads as present.
+      </p>
+      <p>
+        <strong>Muted</strong> is body text one step quieter than default. <strong>Meta</strong> is for dates, units and
+        supporting figures: in dark it is the product’s own gray, quieter than tertiary. In light the product’s gray,
+        <code>#737D71</code>, reaches only 4.21:1 on a card and 3.73:1 on the page, below 4.5:1, so meta takes the
+        tertiary tone, <code>#5E685D</code>: 5.71:1 on a card, 5.05:1 on the page.
+      </p>
+      <p>
+        Colored text uses darker tones than the fills of the same hue in light, and lighter ones in dark. It sits on
+        cards, pages, menus and rows; on containers, status is shown with an icon or a chip.
+      </p>
+    </div>
+    <TokenTable caption="Text roles" tokens={group('color.text')} preview="text" contrastWith="color.surface.card" />
+  </Section>
+
+  <Section title="Text that is not read" id="not-read">
+    <ul class="prose">
+      <li>
+        <strong>Never lower contrast with opacity</strong>, with one exception kept from the product: a chart’s
+        running-total toggle fades to 40 % when off. Its state is also given by <code>aria-pressed</code> and by its
+        line leaving the chart.
+      </li>
+      <li>
+        <strong>Neighboring days are context, not content.</strong> A month calendar fills its six rows with the
+        days of the months around it in the disabled gray; each of those days reads at full contrast in its own month.
+      </li>
+      <li>
+        <strong>Decorative previews are hidden from assistive technology.</strong> A glimpse of the next day at the edge
+        of a scrolling view carries <code>aria-hidden="true"</code> and no focusable content. It is exempt from contrast
+        because the same content is one swipe away, at full contrast.
+      </li>
+    </ul>
+  </Section>
+
+  <Section title="Surfaces" id="surfaces">
+    <p class="prose">
+      Light surfaces are achromatic grays with a white top bar; the green tint appears in containers, menus and states.
+      In the dark theme everything is tinted and steps up in lightness as it comes closer.
+    </p>
+    <TokenTable caption="Surface roles" tokens={[...group('color.surface'), token('color.scrim')]} />
+  </Section>
+
+  <Section title="Lines and fills" id="lines">
+    <TokenTable caption="Line roles" tokens={[token('color.divider'), ...group('color.border')]} preview="border" />
+    <TokenTable caption="Fill roles" tokens={group('color.fill')} />
+  </Section>
+
+  <Section title="States" id="states">
+    <p class="prose">
+      Hover and pressed are translucent layers over whatever is underneath, tinted with the accent. On accent fills, the
+      layer turns white in light and black in dark.
+    </p>
+    <TokenTable caption="State layers" tokens={group('color.state')} />
+  </Section>
+
+  <Section title="Status" id="status">
+    <p class="prose">
+      Danger flags delays, overdue invoices and stock on hold; warning flags what is pending. Status is never told by color
+      alone: it always comes with a word or an icon.
+    </p>
+    <TokenTable caption="Status roles" tokens={status} />
+  </Section>
+
+  <Section title="Charts" id="charts">
+    <TokenTable caption="Chart roles" tokens={[...group('color.chart'), token('color.scrollbar')]} />
+  </Section>
+
+  <Section title="Contrast" id="contrast">
+    <p class="prose">
+      The colors below are the product’s own. Each is kept as it is because it passes its minimum where it is used:
+      4.5:1 for text, 3:1 for icons, chart lines and control boundaries.
+    </p>
+    <div class="table-wrap" data-scroll-region data-label="Contrast of product colors">
+      <table>
+        <caption>Product colors on cards</caption>
+        <thead>
+          <tr><th scope="col">Role</th><th scope="col">Used for</th><th scope="col">Light</th><th scope="col">Dark</th><th scope="col">Minimum</th></tr>
+        </thead>
+        <tbody>
+          {
+            productPairs.map(({ role, use, minimum }) => (
+              <tr>
+                <td><code>{shortName(role)}</code></td>
+                <td>{use}</td>
+                {THEMES.map((theme) => {
+                  const ratio = contrastOf(role, 'color.surface.card', theme)
+                  return <td>{minimum === null ? `${formatRatio(ratio)} (exempt)` : formatRatio(ratio)}</td>
+                })}
+                <td>{minimum === null ? 'Exempt' : `${minimum}:1`}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="prose">
+      The full matrix is measured from the built tokens, the same way the test suite checks them on every build. Each
+      pair is judged against its own minimum: 4.5:1 for text; disabled is exempt. Lighter figures are pairs the system does not use. Ratios are
+      rounded down.
+    </p>
+    <ContrastMatrix />
+  </Section>
+  <Section title="Where the system departs from the product" id="departures">
+    <p class="prose">
+      The rule: the system takes the product’s colors unless a pair fails WCAG AA, and then accessibility wins. These are
+      the roles where the product’s color fails and the system’s replaces it, with both ratios measured on the card
+      (<code>#FDFDFC</code> in light, <code>#1F251F</code> in dark). Danger in dark follows the same rule: marks and
+      fills keep the product’s <code>#F04B4B</code>, red text takes <code>#F97068</code>, and a red fill that carries
+      white text takes <code>#DD3535</code>.
+    </p>
+    <div class="table-wrap" data-scroll-region data-label="Departures from the product, table">
+      <table>
+        <thead><tr><th>Role</th><th>Product</th><th>Ratio</th><th>System</th><th>Ratio</th><th>Needs</th></tr></thead>
+        <tbody>
+          <tr><td>Accent (light)</td><td><code>#1E8A3A</code></td><td>4.42:1</td><td><code>#1A8838</code></td><td>4.54:1</td><td>4.5:1 on white text on it</td></tr>
+          <tr><td>Chart line, primary (light)</td><td><code>#1E8A3A</code></td><td>4.34:1</td><td><code>#1A8838</code></td><td>4.46:1</td><td>3:1 on card</td></tr>
+          <tr><td>Meta text (light)</td><td><code>#737D71</code></td><td>4.21:1</td><td><code>#5E685D</code></td><td>5.71:1</td><td>4.5:1 on card</td></tr>
+          <tr><td>Placeholder text (light)</td><td><code>#8E988C</code></td><td>2.94:1</td><td><code>#5E685D</code></td><td>5.71:1</td><td>4.5:1 on card</td></tr>
+          <tr><td>Placeholder text (dark)</td><td><code>#6C766A</code></td><td>3.30:1</td><td><code>#97A194</code></td><td>5.84:1</td><td>4.5:1 on card</td></tr>
+          <tr><td>Warning text (light)</td><td><code>#DD8E35</code></td><td>2.58:1</td><td><code>#A15C00</code></td><td>5.10:1</td><td>4.5:1 on card</td></tr>
+          <tr><td>Control outline (light)</td><td><code>#8E988C</code></td><td>2.94:1</td><td><code>#879184</code></td><td>3.22:1</td><td>3:1 on card</td></tr>
+          <tr><td>Danger text (light)</td><td><code>#DD3535</code></td><td>4.45:1</td><td><code>#D1282D</code></td><td>5.09:1</td><td>4.5:1 on card</td></tr>
+          <tr><td>Danger text (dark)</td><td><code>#F04B4B</code></td><td>4.33:1</td><td><code>#F97068</code></td><td>5.62:1</td><td>4.5:1 on card</td></tr>
+          <tr><td>Danger fill with white text (dark)</td><td><code>#F04B4B</code></td><td>3.61:1</td><td><code>#DD3535</code></td><td>4.53:1</td><td>4.5:1 on white text on it</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="prose">
+      The chart’s primary line passes with the product’s green; it follows the accent so the two never drift apart. Three
+      more roles differ without a contrast reason, because the palette is generated by one formula: the light menu and
+      inverse text (<code>#EBF3E8</code> for the product’s <code>#EEF3EA</code>), the dark control outline
+      (<code>#687266</code> for <code>#6C766A</code>) and the dark chart’s second line (<code>#DCE5D9</code> for
+      <code>#B7C3B4</code>). The light and dark neutrals land within one or two RGB steps of the product’s
+      (ΔE under 1.7, below what the eye tells apart).
+    </p>
+  </Section>
+</Docs>
+
+<style>
+  .families {
+    display: grid;
+    gap: var(--sonar-space-32);
+  }
+
+  .family h3 {
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+  }
+
+  .family p {
+    margin: var(--sonar-space-2) 0 var(--sonar-space-12);
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-body-md);
+  }
+
+  .table-wrap {
+    min-width: 0;
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  .table-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .table-wrap caption {
+    padding: var(--sonar-space-16) var(--sonar-space-16) var(--sonar-space-8);
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+    text-align: left;
+  }
+
+  .table-wrap :is(th, td) {
+    padding: var(--sonar-space-8) var(--sonar-space-16);
+    border-top: 1px solid var(--sonar-color-divider);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .table-wrap thead th {
+    color: var(--sonar-color-text-tertiary);
+    font-weight: var(--sonar-font-weight-medium);
+    white-space: nowrap;
+  }
+
+  .table-wrap code {
+    white-space: nowrap;
+  }
+</style>

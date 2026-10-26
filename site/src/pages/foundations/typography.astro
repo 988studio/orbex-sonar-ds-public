@@ -1,0 +1,250 @@
+---
+import CodeBlock from '../../components/CodeBlock.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import Docs from '../../layouts/Docs.astro'
+import { group, toneOf } from '../../lib/tokens.ts'
+
+interface Dimension { value: number; unit: string }
+interface Typography { fontFamily: string[]; fontSize: Dimension; fontWeight: number; lineHeight: number; letterSpacing: Dimension }
+
+/* What each role looks like in the product */
+const samples: Record<string, string> = {
+  'headline-sm': '30,000.00 USD',
+  'title-lg': 'Daily shipments',
+  'title-md': 'Total 415 plt',
+  'title-sm': 'Delivery 04-127C',
+  'body-lg': 'The changes you made to this layout will be lost.',
+  'body-md': 'Recycled-fiber cases, 120 per pallet, ready for loading.',
+  'label-lg': 'All accounts',
+  'label-md': '1,420 plt',
+  'label-md-condensed': 'Mo Tu We Th Fr Sa Su',
+  'label-sm': 'Delayed',
+  button: 'Create order',
+  caption: 'plt',
+  overline: 'Operations',
+  data: '0   500   1,000   1,500   2,000',
+}
+
+const weights: Record<number, string> = { 400: 'Regular', 500: 'Medium', 600: 'Semibold' }
+const roles = group('type').map((doc) => {
+  const type = doc.light.resolved as Typography
+  const name = toneOf(doc.name)
+  return {
+    name,
+    className: `sonar-type-${name}`,
+    description: doc.description,
+    uppercase: (doc.extensions as { textTransform?: string } | undefined)?.textTransform === 'uppercase',
+    family: type.fontFamily[0].replace('IBM Plex ', ''),
+    size: type.fontSize.value,
+    lineHeight: Math.round(type.fontSize.value * type.lineHeight),
+    weight: weights[type.fontWeight],
+    tracking: type.letterSpacing.value,
+  }
+})
+
+const families = [
+  { name: 'IBM Plex Sans', cssVar: '--sonar-font-family-sans', sample: 'Orders, deliveries and stock', use: 'Every interface text.' },
+  { name: 'IBM Plex Sans Condensed', cssVar: '--sonar-font-family-condensed', sample: 'Mo Tu We Th Fr Sa Su', use: 'Weekday initials and the wordmark, where width is scarce.' },
+  { name: 'IBM Plex Mono', cssVar: '--sonar-font-family-mono', sample: '2,000  1,500  1,000', use: 'Chart axes and navigation overlines.' },
+]
+
+const usage = `@import '@orbex/sonar-tokens/type.css';
+
+<h2 class="sonar-type-title-lg">Daily shipments</h2>
+
+/* or, inside a component */
+.card-title {
+  font: var(--sonar-type-title-lg);
+  letter-spacing: var(--sonar-type-title-lg-tracking);
+}`
+---
+
+<Docs title="Typography" description="The Sonar-DB type families and the fourteen type roles, with sizes, weights and where each is used.">
+  <PageHeader
+    title="Typography"
+    lead="One superfamily, fourteen roles. The interface is dense with figures, so sizes stay small and steady; hierarchy comes from weight and color more than from size."
+  />
+
+  <Section title="Families" id="families">
+    <ul class="families" role="list">
+      {
+        families.map(({ name, cssVar, sample, use }) => (
+          <li>
+            <p class="family-sample" style={`font-family: var(${cssVar})`}>{sample}</p>
+            <h3>{name}</h3>
+            <p>{use}</p>
+            <code>{cssVar}</code>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section title="Roles" id="roles">
+    <p class="prose">
+      Names follow Material 3: headline, title, body and label, from larger to smaller and from reading to scanning. Two
+      roles are Sonar-DB’s own: <code>caption</code> for units in pills and <code>data</code> for chart axes. Each role is a
+      font shorthand plus its tracking.
+    </p>
+    <div class="table-wrap" data-scroll-region data-label="Type roles">
+      <table>
+        <caption class="visually-hidden">Type roles</caption>
+        <thead>
+          <tr>
+            <th scope="col">Role</th>
+            <th scope="col">Sample</th>
+            <th scope="col">Size / line</th>
+            <th scope="col">Weight</th>
+            <th scope="col">Tracking</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            roles.map((role) => (
+              <tr>
+                <th scope="row">
+                  <code>{role.name}</code>
+                  <p>{role.description}</p>
+                </th>
+                <td>
+                  <span class:list={['sample', role.className]}>{samples[role.name]}</span>
+                </td>
+                <td class="spec">
+                  {role.size} / {role.lineHeight} px
+                  <span>{role.family}{role.uppercase && ', uppercase'}</span>
+                </td>
+                <td class="spec">{role.weight}</td>
+                <td class="spec">{role.tracking === 0 ? '0' : `${role.tracking} px`}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section title="In code" id="code">
+    <p class="prose">Use the class for markup you control, or the two custom properties inside a component’s styles.</p>
+    <CodeBlock code={usage} language="css" />
+  </Section>
+
+  <Section title="Guidelines" id="guidelines">
+    <ul class="prose">
+      <li>Join a figure and its unit with a non-breaking space, <code>1,420&amp;nbsp;plt</code>, so they never wrap apart.</li>
+      <li>Use color, not size, to step down: a tertiary date next to a strong figure reads as secondary at the same size.</li>
+      <li>Keep uppercase to the two roles that define it. Everything else is sentence case.</li>
+      <li>Titles are short nouns (Orders, Daily shipments). Actions are verbs (Create order, Release stock).</li>
+    </ul>
+  </Section>
+</Docs>
+
+<style>
+  .families {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: var(--sonar-space-20);
+    padding: 0;
+    list-style: none;
+  }
+
+  .families li {
+    padding: var(--sonar-space-24);
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  .family-sample {
+    min-height: 2.4em;
+    color: var(--sonar-color-text-strong);
+    font-size: 26px;
+    font-weight: var(--sonar-font-weight-medium);
+    line-height: 1.15;
+  }
+
+  .families h3 {
+    margin-top: var(--sonar-space-24);
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+  }
+
+  .families p:not(.family-sample) {
+    margin: var(--sonar-space-4) 0 var(--sonar-space-12);
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-body-md);
+  }
+
+  .families code {
+    color: var(--sonar-color-text-tertiary);
+    font-size: 11px;
+  }
+
+  .table-wrap {
+    /* One axis only: wide content scrolls sideways; nothing scrolls or bounces up and down */
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: var(--sonar-space-16);
+    border-bottom: 1px solid var(--sonar-color-divider);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  thead th {
+    padding-block: var(--sonar-space-12);
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  tbody th {
+    width: 30%;
+    font-weight: inherit;
+  }
+
+  tbody th code {
+    font: 500 12px/1.4 var(--sonar-font-family-mono);
+  }
+
+  tbody th p {
+    margin-top: var(--sonar-space-4);
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-body-md);
+  }
+
+  .sample {
+    color: var(--sonar-color-text-strong);
+    white-space: pre;
+  }
+
+  .spec {
+    color: var(--sonar-color-text-default);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .spec span {
+    display: block;
+    margin-top: var(--sonar-space-2);
+    color: var(--sonar-color-text-tertiary);
+  }
+</style>

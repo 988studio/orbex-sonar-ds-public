@@ -1,0 +1,330 @@
+{
+  "color": {
+    "$type": "color",
+    "$description": "Semantic color roles, light theme. Components use these, never the palette.",
+    "accent": {
+      "$root": {
+        "$value": "{palette.green.50}",
+        "$description": "Brand green: primary buttons, active navigation, selected controls and link icons."
+      },
+      "container": {
+        "$value": "{palette.green.91}",
+        "$description": "Soft accent background: drop placeholders, the slot a card lands in while the overview is edited."
+      },
+      "tonal": {
+        "$value": "{palette.green.90}",
+        "$description": "Tonal fill for the selected item in navigation and segmented controls."
+      },
+      "inverse": {
+        "$value": "{palette.green.81}",
+        "$description": "Accent on inverse surfaces, such as the action in a toast."
+      }
+    },
+    "on": {
+      "accent": {
+        "$value": "{palette.white}",
+        "$description": "Text and icons on the accent fill."
+      },
+      "accent-tonal": {
+        "$value": "{palette.green.11}",
+        "$description": "Text and icons on the tonal accent fill."
+      },
+      "emphasis": {
+        "$value": "{palette.white}",
+        "$description": "Text on saturated fills (accent or danger) that stays white in both themes, such as badges."
+      }
+    },
+    "danger": {
+      "$root": {
+        "$value": "{palette.red.50}",
+        "$description": "Delays, overdue items, alerts and destructive actions: fills, icons and chart marks."
+      },
+      "solid": {
+        "$value": "{palette.red.50}",
+        "$description": "Danger fill that carries text, such as notification badges: white on it reaches 4.5:1 in both themes."
+      },
+      "container": {
+        "$value": "{palette.red.50}",
+        "$extensions": {
+          "sonar-ds": {
+            "alpha": 0.12
+          }
+        },
+        "$description": "Background of alert notices."
+      }
+    },
+    "warning": {
+      "$root": {
+        "$value": "{palette.orange.77}",
+        "$description": "Pending and on-hold states: dots and icons."
+      },
+      "container": {
+        "$value": "{palette.orange.77}",
+        "$extensions": {
+          "sonar-ds": {
+            "alpha": 0.16
+          }
+        },
+        "$description": "Background of warning notices."
+      }
+    },
+    "success": {
+      "container": {
+        "$value": "{palette.green.50}",
+        "$extensions": {
+          "sonar-ds": {
+            "alpha": 0.1
+          }
+        },
+        "$description": "Background of success notices."
+      }
+    },
+    "text": {
+      "$description": "Emphasis levels, defined by contrast so both themes read alike. Every level meant to be read passes WCAG AA (4.5:1) on every surface, containers included. Disabled is exempt in WCAG, and is kept at 3:1 so it can still be read.",
+      "strong": {
+        "$value": "{palette.neutral.10}",
+        "$description": "Titles and key figures."
+      },
+      "default": {
+        "$value": "{palette.neutral.21}",
+        "$description": "Body text."
+      },
+      "secondary": {
+        "$value": "{palette.neutral-light.28}",
+        "$description": "Navigation at rest, secondary text and icons."
+      },
+      "muted": {
+        "$value": "{palette.neutral-light.30}",
+        "$description": "Body text one step quieter than default, such as the reading of a search."
+      },
+      "tertiary": {
+        "$value": "{palette.neutral.43}",
+        "$description": "Placeholders, hints and inactive legend entries: the faintest text, still 4.5:1."
+      },
+      "meta": {
+        "$value": "{color.text.tertiary}",
+        "$description": "Metadata and small labels: dates, units, supporting figures. The same as tertiary in light, where the product’s own gray falls below 4.5:1; quieter than tertiary in dark."
+      },
+      "placeholder": {
+        "$value": "{color.text.tertiary}",
+        "$description": "Placeholder text in fields. Placeholders are text, so they read at the tertiary level; a role of its own lets fields change it without touching tertiary."
+      },
+      "disabled": {
+        "$value": "{palette.neutral-light.76}",
+        "$description": "Disabled controls. Exempt from contrast in WCAG; the control keeps its outline or shape so it still reads as present."
+      },
+      "inverse": {
+        "$value": "{palette.neutral.95}",
+        "$description": "Text on inverse surfaces: tooltips, toasts."
+      },
+      "accent": {
+        "$value": "{palette.green.46}",
+        "$description": "Accent-colored text: positive figures, links."
+      },
+      "danger": {
+        "$value": "{palette.red.46}",
+        "$description": "Danger-colored text."
+      },
+      "warning": {
+        "$value": "{palette.orange.46}",
+        "$description": "Warning-colored text."
+      }
+    },
+    "surface": {
+      "canvas": {
+        "$value": "{palette.gray.91}",
+        "$description": "Behind the application frame."
+      },
+      "page": {
+        "$value": "{palette.gray.97}",
+        "$description": "Dashboard background."
+      },
+      "raised": {
+        "$value": "{palette.white}",
+        "$description": "Top bar and small raised controls."
+      },
+      "card": {
+        "$value": "{palette.gray.99}",
+        "$description": "Cards, panels and sheets."
+      },
+      "container": {
+        "$value": "{palette.neutral.91}",
+        "$description": "Segmented tracks, neutral notices and chips."
+      },
+      "container-low": {
+        "$value": "{palette.neutral.93}",
+        "$description": "Fields, neutral notices, icon wells."
+      },
+      "well": {
+        "$value": "{palette.neutral.93}",
+        "$description": "Product thumbnails and add buttons."
+      },
+      "well-hover": {
+        "$value": "{palette.neutral.90}",
+        "$description": "Hover on a control drawn on the well, such as New order in the Orders card (v38 .addbtn:hover). Since 1.1."
+      },
+      "menu": {
+        "$value": "{palette.neutral.95}",
+        "$description": "Dropdown menus."
+      },
+      "hover": {
+        "$value": "{palette.neutral.96}",
+        "$description": "Row under the pointer."
+      },
+      "selected": {
+        "$value": "{palette.neutral.96}",
+        "$description": "Row whose detail panel is open."
+      },
+      "search-head": {
+        "$value": "{palette.neutral-light.96}",
+        "$description": "Head row of search results: the status line (“Smart search · …”). Since 1.1."
+      },
+      "search-active": {
+        "$value": "{palette.neutral-light.91}",
+        "$description": "The highlighted search result, the one Enter chooses. Since 1.1."
+      },
+      "inverse": {
+        "$value": "{palette.neutral-subdued.20}",
+        "$description": "Tooltips and toasts."
+      }
+    },
+    "scrim": {
+      "$value": "{palette.neutral-light.7}",
+      "$extensions": {
+        "sonar-ds": {
+          "alpha": 0.22
+        }
+      },
+      "$description": "Veil behind modal sheets and drawers."
+    },
+    "divider": {
+      "$value": "{palette.neutral.88}",
+      "$description": "Rules between rows and blocks."
+    },
+    "border": {
+      "strong": {
+        "$value": "{palette.neutral.10}",
+        "$description": "Outlined buttons, fields on hover."
+      },
+      "emphasis": {
+        "$value": "{palette.neutral.46}",
+        "$description": "Dotted connectors, pending route segments, hover borders."
+      },
+      "control": {
+        "$value": "{palette.neutral.59}",
+        "$description": "Boundaries of fields, checkboxes and switches. At least 3:1 on card (WCAG 1.4.11)."
+      },
+      "muted": {
+        "$value": "{palette.neutral.76}",
+        "$description": "Sidebar separators."
+      },
+      "subtle": {
+        "$value": "{palette.neutral.84}",
+        "$description": "Dotted list separators."
+      },
+      "faint": {
+        "$value": "{palette.neutral.90}",
+        "$description": "Separators inside grouped controls."
+      }
+    },
+    "fill": {
+      "strong": {
+        "$value": "{palette.neutral.10}",
+        "$description": "Today marker, text cursor."
+      },
+      "faint": {
+        "$value": "{palette.neutral.59}",
+        "$description": "Neutral status dots, switch thumb."
+      },
+      "muted": {
+        "$value": "{palette.neutral.76}",
+        "$description": "Inactive segments of bars and progress."
+      },
+      "subtle": {
+        "$value": "{palette.neutral.84}",
+        "$description": "Disabled buttons, calendar dots."
+      }
+    },
+    "state": {
+      "hover": {
+        "$value": "{palette.green.50}",
+        "$extensions": {
+          "sonar-ds": {
+            "alpha": 0.08
+          }
+        },
+        "$description": "State layer for hover on icon buttons and list items."
+      },
+      "pressed": {
+        "$value": "{palette.green.50}",
+        "$extensions": {
+          "sonar-ds": {
+            "alpha": 0.12
+          }
+        },
+        "$description": "State layer for pressed and active."
+      },
+      "on-accent-hover": {
+        "$value": "{palette.white}",
+        "$extensions": {
+          "sonar-ds": {
+            "alpha": 0.1
+          }
+        },
+        "$description": "State layer for hover on accent fills."
+      },
+      "on-accent-pressed": {
+        "$value": "{palette.white}",
+        "$extensions": {
+          "sonar-ds": {
+            "alpha": 0.12
+          }
+        },
+        "$description": "State layer for pressed on accent fills."
+      }
+    },
+    "chart": {
+      "primary": {
+        "$value": "{color.accent}",
+        "$description": "First series."
+      },
+      "secondary": {
+        "$value": "{palette.black}",
+        "$description": "Second series (cumulative)."
+      },
+      "alert": {
+        "$value": "{color.danger}",
+        "$description": "Values that need attention, such as stock on hold."
+      },
+      "rest": {
+        "$value": "{palette.neutral.76}",
+        "$description": "Remainder of a whole: the rest of a donut or bar."
+      },
+      "grid": {
+        "$value": "{palette.neutral.90}",
+        "$description": "Grid lines."
+      },
+      "axis": {
+        "$value": "{color.text.default}",
+        "$description": "Axis figures."
+      },
+      "tip-shadow": {
+        "$value": "{palette.black}",
+        "$extensions": {
+          "sonar-ds": {
+            "alpha": 0.12
+          }
+        },
+        "$description": "The chart bubble’s drop shadow; none in dark, where the bubble is light."
+      }
+    },
+    "focus": {
+      "$value": "{color.accent}",
+      "$description": "Keyboard focus ring. At least 3:1 on every surface (WCAG 2.4.13)."
+    },
+    "scrollbar": {
+      "$value": "{palette.neutral.90}",
+      "$description": "Scroll indicator thumb."
+    }
+  }
+}

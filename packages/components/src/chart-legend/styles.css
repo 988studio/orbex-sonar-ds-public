@@ -1,0 +1,40 @@
+/* Chart legend: the key to a chart's colors, in the same chart roles as the tick bar and the ring. */
+@layer sonar.components {
+  .sonar-chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sonar-space-4) var(--sonar-space-16);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sonar-chart-legend > li {
+    display: inline-flex;
+    gap: var(--sonar-space-6);
+    align-items: center;
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-label-sm);
+    letter-spacing: var(--sonar-type-label-sm-tracking);
+  }
+
+  .sonar-chart-legend > li::before {
+    content: '';
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--_dot);
+  }
+
+  .sonar-chart-legend > [data-tone='accent'] { --_dot: var(--sonar-color-chart-primary); }
+  .sonar-chart-legend > [data-tone='strong'] { --_dot: var(--sonar-color-chart-secondary); }
+  .sonar-chart-legend > [data-tone='muted'] { --_dot: var(--sonar-color-chart-rest); }
+  .sonar-chart-legend > [data-tone='danger'] { --_dot: var(--sonar-color-chart-alert); }
+  .sonar-chart-legend > [data-tone='warning'] { --_dot: var(--sonar-color-warning); }
+
+  .sonar-chart-legend-value {
+    color: var(--sonar-color-text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+}

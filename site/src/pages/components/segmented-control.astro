@@ -1,0 +1,33 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Units from '../../demos/segmented-control/Units.tsx'
+import unitsCode from '../../demos/segmented-control/Units.tsx?raw'
+import Views from '../../demos/segmented-control/Views.tsx'
+import viewsCode from '../../demos/segmented-control/Views.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import { SegmentedStates } from '../../demos/segmented-control/Specimens.tsx'
+---
+
+<ComponentDoc
+  entry="segmented-control"
+  lead="One choice among two to five, drawn as pills on a well: the unit figures are shown in, the view of a list. Native radios underneath."
+>
+  <Demo title="With a legend" code={unitsCode}><Units /></Demo>
+  <Demo title="Icons only, small" code={viewsCode}><Views /></Demo>
+  <SpecimenFigure slot="specimens" title="Sizes, content and states"><SegmentedStates /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>The choice applies at once. More than five options is a select.</li>
+      <li>Icons only when each icon is unmistakable in its context; every option keeps a label for assistive technology.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>A <code>{'<fieldset>'}</code> named by its legend, with one native radio per option: arrow keys move the choice, Tab leaves the group.</li>
+    <li>The legend can be hidden visually and still names the group.</li>
+    <li>It submits with a form without any script, under its <code>name</code>.</li>
+  </ul>
+</ComponentDoc>

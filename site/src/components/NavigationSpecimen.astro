@@ -1,0 +1,636 @@
+---
+/**
+ * A schematic window of one size class, drawn at real size from the layout tokens and scaled to fit.
+ * The navigation and the details panel work as they do in the product; the controls under it are the
+ * accessible way to drive them, and the drawing itself is decorative.
+ */
+import type { Card } from '../lib/overview-grid.ts'
+
+interface Props {
+  kind: 'bar' | 'rail' | 'sidebar'
+  /** Size class whose margins and top bar the window uses */
+  sizeClass: string
+  width: number
+  height: number
+  columns: Card[][]
+  maxZoom: number
+  label: string
+}
+
+const { kind, sizeClass, width, height, columns, maxZoom, label } = Astro.props
+const id = `specimen-${sizeClass}`
+const destinations = 8
+const navigationAction = { bar: 'Open the menu', rail: 'Expand the rail', sidebar: 'Collapse the sidebar' }[kind]
+const style = [
+  `--window-width: ${width}px`,
+  `--window-height: ${height}px`,
+  `--zoom: ${maxZoom}`,
+  `--margin: var(--sonar-layout-margin-${sizeClass})`,
+  `--top-bar: var(--sonar-layout-bar-top-${kind === 'bar' ? 'compact' : 'medium'})`,
+  `--columns: ${columns.length}`,
+].join('; ')
+---
+
+<figure class="specimen" data-kind={kind} data-max-zoom={maxZoom} style={style}>
+  <div class="viewport">
+    <div class="window" aria-hidden="true">
+      <div class="navigation" data-part="navigation">
+        <span class="brand"></span>
+        {
+          Array.from({ length: destinations }, (_, index) => (
+            <span class:list={['destination', { active: index === 0 }]}>
+              <i></i>
+              <b></b>
+            </span>
+          ))
+        }
+        {kind !== 'bar' && <span class="toggle" data-action="navigation"><i></i></span>}
+      </div>
+      <div class="main">
+        <div class="top-bar">
+          {/* Phones: the brand, the account selector and search; alerts, the assistant and the account live in the
+              bottom bar */}
+          {kind === 'bar' && <span class="brand"></span>}
+          {kind === 'bar' && <span class="accounts"></span>}
+          <span class="search"></span>
+          {kind !== 'bar' && <span class="icon"></span>}
+          {kind !== 'bar' && <span class="icon"></span>}
+          {kind !== 'bar' && <span class="avatar"></span>}
+        </div>
+        <div class="content">
+          {
+            columns.map((column) => (
+              <div class="column">
+                {column.map(({ id: cardId, size }) => (
+                  <span class="card" style={`height: var(--sonar-layout-card-${size})`} data-card={cardId}>
+                    <b></b>
+                    <i></i>
+                    {cardId === 'orders' && <span class="details" data-action="details"></span>}
+                  </span>
+                ))}
+              </div>
+            ))
+          }
+        </div>
+      </div>
+      {
+        kind === 'bar' && (
+          <div class="bottom-bar">
+            {/* Alerts with a count, Assistant, Edit, Account, and Menu with a dot, at the end */}
+            {Array.from({ length: 5 }, (_, index) => (
+              <span class="destination" data-action={index === 4 ? 'navigation' : undefined}>
+                <i></i>
+                {index === 0 && <em></em>}
+                {index === 4 && <s></s>}
+                <b></b>
+              </span>
+            ))}
+          </div>
+        )
+      }
+      <div class="scrim" data-action="close"></div>
+      <div class="sheet">
+        {kind === 'bar' && <span class="handle"></span>}
+        <b></b>
+        <i></i>
+        <i></i>
+        <i></i>
+      </div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="label">{label}</span>
+    <span class="controls">
+      <button type="button" aria-pressed="false" data-control="navigation" aria-controls={id}>{navigationAction}</button>
+      <button type="button" aria-pressed="false" data-control="details" aria-controls={id}>Open details</button>
+    </span>
+    <span class="visually-hidden" id={id} aria-live="polite"></span>
+  </figcaption>
+</figure>
+
+<script>
+  /* Each specimen keeps two states, as the product does: navigation open (or, on desktops, collapsed) and details open */
+  for (const specimen of document.querySelectorAll<HTMLElement>('.specimen')) {
+    const maxZoom = Number(specimen.dataset.maxZoom)
+    const status = specimen.querySelector<HTMLElement>('[aria-live]')!
+    const controls = {
+      navigation: specimen.querySelector<HTMLButtonElement>('[data-control="navigation"]')!,
+      details: specimen.querySelector<HTMLButtonElement>('[data-control="details"]')!,
+    }
+    const kind = specimen.dataset.kind as 'bar' | 'rail' | 'sidebar'
+    const desktop = kind === 'sidebar'
+    const labels = {
+      navigation: {
+        bar: ['Open the menu', 'Close the menu'],
+        rail: ['Expand the rail', 'Fold the rail'],
+        sidebar: ['Collapse the sidebar', 'Expand the sidebar'],
+      }[kind],
+      details: ['Open details', 'Close details'],
+    }
+
+    function set(part: 'navigation' | 'details', on: boolean) {
+      specimen.toggleAttribute(`data-${part}`, on)
+      controls[part].setAttribute('aria-pressed', String(on))
+      controls[part].textContent = labels[part][on ? 1 : 0]
+      if (on && part === 'details' && !desktop) set('navigation', false)
+      if (on && part === 'navigation' && !desktop) set('details', false)
+      status.textContent = on
+        ? part === 'details' ? 'Details panel open' : desktop ? 'Sidebar collapsed to the rail' : 'Navigation open'
+        : ''
+    }
+    const toggle = (part: 'navigation' | 'details') => set(part, !specimen.hasAttribute(`data-${part}`))
+
+    controls.navigation.addEventListener('click', () => toggle('navigation'))
+    controls.details.addEventListener('click', () => toggle('details'))
+    /* The drawing answers the pointer too: menu, rail toggle, the card’s details button and the scrim */
+    specimen.querySelector('.window')!.addEventListener('click', (event) => {
+      const action = (event.target as Element).closest<HTMLElement>('[data-action]')?.dataset.action
+      if (action === 'navigation' || action === 'details') toggle(action)
+      if (action === 'close') {
+        set('details', false)
+        if (!desktop) set('navigation', false)
+      }
+    })
+    specimen.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return
+      set('details', false)
+      if (!desktop) set('navigation', false)
+    })
+
+    /* Zoom the real-size window to the space available, up to its design zoom */
+    const width = parseFloat(getComputedStyle(specimen).getPropertyValue('--window-width'))
+    new ResizeObserver(([entry]) => {
+      specimen.style.setProperty('--zoom', String(Math.min(maxZoom, entry.contentRect.width / width)))
+    }).observe(specimen)
+  }
+</script>
+
+<style>
+  /* The window is zoomed to the specimen’s width: a column that can shrink keeps that measure from feeding itself */
+  .specimen {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sonar-space-16);
+    justify-items: start;
+    min-width: 0;
+  }
+
+  .viewport {
+    max-width: 100%;
+    width: calc(var(--window-width) * var(--zoom));
+    height: calc(var(--window-height) * var(--zoom));
+    overflow: hidden;
+    border-radius: var(--sonar-shape-corner-large);
+    box-shadow: 0 0 0 1px var(--sonar-color-divider), var(--sonar-elevation-2);
+  }
+
+  /* Everything inside is drawn in window pixels, with the product’s own tokens, then scaled */
+  .window {
+    position: relative;
+    display: flex;
+    width: var(--window-width);
+    height: var(--window-height);
+    overflow: hidden;
+    /* One scale for the whole window (not CSS zoom, which Safari lays out again at the zoomed size) */
+    transform: scale(var(--zoom));
+    transform-origin: 0 0;
+    /* Bars, drawers and sheets meet the edge: the clip keeps the corners round while they move, in every browser.
+       It sits here, not on the viewport, so the viewport’s shadow is not clipped. */
+    clip-path: inset(0 round calc(var(--sonar-shape-corner-large) / var(--zoom)));
+    background: var(--sonar-color-surface-page);
+    --motion: var(--sonar-motion-spatial-default-duration) var(--sonar-motion-spatial-default-easing);
+    --fade: var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing);
+  }
+
+  .window i,
+  .window b {
+    display: block;
+    border-radius: 999px;
+  }
+
+  /* ---------- Navigation ---------- */
+
+  .navigation {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: var(--sonar-space-4);
+    width: var(--sonar-layout-sidebar);
+    padding: var(--sonar-space-16) var(--sonar-space-10);
+    overflow: hidden;
+    background: var(--sonar-color-surface-card);
+    box-shadow: 1px 0 0 var(--sonar-color-divider);
+    transition: width var(--motion), translate var(--motion), box-shadow var(--fade);
+  }
+
+  .navigation .brand {
+    width: 96px;
+    height: 28px;
+    margin: 0 var(--sonar-space-6) var(--sonar-space-20);
+    border-radius: var(--sonar-shape-corner-small);
+    background: var(--sonar-color-accent);
+  }
+
+  .destination {
+    display: flex;
+    flex: none;
+    gap: var(--sonar-space-12);
+    align-items: center;
+    height: 48px;
+    padding: 0 var(--sonar-space-10);
+    border-radius: var(--sonar-shape-corner-full);
+  }
+
+  .destination i {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    background: var(--sonar-color-fill-muted);
+  }
+
+  .destination b {
+    width: 104px;
+    height: 10px;
+    background: var(--sonar-color-fill-subtle);
+    transition: opacity var(--fade);
+  }
+
+  .destination.active {
+    background: var(--sonar-color-accent-tonal);
+  }
+
+  .destination.active i {
+    background: var(--sonar-color-accent);
+  }
+
+  .toggle {
+    position: absolute;
+    top: 14px;
+    right: 10px;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .toggle i {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 2px var(--sonar-color-text-secondary);
+  }
+
+  /* Rail: icons only, the toggle where the brand was */
+  [data-kind='rail'] .navigation,
+  [data-kind='sidebar'][data-navigation] .navigation {
+    width: var(--sonar-layout-rail);
+  }
+
+  [data-kind='rail'] .destination b,
+  [data-kind='sidebar'][data-navigation] .destination b,
+  [data-kind='rail'] .navigation .brand,
+  [data-kind='sidebar'][data-navigation] .navigation .brand {
+    opacity: 0;
+  }
+
+  /* Tablets: the full sidebar opens over the content; the columns stay where they are */
+  [data-kind='rail'] .navigation {
+    position: absolute;
+    inset: 0 auto 0 0;
+  }
+
+  [data-kind='rail'] .main {
+    margin-left: var(--sonar-layout-rail);
+  }
+
+  [data-kind='rail'][data-navigation] .navigation {
+    width: var(--sonar-layout-sidebar);
+    box-shadow: var(--sonar-elevation-panel);
+  }
+
+  [data-kind='rail'][data-navigation] .destination b,
+  [data-kind='rail'][data-navigation] .navigation .brand {
+    opacity: 1;
+  }
+
+  /* Phones: the sidebar is a drawer from the left, at most 84% of the window */
+  [data-kind='bar'] .navigation {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: min(var(--sonar-layout-drawer), 84%);
+    translate: -102% 0;
+  }
+
+  [data-kind='bar'][data-navigation] .navigation {
+    translate: 0 0;
+    box-shadow: var(--sonar-elevation-panel);
+  }
+
+  /* ---------- Bars and content ---------- */
+
+  .main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .top-bar {
+    display: flex;
+    flex: none;
+    gap: var(--sonar-space-12);
+    justify-content: flex-end;
+    align-items: center;
+    height: var(--top-bar);
+    padding: 0 var(--margin);
+    background: var(--sonar-color-surface-raised);
+    box-shadow: 0 1px 0 var(--sonar-color-divider);
+  }
+
+  .top-bar .accounts {
+    width: 86px;
+    height: 12px;
+    margin-right: auto;
+    border-radius: var(--sonar-shape-corner-small);
+    background: var(--sonar-color-accent-tonal);
+  }
+
+  .top-bar .brand {
+    width: 80px;
+    height: 24px;
+    border-radius: var(--sonar-shape-corner-small);
+    background: var(--sonar-color-accent);
+  }
+
+  .search {
+    width: 334px;
+    min-width: 0;
+    height: 44px;
+    margin-right: var(--sonar-space-12);
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-surface-container-low);
+  }
+
+  [data-kind='bar'] .search {
+    width: 40px;
+    margin: 0;
+  }
+
+  .icon,
+  .avatar {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--sonar-color-surface-container-low);
+  }
+
+  .avatar {
+    background: var(--sonar-color-accent-tonal);
+  }
+
+  .content {
+    display: grid;
+    flex: 1;
+    grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+    gap: var(--sonar-layout-gap);
+    align-items: start;
+    padding: var(--margin);
+    overflow: hidden;
+  }
+
+  .column {
+    display: grid;
+    gap: var(--sonar-layout-gap);
+  }
+
+  .card {
+    position: relative;
+    display: grid;
+    gap: var(--sonar-space-12);
+    align-content: start;
+    padding: var(--sonar-space-24) var(--sonar-space-28);
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  .card b {
+    width: 45%;
+    height: 14px;
+    background: var(--sonar-color-fill-muted);
+  }
+
+  .card i {
+    width: 70%;
+    height: 10px;
+    background: var(--sonar-color-fill-subtle);
+  }
+
+  .details {
+    position: absolute;
+    right: var(--sonar-space-28);
+    bottom: var(--sonar-space-24);
+    width: 96px;
+    height: 36px;
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-accent);
+    cursor: pointer;
+  }
+
+  .bottom-bar {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 2;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: var(--sonar-layout-bar-bottom);
+    background: var(--sonar-color-surface-raised);
+    box-shadow: 0 -1px 0 var(--sonar-color-divider);
+  }
+
+  .bottom-bar .destination {
+    position: relative;
+    flex-direction: column;
+    gap: var(--sonar-space-4);
+    justify-content: center;
+    width: 64px;
+    height: 48px;
+    padding: 0;
+    border-radius: var(--sonar-shape-corner-medium);
+  }
+
+  .bottom-bar .destination b {
+    width: 36px;
+    height: 6px;
+  }
+
+  .bottom-bar .destination.active {
+    background: none;
+  }
+
+  /* The active destination’s indicator: a tonal pill behind its icon */
+  .bottom-bar .destination.active i {
+    width: 56px;
+    height: 28px;
+    border-radius: 999px;
+    background: var(--sonar-color-accent-tonal);
+  }
+
+  .bottom-bar [data-action] {
+    cursor: pointer;
+  }
+
+  .bottom-bar em {
+    position: absolute;
+    top: 2px;
+    left: calc(50% + 4px);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--sonar-color-danger-solid);
+  }
+
+  .bottom-bar s {
+    position: absolute;
+    top: 6px;
+    left: calc(50% + 6px);
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--sonar-color-danger);
+  }
+
+  /* ---------- Scrim and details ---------- */
+
+  .scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: var(--sonar-color-scrim);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--fade);
+  }
+
+  /* Over the content: tablet navigation, phone drawer, and details on every class */
+  [data-kind='rail'][data-navigation] .scrim,
+  [data-kind='bar'][data-navigation] .scrim {
+    opacity: 1;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .sheet {
+    position: absolute;
+    z-index: 5;
+    display: grid;
+    gap: var(--sonar-space-16);
+    align-content: start;
+    padding: var(--sonar-space-28) var(--sonar-space-32);
+    background: var(--sonar-color-surface-card);
+    transition: translate var(--motion), box-shadow var(--fade);
+  }
+
+  .sheet b {
+    width: 50%;
+    height: 18px;
+    background: var(--sonar-color-fill-muted);
+  }
+
+  .sheet i {
+    width: 80%;
+    height: 10px;
+    background: var(--sonar-color-fill-subtle);
+  }
+
+  /* Tablets and desktops: a side sheet from the right, under the top bar, with no scrim: the overview stays in view */
+  [data-kind='rail'] .sheet,
+  [data-kind='sidebar'] .sheet {
+    inset: var(--top-bar) 0 0 auto;
+    width: 402px;
+    box-shadow: var(--sonar-elevation-panel);
+    border-radius: var(--sonar-shape-corner-extra-large) 0 0 var(--sonar-shape-corner-extra-large);
+    translate: 102% 0;
+  }
+
+  /* Phones: a bottom sheet with a handle */
+  [data-kind='bar'] .sheet {
+    inset: var(--top-bar) 0 0;
+    box-shadow: var(--sonar-elevation-sheet-up);
+    padding-top: var(--sonar-space-12);
+    border-radius: var(--sonar-shape-corner-extra-large) var(--sonar-shape-corner-extra-large) 0 0;
+    translate: 0 102%;
+  }
+
+  .handle {
+    justify-self: center;
+    width: 32px;
+    height: 4px;
+    margin-bottom: var(--sonar-space-12);
+    border-radius: 2px;
+    background: var(--sonar-color-fill-faint);
+  }
+
+  [data-details] .sheet {
+    translate: 0 0;
+    box-shadow: var(--sonar-elevation-panel);
+  }
+
+  [data-kind='bar'][data-details] .sheet {
+    box-shadow: var(--sonar-elevation-sheet-up);
+  }
+
+  /* ---------- Caption and controls ---------- */
+
+  figcaption {
+    display: grid;
+    gap: var(--sonar-space-12);
+  }
+
+  .label {
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-label-lg);
+    letter-spacing: var(--sonar-type-label-lg-tracking);
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sonar-space-8);
+  }
+
+  .controls button {
+    min-height: 40px;
+    padding: 0 var(--sonar-space-16);
+    border: 1px solid var(--sonar-color-border-control);
+    border-radius: var(--sonar-shape-corner-full);
+    background: none;
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-button);
+    letter-spacing: var(--sonar-type-button-tracking);
+    cursor: pointer;
+    transition: background-color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);
+  }
+
+  .controls button:hover {
+    background: var(--sonar-color-state-hover);
+  }
+
+  .controls button[aria-pressed='true'] {
+    border-color: transparent;
+    background: var(--sonar-color-accent-tonal);
+    color: var(--sonar-color-on-accent-tonal);
+  }
+
+  .controls button:focus-visible {
+    outline: 2px solid var(--sonar-color-accent);
+    outline-offset: 2px;
+  }
+</style>

@@ -1,0 +1,67 @@
+---
+/** One palette family as a strip of tones, darkest first. Derived tones carry their reason. */
+import { group, toneOf } from '../lib/tokens.ts'
+
+interface Props {
+  family: string
+}
+
+const { family } = Astro.props
+const tones = group(`palette.${family}`).map((doc) => ({
+  tone: toneOf(doc.name),
+  hex: doc.light.resolved as string,
+  cssVar: doc.cssVar,
+  note: doc.description,
+}))
+---
+
+<ol class="strip" aria-label={`${family}, ${tones.length} tones`}>
+  {
+    tones.map(({ tone, hex, cssVar, note }) => (
+      <li title={note}>
+        <span class="chip" style={`background: var(${cssVar})`} />
+        <span class="tone">{tone}</span>
+        <code>{hex}</code>
+        {note && <span class="visually-hidden">{note}</span>}
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: var(--sonar-space-12) var(--sonar-space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: grid;
+    gap: var(--sonar-space-2);
+  }
+
+  .chip {
+    height: 40px;
+    border-radius: var(--sonar-shape-corner-small);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sonar-color-text-strong) 10%, transparent);
+  }
+
+  li[title] .chip {
+    outline: 2px dashed var(--sonar-color-border-emphasis);
+    outline-offset: 2px;
+  }
+
+  .tone {
+    margin-top: var(--sonar-space-4);
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  code {
+    color: var(--sonar-color-text-tertiary);
+    font: 400 11px/1.3 var(--sonar-font-family-mono);
+  }
+</style>

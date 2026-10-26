@@ -1,0 +1,791 @@
+/* A card while the overview is edited, as the product draws it: a dashed accent edge, a pill to move it centered on
+   the top edge, a red remove button outside the top end corner, a pill to resize it centered on the bottom edge with
+   the size beside it. A card being moved lifts without its edge, its pill turns solid, and its slot shows the drop
+   placeholder. Shared by the state matrix of the Cards page and the live editing demo. */
+
+.edit-card {
+  --edit-placeholder: color-mix(in srgb, var(--sonar-color-accent-container) 55%, transparent);
+  --edit-pill-w: 36px;
+  --edit-pill-h: 16px;
+  --edit-x: 22px;
+
+  position: relative;
+  min-width: 0;
+}
+
+.edit-body {
+  position: relative;
+  height: 100%;
+}
+
+.edit-body > .sonar-card {
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.edit-card[data-editing] .edit-body > .sonar-card {
+  outline: 1px dashed var(--sonar-color-accent);
+  outline-offset: -1px;
+}
+
+/* In the demo grid the card is drawn at 1:1, with the overview's own heights; a resize eases to the new one */
+.edit-scale {
+  height: 100%;
+}
+
+.edit-card[data-editing] > .edit-body:has(> .edit-scale)::after,
+.edit-new-slot:has(.new-element:not([data-open]))::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border: 1px dashed var(--sonar-color-accent);
+  border-radius: var(--sonar-shape-corner-medium);
+  pointer-events: none;
+}
+
+.edit-card[data-lifted] > .edit-body::after {
+  display: none;
+}
+
+/* The pills: 36 × 16, an accent ring on the card's surface; solid accent while hovered, focused or held */
+.edit-handle {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: var(--edit-pill-w);
+  height: var(--edit-pill-h);
+  margin-left: calc(var(--edit-pill-w) / -2);
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--edit-pill-h) / 2);
+  background: var(--sonar-color-surface-card);
+  color: var(--sonar-color-accent);
+  box-shadow: inset 0 0 0 1px var(--sonar-color-accent);
+  cursor: grab;
+  touch-action: none;
+}
+
+/* A larger hit area than the pill, for pointers and fingers */
+.edit-handle::after,
+.edit-remove::after {
+  content: '';
+  position: absolute;
+  inset: -12px -6px;
+}
+
+/* For a finger, at least 44 × 44 px (1.0.0-alpha.20): the move pill 56 × 44, the remove button 44 × 44. Nothing is
+   drawn larger */
+@media (pointer: coarse) {
+  .edit-handle::after {
+    inset: -14px -10px;
+  }
+
+  .edit-remove::after {
+    inset: -11px;
+  }
+}
+
+.edit-handle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.edit-handle[data-handle='move'] {
+  top: calc(var(--edit-pill-h) / -2);
+}
+
+/* drag_indicator turned on its side: the dots run along the edge */
+.edit-handle[data-handle='move'] svg {
+  rotate: 90deg;
+}
+
+.edit-handle[data-handle='resize'] {
+  bottom: calc(var(--edit-pill-h) / -2);
+  cursor: ns-resize;
+}
+
+.edit-handle:hover,
+.edit-handle:focus-visible,
+.edit-handle[data-on],
+[data-preview~='hover'] > .edit-handle,
+[data-preview~='focus'] > .edit-handle {
+  background: var(--sonar-color-accent);
+  color: var(--sonar-color-on-accent);
+  box-shadow: none;
+  outline: none;
+}
+
+/* Remove: a red ring outside the top end corner; solid red while hovered or focused */
+.edit-remove {
+  position: absolute;
+  z-index: 3;
+  top: calc(var(--edit-x) / -2);
+  right: calc(var(--edit-x) / -2);
+  display: grid;
+  place-items: center;
+  width: var(--edit-x);
+  height: var(--edit-x);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--sonar-color-surface-card);
+  color: var(--sonar-color-danger);
+  box-shadow: inset 0 0 0 1px var(--sonar-color-danger);
+  cursor: pointer;
+}
+
+.edit-remove svg {
+  width: 15px;
+  height: 15px;
+}
+
+.edit-canvas[data-mode='tablet'] .edit-remove svg {
+  width: 18px;
+  height: 18px;
+}
+
+.edit-remove:hover,
+.edit-remove:focus-visible,
+[data-preview~='hover'] > .edit-remove {
+  background: var(--sonar-color-danger);
+  color: var(--sonar-color-on-emphasis);
+  box-shadow: none;
+  outline: none;
+}
+
+/* The size, in a ring beside the resize pill */
+.edit-size {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: -11px;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  margin-left: 26px;
+  border: 1px solid var(--sonar-color-accent);
+  border-radius: 50%;
+  background: var(--sonar-color-surface-card);
+  color: var(--sonar-color-accent);
+  font: 400 10px/1 var(--sonar-font-family-mono);
+  letter-spacing: -0.3px;
+  pointer-events: none;
+}
+
+/* While a card is resized, a label over the bottom pill names the size it takes, or says the columns now end level */
+.edit-guide {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: 32px;
+  display: flex;
+  gap: var(--sonar-space-4);
+  align-items: center;
+  height: 26px;
+  padding: 0 var(--sonar-space-10);
+  border: 1px solid var(--sonar-color-accent);
+  border-radius: 13px;
+  background: var(--sonar-color-surface-card);
+  color: var(--sonar-color-accent);
+  font: var(--sonar-font-weight-medium) 12px/1 var(--sonar-font-family-sans);
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  translate: -50% 0;
+}
+
+.edit-guide svg {
+  width: 14px;
+  height: 14px;
+}
+
+.edit-card:has(.edit-guide) .edit-size {
+  opacity: 0;
+}
+
+/* Lifted: the card rises to level 4 at 103 % (200 ms), without its dashed edge, and follows the pointer with its pill
+   solid. Dropped, it glides into its slot in 500 ms on the expressive spring and comes back to 100 %. */
+.edit-card .sonar-card {
+  transition:
+    scale var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing),
+    box-shadow var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing),
+    height 320ms var(--sonar-motion-spatial-default-easing);
+}
+
+.edit-card[data-lifted] > .edit-body {
+  z-index: 5;
+  translate: var(--drag-x, 0) var(--drag-y, 0);
+  cursor: grabbing;
+}
+
+.edit-card[data-settling] > .edit-body {
+  z-index: 5;
+  transition: translate var(--sonar-motion-spatial-expressive-duration) var(--sonar-motion-spatial-expressive-easing);
+}
+
+.edit-card[data-lifted] .sonar-card {
+  outline: 0;
+  box-shadow: var(--sonar-elevation-4);
+  scale: 1.03;
+}
+
+.edit-card[data-lifted] :is(.edit-remove, .edit-size, .edit-handle[data-handle='resize']) {
+  display: none;
+}
+
+/* The drop placeholder: where the card will land, as tall as the card */
+.edit-placeholder {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border: 1px dashed var(--sonar-color-accent);
+  border-radius: var(--sonar-shape-corner-medium);
+  background: var(--edit-placeholder);
+}
+
+/* New element: a card of size S at the foot of the shortest column, only while the layout is edited. Closed, a dashed
+   slot with a plus; open, the list of modules, which grows the card to fit */
+.edit-new-slot {
+  position: relative;
+}
+
+.new-element:not([data-open]) {
+  background: transparent;
+  box-shadow: none;
+}
+
+.new-element .sonar-card-header {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.new-element .sonar-card-body {
+  overflow: visible;
+}
+
+.new-element-add {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 6px;
+  border: 0;
+  background: none;
+  color: var(--sonar-color-text-tertiary);
+  font: 400 12px/1.2 var(--sonar-font-family-sans);
+  letter-spacing: -0.4px;
+  cursor: pointer;
+}
+
+.new-element-plus {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  color: var(--sonar-color-accent);
+  box-shadow: inset 0 0 0 1px var(--sonar-color-accent);
+  transition:
+    background-color var(--sonar-motion-effects-fast-duration) linear,
+    scale var(--sonar-motion-effects-fast-duration) ease-out;
+}
+
+.new-element-plus svg {
+  width: 28px;
+  height: 28px;
+}
+
+.new-element-add:hover .new-element-plus {
+  background: color-mix(in srgb, var(--sonar-color-accent) 8%, transparent);
+}
+
+/* On dark the plus sits on a faint accent, as in the product */
+[data-theme='dark'] .new-element-plus:where(:not([data-theme="dark"] [data-theme="light"] *)),
+[data-theme='dark'] .new-element-add:hover .new-element-plus:where(:not([data-theme="dark"] [data-theme="light"] *)) {
+  background: color-mix(in srgb, var(--sonar-color-accent) 10%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .new-element-plus:where(:not([data-theme="light"] *)),
+  :root:not([data-theme='light']) .new-element-add:hover .new-element-plus:where(:not([data-theme="light"] *)) {
+    background: color-mix(in srgb, var(--sonar-color-accent) 10%, transparent);
+  }
+}
+
+.new-element-add:active .new-element-plus {
+  scale: 0.94;
+}
+
+.new-element-add:focus-visible {
+  outline: 2px solid var(--sonar-color-accent);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+.new-element-lead {
+  margin: 0;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--sonar-color-divider);
+  color: var(--sonar-color-text-tertiary);
+  font: 400 12px/1.2 var(--sonar-font-family-sans);
+}
+
+.new-element-list {
+  margin-top: 2px;
+}
+
+.new-element-option {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 24px;
+  column-gap: 12px;
+  align-items: center;
+  height: 51px;
+  border-bottom: 1px solid var(--sonar-color-divider);
+  cursor: pointer;
+  transition: background-color var(--sonar-motion-effects-fast-duration) linear;
+  animation: new-element-in var(--sonar-motion-spatial-default-duration) var(--sonar-motion-spatial-default-easing) both;
+  animation-delay: calc(var(--i, 0) * 30ms);
+}
+
+.new-element-option[data-chosen] {
+  background: color-mix(in srgb, var(--sonar-color-accent) 8%, transparent);
+}
+
+.new-element-option[data-added] {
+  cursor: default;
+}
+
+@media (hover: hover) {
+  .new-element-option:not([data-added]):hover {
+    background: var(--sonar-color-surface-hover);
+  }
+
+  .new-element-option[data-chosen]:hover {
+    background: color-mix(in srgb, var(--sonar-color-accent) 12%, transparent);
+  }
+}
+
+.new-element-option:focus-visible {
+  outline: 2px solid var(--sonar-color-accent);
+  outline-offset: -2px;
+}
+
+.new-element-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--sonar-color-surface-well);
+  color: var(--sonar-color-text-default);
+}
+
+.new-element-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.new-element-name,
+.new-element-line {
+  display: block;
+  font: 400 12px/16px var(--sonar-font-family-sans);
+}
+
+.new-element-name {
+  color: var(--sonar-color-text-strong);
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.new-element-line {
+  margin-top: 1px;
+  color: var(--sonar-color-text-tertiary);
+}
+
+.new-element-option[data-added] :is(.new-element-name, .new-element-icon, .new-element-mark) {
+  opacity: 0.55;
+}
+
+.new-element-mark {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: var(--sonar-color-accent);
+}
+
+.new-element-mark svg {
+  width: 22px;
+  height: 22px;
+}
+
+.new-element-section {
+  margin: 0;
+  padding: 14px 0 6px;
+  border-bottom: 1px solid var(--sonar-color-divider);
+  color: var(--sonar-color-text-tertiary);
+  font: var(--sonar-font-weight-medium) 12px/1.2 var(--sonar-font-family-sans);
+}
+
+.new-element-foot {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 39px;
+  padding-top: 12px;
+}
+
+@keyframes new-element-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .new-element-plus {
+    transition: none;
+  }
+
+  .new-element-option {
+    animation: none;
+  }
+}
+
+/* ---------- The state matrix ---------- */
+
+.card-states {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+  gap: var(--sonar-space-24) var(--sonar-space-20);
+  padding: var(--sonar-space-12) var(--sonar-space-4) var(--sonar-space-4);
+}
+
+.card-state {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--sonar-space-8);
+  margin: 0;
+}
+
+.card-state figcaption {
+  color: var(--sonar-color-text-secondary);
+  font: var(--sonar-type-label-sm);
+  letter-spacing: var(--sonar-type-label-sm-tracking);
+}
+
+.card-state .edit-card {
+  height: 176px;
+  margin: 11px 11px 11px 0;
+}
+
+.card-state .sonar-card {
+  --_pad-x: var(--sonar-space-20);
+}
+
+.card-state .edit-card[data-lifted] {
+  --drag-x: 10px;
+  --drag-y: 8px;
+}
+
+/* Pins on the anatomy of a card in edit mode sit on the controls that stand out of the card */
+.anatomy-figure .edit-card .anatomy-pin {
+  z-index: 6;
+}
+
+/* ---------- The numbered anatomy ---------- */
+
+.anatomy {
+  display: grid;
+  grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+  gap: var(--sonar-space-32);
+  align-items: start;
+}
+
+.anatomy-figure {
+  position: relative;
+  padding: var(--sonar-space-24);
+  border-radius: var(--sonar-shape-corner-large);
+  background: var(--sonar-color-surface-page);
+}
+
+.anatomy-pin {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--sonar-shape-corner-full);
+  background: var(--sonar-color-accent);
+  color: var(--sonar-color-on-accent);
+  font: 600 11px/1 var(--sonar-font-family-sans);
+  box-shadow: 0 0 0 2px var(--sonar-color-surface-page);
+}
+
+.anatomy-keys {
+  display: grid;
+  gap: var(--sonar-space-12);
+  padding: 0;
+  counter-reset: part;
+}
+
+.anatomy-keys li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: var(--sonar-space-12);
+  font: var(--site-prose);
+}
+
+.anatomy-keys li::before {
+  content: counter(part);
+  counter-increment: part;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border-radius: var(--sonar-shape-corner-full);
+  background: var(--sonar-color-accent);
+  color: var(--sonar-color-on-accent);
+  font: 600 11px/1 var(--sonar-font-family-sans);
+}
+
+/* Measured on the page's own width: with the navigation beside it on tablets the page is narrower than the window
+   (1.0.0-alpha.21) */
+@container page (width < 728px) {
+  .anatomy {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- The editing demo on a desktop grid ---------- */
+
+.edit-demo {
+  display: grid;
+  gap: var(--sonar-space-16);
+  width: 100%;
+  min-width: 0;
+}
+
+/* The frame scrolls sideways; the canvas inside keeps the overview's real measures */
+.edit-frame {
+  min-width: 0;
+  overflow-x: auto;
+  border-radius: var(--sonar-shape-corner-large);
+  background: var(--sonar-color-surface-page);
+  overscroll-behavior-x: contain;
+}
+
+.edit-frame:focus-visible {
+  outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+  outline-offset: var(--sonar-focus-offset);
+}
+
+.edit-fit-box[style] {
+  /* Fitted: exactly the drawn size of the scaled canvas */
+  overflow: clip;
+}
+
+.edit-canvas {
+  box-sizing: border-box;
+  width: max-content;
+  padding: 24px 32px 32px;
+}
+
+/* Tablet: the frame is the 820 px screen, the rail on its left edge and 24 px margins after it */
+.edit-canvas[data-mode='tablet'] {
+  position: relative;
+  width: 820px;
+  padding: 24px 24px 32px 84px;
+}
+
+.edit-rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+}
+
+.edit-rail .oxa.app {
+  height: 100%;
+}
+
+.edit-fit {
+  display: inline-flex;
+  gap: var(--sonar-space-8);
+  align-items: center;
+  margin-inline-end: auto;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-label-md);
+  cursor: pointer;
+}
+
+.edit-fit input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--sonar-color-accent);
+}
+
+/* Tablet: larger handles for fingers, 44 × 20 pills and a 28 px remove button */
+.edit-canvas[data-mode='tablet'] .edit-card {
+  --edit-pill-w: 44px;
+  --edit-pill-h: 20px;
+  --edit-x: 28px;
+}
+
+.edit-demo-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sonar-space-12);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.edit-demo-title {
+  margin: 0;
+  font: var(--sonar-type-title-md);
+  letter-spacing: var(--sonar-type-title-md-tracking);
+}
+
+.edit-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 3), var(--col, 370px));
+  gap: 20px;
+  align-items: start;
+  margin-top: var(--sonar-space-16);
+}
+
+.edit-demo-title {
+  color: var(--sonar-color-text-strong);
+}
+
+.edit-column {
+  display: grid;
+  gap: var(--sonar-space-20);
+}
+
+
+/* The edit bar at the foot: what to do on the left, Reset to default, Cancel and Save layout on the right */
+.edit-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sonar-space-8) var(--sonar-space-16);
+  align-items: center;
+  justify-content: space-between;
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: var(--sonar-space-8) var(--sonar-space-32) var(--sonar-space-8) var(--sonar-space-24);
+  border-radius: 28px 28px 0 0;
+  background: var(--sonar-color-surface-card);
+  box-shadow: var(--sonar-elevation-edit-bar);
+  animation: edit-bar-in var(--sonar-motion-spatial-default-duration) var(--sonar-motion-spatial-default-easing);
+}
+
+.edit-bar-text {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sonar-space-2) var(--sonar-space-14);
+  align-items: baseline;
+  min-width: 0;
+}
+
+.edit-bar-text strong {
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-font-weight-semibold) 14px/1.4 var(--sonar-font-family-sans);
+  letter-spacing: -0.2px;
+}
+
+.edit-bar-text span {
+  color: var(--sonar-color-text-tertiary);
+  font: 400 12px/1.2 var(--sonar-font-family-sans);
+}
+
+.edit-bar-actions {
+  display: flex;
+  gap: var(--sonar-space-12);
+  align-items: center;
+}
+
+.edit-reset {
+  margin-right: var(--sonar-space-8);
+  padding: var(--sonar-space-4) 0;
+  border: 0;
+  background: none;
+  color: var(--sonar-color-text-secondary);
+  font: var(--sonar-font-weight-medium) 12px/1 var(--sonar-font-family-sans);
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.edit-reset:hover {
+  color: var(--sonar-color-text-strong);
+}
+
+.edit-reset:focus-visible {
+  outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+  outline-offset: var(--sonar-focus-offset);
+  border-radius: var(--sonar-shape-corner-small);
+}
+
+/* Cancel throws the draft away: an outlined button in danger */
+.sonar-button.edit-cancel {
+  --_edge: var(--sonar-color-danger);
+  --_ink: var(--sonar-color-text-danger);
+}
+
+.edit-bar-actions .sonar-button {
+  min-width: 96px;
+  justify-content: center;
+}
+
+@keyframes edit-bar-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--sonar-space-16);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edit-bar {
+    animation: none;
+  }
+
+  .edit-card .sonar-card,
+  .edit-card[data-settling] > .edit-body {
+    transition: none;
+  }
+}
+
+@media (width < 560px) {
+  .edit-bar-text span {
+    display: none;
+  }
+
+  .edit-bar {
+    padding-inline: var(--sonar-space-16);
+  }
+
+  .edit-bar-actions {
+    flex: 1;
+  }
+
+  .edit-reset {
+    margin-right: auto;
+  }
+
+  .edit-bar-actions .sonar-button {
+    min-width: 0;
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "layout": {
+    "$description": "Window size classes, as in Material 3, with thresholds tuned for a data-dense dashboard. A group keyed by size class is responsive: the build also writes one property that takes the value of the current class.",
+    "breakpoint": {
+      "$type": "dimension",
+      "$description": "Minimum window width of each size class. Compact starts at 0.",
+      "medium": { "$value": { "value": 768, "unit": "px" }, "$description": "Tablets: two columns, navigation as a rail." },
+      "expanded": { "$value": { "value": 1280, "unit": "px" }, "$description": "Desktops: three columns, full sidebar." },
+      "large": { "$value": { "value": 2048, "unit": "px" }, "$description": "Wide monitors: four columns, so a card never grows past 575 px." },
+      "extra-large": { "$value": { "value": 2650, "unit": "px" }, "$description": "Ultra-wide monitors: five columns, for the same reason." }
+    },
+    "columns": {
+      "$type": "number",
+      "$description": "Card columns of the overview grid.",
+      "compact": { "$value": 1 },
+      "medium": { "$value": 2 },
+      "expanded": { "$value": 3 },
+      "large": { "$value": 4 },
+      "extra-large": { "$value": 5 }
+    },
+    "margin": {
+      "$type": "dimension",
+      "$description": "Space between the content and the window edge, or the navigation.",
+      "compact": { "$value": { "value": 16, "unit": "px" } },
+      "medium": { "$value": { "value": 24, "unit": "px" } },
+      "expanded": { "$value": { "value": 32, "unit": "px" } }
+    },
+    "gap": { "$type": "dimension", "$value": { "value": 20, "unit": "px" }, "$description": "Between cards, in every size class." },
+    "sidebar": { "$type": "dimension", "$value": { "value": 224, "unit": "px" }, "$description": "Full navigation beside the content on desktops. On tablets it opens over the content." },
+    "rail": { "$type": "dimension", "$value": { "value": 60, "unit": "px" }, "$description": "Navigation as icons only: the rail on tablets and the collapsed sidebar on desktops." },
+    "drawer": { "$type": "dimension", "$value": { "value": 304, "unit": "px" }, "$description": "The sidebar as a drawer on phones. It never covers more than 84% of the window." },
+    "bar": {
+      "$type": "dimension",
+      "$description": "Heights of the application bars, before safe areas are added.",
+      "top": {
+        "$description": "Top app bar: brand, search, notifications, assistant and account.",
+        "compact": { "$value": { "value": 56, "unit": "px" } },
+        "medium": { "$value": { "value": 68, "unit": "px" } }
+      },
+      "bottom": { "$value": { "value": 60, "unit": "px" }, "$description": "Bottom app bar on phones: Alerts, Assistant, Edit, Account and Menu." },
+      "footer": { "$value": { "value": 46, "unit": "px" }, "$description": "Footer and edit bar on tablets and desktops." }
+    },
+    "card": {
+      "$type": "dimension",
+      "$description": "Card heights in the overview grid. M + L = S + XL, so two columns built from different sizes end level.",
+      "s": { "$value": { "value": 245, "unit": "px" } },
+      "m": { "$value": { "value": 375, "unit": "px" } },
+      "l": { "$value": { "value": 405, "unit": "px" } },
+      "xl": { "$value": { "value": 535, "unit": "px" } }
+    },
+    "touch-target": { "$type": "dimension", "$value": { "value": 48, "unit": "px" }, "$description": "Minimum hit area on touch screens." }
+  }
+}

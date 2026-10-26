@@ -1,0 +1,42 @@
+/* The specimen grid of the component pages: names in the label role, cells aligned on a quiet grid */
+.specimen-frame {
+  /* Room for focus rings and pressed states, which the frame would otherwise clip now that it cannot scroll down */
+  margin: -6px;
+  padding: 6px;
+  /* A grid wider than its block is cut at the block's own inner edge, the same distance from the card's right edge as
+     the grid starts from its left edge, and scrolled to its end it stops there too (1.0.0-alpha.24, 988©STUDIO: the right
+     margin exactly the left one; the frame used to stop 6 px short of it, 22 px from the edge against 16) */
+  margin-right: 0;
+  padding-right: 0;
+  /* One axis only: wide content scrolls sideways; nothing scrolls or bounces up and down */
+  overflow: auto hidden;
+  overscroll-behavior-x: contain;
+}
+
+.specimen {
+  display: grid;
+  gap: var(--sonar-space-16) var(--sonar-space-24);
+  align-items: center;
+  width: max-content;
+  padding-bottom: var(--sonar-space-4);
+}
+
+.specimen-head,
+.specimen-name {
+  color: var(--sonar-color-text-tertiary);
+  font: var(--sonar-type-label-sm);
+  letter-spacing: var(--sonar-type-label-sm-tracking);
+  white-space: nowrap;
+}
+
+.specimen-name {
+  padding-right: var(--sonar-space-8);
+  color: var(--sonar-color-text-secondary);
+}
+
+.specimen-cell {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 32px;
+}

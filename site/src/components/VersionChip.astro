@@ -1,0 +1,33 @@
+---
+/** The version this site documents, beside the wordmark; it leads to the changelog */
+import { version } from '../lib/release.ts'
+---
+
+<a class="version-chip" href="/resources/changelog/">v{version}<span class="visually-hidden">, changelog</span></a>
+
+<style>
+  .version-chip {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    height: 24px;
+    padding: 0 var(--sonar-space-8);
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-surface-container);
+    color: var(--sonar-color-text-secondary);
+    font: 500 11px/1 var(--sonar-font-family-mono);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);
+  }
+
+  .version-chip:hover {
+    background: linear-gradient(var(--sonar-color-state-hover) 0 0) var(--sonar-color-surface-container);
+    color: var(--sonar-color-text-strong);
+  }
+
+  .version-chip:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+  }
+</style>

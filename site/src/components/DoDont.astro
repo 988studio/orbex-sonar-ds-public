@@ -1,0 +1,21 @@
+---
+/** Do and don’t for a component or pattern page: pairs drawn with the components, from demos/guidance */
+import '@orbex/sonar-components/styles.css'
+import Guidance, { guidance } from '../demos/guidance/Guidance.tsx'
+import Section from './Section.astro'
+
+interface Props {
+  page: string
+}
+
+const { page } = Astro.props
+const pairs = guidance[page]?.length ?? 0
+---
+
+{
+  pairs > 0 && (
+    <Section title="Do and don’t" id="do-dont">
+      <Guidance page={page} />
+    </Section>
+  )
+}

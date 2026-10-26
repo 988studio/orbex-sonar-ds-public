@@ -1,0 +1,285 @@
+/* Do and don't: pairs of examples drawn with the components, a do beside a don't */
+.guidance {
+  display: grid;
+  gap: var(--sonar-space-24);
+}
+
+.guidance-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: var(--sonar-space-12);
+}
+
+.guidance-example {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--sonar-shape-corner-large);
+  background: var(--sonar-color-surface-card);
+  box-shadow: var(--sonar-elevation-1);
+}
+
+/* The picture: a quiet stage the example sits on, out of the tab order and the accessibility tree */
+.guidance-stage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sonar-space-12);
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 148px;
+  box-sizing: border-box;
+  padding: var(--sonar-space-24) var(--sonar-space-20);
+  overflow: hidden;
+  background: var(--sonar-color-surface-page);
+}
+
+.guidance-stage[data-align='stretch'] > * {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+.guidance-verdict {
+  display: grid;
+  gap: var(--sonar-space-4);
+  padding: var(--sonar-space-12) var(--sonar-space-20) var(--sonar-space-16);
+  border-top: 3px solid var(--_verdict);
+}
+
+.guidance-example[data-verdict='do'] {
+  --_verdict: var(--sonar-color-accent);
+}
+
+.guidance-example[data-verdict='dont'] {
+  --_verdict: var(--sonar-color-danger);
+}
+
+.guidance-label {
+  display: flex;
+  gap: var(--sonar-space-6);
+  align-items: center;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-label-lg);
+  font-weight: var(--sonar-font-weight-semibold);
+  letter-spacing: var(--sonar-type-label-lg-tracking);
+}
+
+.guidance-label svg {
+  width: 18px;
+  height: 18px;
+  color: var(--_verdict);
+}
+
+.guidance-text {
+  color: var(--sonar-color-text-secondary);
+  font: var(--sonar-type-body-md);
+}
+
+/* ---------- Pieces the pictures are made of ---------- */
+
+.g-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sonar-space-8);
+  align-items: center;
+}
+
+.g-stack {
+  display: grid;
+  gap: var(--sonar-space-12);
+  width: 100%;
+  max-width: 280px;
+}
+
+.g-panel {
+  display: grid;
+  gap: var(--sonar-space-12);
+  width: 100%;
+  max-width: 300px;
+  box-sizing: border-box;
+  padding: var(--sonar-space-16) var(--sonar-space-20);
+  border-radius: var(--sonar-shape-corner-medium);
+  background: var(--sonar-color-surface-card);
+  box-shadow: var(--sonar-elevation-1);
+  color: var(--sonar-color-text-default);
+  font: var(--sonar-type-body-md);
+}
+
+.g-panel h5 {
+  margin: 0;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-title-sm);
+  letter-spacing: var(--sonar-type-title-sm-tracking);
+}
+
+.g-panel p {
+  margin: 0;
+  color: var(--sonar-color-text-secondary);
+}
+
+.g-dialog {
+  max-width: 280px;
+  border-radius: var(--sonar-shape-corner-extra-large);
+  box-shadow: var(--sonar-elevation-3);
+}
+
+.g-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sonar-space-8);
+  justify-content: flex-end;
+}
+
+.g-list {
+  display: grid;
+  width: 100%;
+  max-width: 300px;
+  padding: 0;
+  list-style: none;
+}
+
+.g-list li {
+  display: flex;
+  gap: var(--sonar-space-12);
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+  border-bottom: 1px solid var(--sonar-color-divider);
+  color: var(--sonar-color-text-default);
+  font: var(--sonar-type-body-md);
+}
+
+.g-list li:last-child {
+  border-bottom: 0;
+}
+
+.g-figure {
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-title-lg);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--sonar-type-title-lg-tracking);
+}
+
+.g-meta {
+  color: var(--sonar-color-text-tertiary);
+  font: var(--sonar-type-label-md);
+  letter-spacing: var(--sonar-type-label-md-tracking);
+}
+
+.g-anchor {
+  position: relative;
+  display: inline-flex;
+}
+
+.g-anchor > .sonar-badge {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+}
+
+.g-tooltip-stack {
+  display: grid;
+  justify-items: center;
+  gap: var(--sonar-space-6);
+}
+
+.g-menu {
+  width: 220px;
+}
+
+.g-toast {
+  position: static;
+  max-width: 300px;
+}
+
+.g-search {
+  width: 100%;
+  max-width: 320px;
+}
+
+.g-search .sonar-search-popup {
+  width: 100%;
+  max-width: none;
+  max-height: none;
+}
+
+.g-card {
+  width: 100%;
+  max-width: 260px;
+}
+
+.g-card .sonar-card {
+  --_pad-x: var(--sonar-space-20);
+}
+
+.g-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* A grid of the overview, drawn as boxes */
+.g-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 56px);
+  gap: var(--sonar-space-6);
+  align-items: start;
+}
+
+.g-grid > span {
+  display: grid;
+  gap: var(--sonar-space-6);
+}
+
+.g-grid i {
+  display: grid;
+  place-items: center;
+  border-radius: var(--sonar-shape-corner-small);
+  background: var(--sonar-color-surface-card);
+  box-shadow: var(--sonar-elevation-1);
+  color: var(--sonar-color-text-tertiary);
+  font: normal var(--sonar-type-label-sm);
+}
+
+.g-grid i[data-first] {
+  outline: 2px solid var(--sonar-color-accent);
+  outline-offset: -2px;
+  color: var(--sonar-color-text-accent);
+}
+
+/* A month grid, drawn small */
+.g-month {
+  display: grid;
+  grid-template-columns: repeat(7, 24px);
+  gap: var(--sonar-space-2);
+  font: 400 11px/24px var(--sonar-font-family-sans);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.g-month span {
+  color: var(--sonar-color-text-default);
+}
+
+.g-month span[data-other] {
+  color: var(--sonar-color-text-tertiary);
+}
+
+.g-month span[data-today] {
+  border-radius: var(--sonar-shape-corner-full);
+  background: var(--sonar-color-accent);
+  color: var(--sonar-color-on-accent);
+}
+
+.g-spark {
+  width: 100%;
+  max-width: 260px;
+  height: 72px;
+}
+
+.g-faded {
+  opacity: 0.35;
+}

@@ -1,0 +1,297 @@
+/* The frame around the live app: documentation chrome, not the product */
+.app-demo {
+  display: grid;
+  gap: var(--sonar-space-12);
+  min-width: 0;
+}
+
+.app-demo-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sonar-space-8) var(--sonar-space-16);
+  align-items: center;
+}
+
+.app-demo-fit {
+  display: inline-flex;
+  gap: var(--sonar-space-8);
+  align-items: center;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-label-md);
+  cursor: pointer;
+}
+
+.app-demo-fit input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--sonar-color-accent);
+}
+
+.app-demo-scale {
+  color: var(--sonar-color-text-tertiary);
+  font: var(--sonar-type-body-sm);
+}
+
+.app-demo-frame {
+  min-width: 0;
+  overflow: auto;
+  border-radius: var(--sonar-shape-corner-large);
+  background: var(--sonar-color-surface-page);
+  box-shadow: var(--sonar-elevation-1);
+  overscroll-behavior: contain;
+}
+
+.app-demo-frame:focus-visible {
+  outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+  outline-offset: var(--sonar-focus-offset);
+}
+
+.app-demo[data-device='tablet'] .app-demo-frame,
+.app-demo[data-device='phone'] .app-demo-frame {
+  justify-self: start;
+  max-width: 100%;
+}
+
+.app-demo-fit-box {
+  position: relative;
+  overflow: hidden;
+}
+
+/* The overview grid inside the app: the product’s columns, no title */
+.oxa .app-grid {
+  margin-top: 0;
+}
+
+.oxa.m-mob .app-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ---------- Panels inside the frame (1.0.0-alpha.18) ----------
+   The frame holds its side panels and sheets as the product's main area does (AppDemo keeps it transformed): under the
+   top bar's 70 px on desktop and tablet, 402 px wide at the end; in the phone frame, a sheet 44 px from the top of the
+   screen. The frame, not the window, decides: a phone frame shows sheets on a desktop, and a desktop or tablet frame
+   keeps side panels on a phone. */
+.app-demo .oxa {
+  --sonar-dialog-top: 70px;
+  --sonar-dialog-sheet-top: 44px;
+}
+
+.app-demo .oxa.m-mob .sonar-dialog[data-placement='end'] {
+  inset: var(--sonar-dialog-sheet-top) 0 0;
+  width: 100%;
+  padding: 30px 16px 16px;
+  border-radius: 20px 20px 0 0;
+  box-shadow: var(--sonar-elevation-sheet-up);
+  clip-path: none;
+}
+
+.app-demo .oxa.m-mob .sonar-dialog[data-placement='end'] .sonar-dialog-handle {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 72px;
+  height: 24px;
+  margin-left: -36px;
+  background: none;
+}
+
+.app-demo .oxa.m-mob .sonar-dialog[data-placement='end'] .sonar-dialog-handle::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 18px;
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--sonar-color-border-subtle);
+}
+
+@media (width < 600px) {
+  .app-demo .oxa:not(.m-mob) .sonar-dialog[data-placement='end'] {
+    inset: var(--sonar-dialog-top) 0 0 auto;
+    width: 402px;
+    padding: 24px 32px 22px 28px;
+    border-radius: 28px 0 0 28px;
+    box-shadow: var(--sonar-elevation-panel);
+    clip-path: inset(0 0 0 -60px);
+  }
+
+  .app-demo .oxa:not(.m-mob) .sonar-dialog[data-placement='end'] .sonar-dialog-handle {
+    display: none;
+  }
+}
+
+/* ---------- Panel motion inside the frame (1.0.0-alpha.19) ----------
+   The frame decides the motion too, not the window, so a tablet frame on a phone moves its panels as a tablet does:
+   · tablet frame: the side sheet slides all the way in from the right edge on the default spatial spring (320 ms) and
+     back out the same way, as Layout › Navigation by device defines; no fade;
+   · desktop frame: the product's panel, 48 px in with a fade over 420 ms, out 28 px and fading over 150 ms;
+   · phone frame: the product's sheet, up in 420 ms (fade 200 ms), down in 220 ms.
+   The app's screen clips sideways, as a window does, so a sheet waiting past its edge never shows outside it. */
+.app-demo .oxa {
+  overflow-x: clip;
+}
+
+.app-demo .oxa.t-tab .sonar-dialog[data-placement='end'] {
+  opacity: 1;
+  translate: 102% 0;
+  transition:
+    translate var(--sonar-motion-spatial-default-duration) var(--sonar-motion-spatial-default-easing),
+    display var(--sonar-motion-spatial-default-duration) allow-discrete,
+    overlay var(--sonar-motion-spatial-default-duration) allow-discrete;
+}
+
+.app-demo .oxa.t-tab .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+  translate: 0 0;
+}
+
+@starting-style {
+  .app-demo .oxa.t-tab .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+    translate: 102% 0;
+  }
+}
+
+.app-demo .oxa:not(.t-tab, .m-mob) .sonar-dialog[data-placement='end'] {
+  opacity: 0;
+  translate: 28px 0;
+  transition:
+    opacity var(--sonar-motion-duration-panel-exit) linear,
+    translate var(--sonar-motion-duration-panel-exit) var(--sonar-motion-easing-accelerate),
+    display var(--sonar-motion-duration-panel-exit) allow-discrete,
+    overlay var(--sonar-motion-duration-panel-exit) allow-discrete;
+}
+
+.app-demo .oxa:not(.t-tab, .m-mob) .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+  opacity: 1;
+  translate: 0 0;
+  transition:
+    opacity var(--sonar-motion-duration-panel-enter) var(--sonar-motion-effects-default-easing),
+    translate var(--sonar-motion-duration-panel-enter) var(--sonar-motion-spatial-default-easing),
+    display var(--sonar-motion-duration-panel-enter) allow-discrete,
+    overlay var(--sonar-motion-duration-panel-enter) allow-discrete;
+}
+
+@starting-style {
+  .app-demo .oxa:not(.t-tab, .m-mob) .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+    opacity: 0;
+    translate: 48px 0;
+  }
+}
+
+.app-demo .oxa.m-mob .sonar-dialog[data-placement='end'] {
+  opacity: 1;
+  translate: 0 100%;
+  transition:
+    translate var(--sonar-motion-duration-sheet-exit) var(--sonar-motion-easing-accelerate),
+    display var(--sonar-motion-duration-sheet-exit) allow-discrete,
+    overlay var(--sonar-motion-duration-sheet-exit) allow-discrete;
+}
+
+.app-demo .oxa.m-mob .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+  translate: 0 0;
+  transition:
+    opacity var(--sonar-motion-duration-sheet-fade) var(--sonar-motion-effects-default-easing),
+    translate var(--sonar-motion-duration-panel-enter) var(--sonar-motion-spatial-default-easing),
+    display var(--sonar-motion-duration-panel-enter) allow-discrete,
+    overlay var(--sonar-motion-duration-panel-enter) allow-discrete;
+}
+
+@starting-style {
+  .app-demo .oxa.m-mob .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+    opacity: 0;
+    translate: 0 100%;
+  }
+}
+
+/* Following the finger: no transition until it lets go */
+.app-demo .oxa.oxa .sonar-dialog[data-placement='end'][data-dragging],
+.app-demo .oxa.oxa .sonar-dialog[data-placement='end'][open]:not([data-leaving])[data-dragging] {
+  transition: none;
+}
+
+/* With reduced motion nothing travels: every panel fades in and out where it rests */
+@media (prefers-reduced-motion: reduce) {
+  .app-demo .oxa.oxa .sonar-dialog[data-placement='end'] {
+    opacity: 0;
+    translate: 0 0;
+    transition:
+      opacity var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing),
+      display var(--sonar-motion-effects-default-duration) allow-discrete,
+      overlay var(--sonar-motion-effects-default-duration) allow-discrete;
+  }
+
+  .app-demo .oxa.oxa .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  @starting-style {
+    .app-demo .oxa.oxa .sonar-dialog[data-placement='end'][open]:not([data-leaving]) {
+      opacity: 0;
+      translate: 0 0;
+    }
+  }
+}
+
+/* Edit layout in the frames (1.0.0-alpha.20), as the product draws it: the bar sits on the foot of the main area, over
+   the overview, 46 px high; the overview gets room under its last card so the bar never covers it. The handles of the
+   cards on the top row stick out above them, so the grid keeps them clear of the top bar. */
+.oxa .main > .app-edit-bar {
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  flex-wrap: nowrap;
+  padding: 0 32px 0 var(--gutter, 32px);
+}
+
+.oxa.t-tab .main > .app-edit-bar {
+  padding-right: var(--pad-r, 24px);
+}
+
+.oxa.s-edit .stage {
+  padding-bottom: calc(46px + 32px);
+}
+
+/* The phone edits the overview as a list, inside the frame's own scroll. Its bar sits on the foot of the screen over
+   the bottom app bar, as the product's does (v38 .m-mob .ebar): placed on the main area, not stuck to the list (a sticky
+   bar inside a scaled frame lands too high in Safari) */
+.oxa.m-mob.s-edit .stage,
+.oxa.m-mob .stage > .edit-list {
+  position: static;
+}
+
+.oxa.m-mob .stage > .edit-list > .edit-list-bar {
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin-inline: 0;
+}
+
+.oxa.m-mob .stage > .edit-list {
+  width: 100%;
+  padding-top: 16px;
+}
+
+/* The bar follows the frame, not the window: inside a desktop or tablet frame drawn small on a phone it keeps its
+   desktop layout, as the rest of the frame does */
+.oxa .main > .app-edit-bar .edit-bar-text span {
+  display: inline;
+}
+
+.oxa .main > .app-edit-bar .edit-bar-actions {
+  flex: none;
+}
+
+.oxa .main > .app-edit-bar .edit-reset {
+  margin-right: var(--sonar-space-8);
+}
+
+.oxa .main > .app-edit-bar .edit-bar-actions .sonar-button {
+  min-width: 96px;
+}

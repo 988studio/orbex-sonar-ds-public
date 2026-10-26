@@ -1,0 +1,27 @@
+---
+import '../../demos/charts/charts.css'
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import TickBars from '../../demos/charts/TickBars.tsx'
+import tickBarsCode from '../../demos/charts/TickBars.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+---
+
+<ComponentDoc
+  entry="tick-bar"
+  lead="A share of a whole as one row of fine ticks, each part in its share of the width and in its chart role. The parts meet without a gap, and no tick is ever split between two colors."
+>
+  <Demo title="Orders of a month, and an overdue share" code={tickBarsCode}><TickBars /></Demo>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>Two or three parts of one whole. The first in accent, then strong, the rest in muted; danger only for an alert.</li>
+      <li>A <a href="/components/chart-legend/">Chart legend</a> under it names the colors; the card states the figures in text.</li>
+      <li>Give it a label and a format: they make its accessible name.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>One name lists every part with its value, so the bar is read once, whole.</li>
+  </ul>
+</ComponentDoc>

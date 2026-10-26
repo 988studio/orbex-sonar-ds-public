@@ -1,0 +1,26 @@
+{
+  "name": "orbex-sonar-ds",
+  "private": true,
+  "description": "Orbex Sonar-DB Design System: tokens, components and documentation.",
+  "author": "988©STUDIO",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "site"
+  ],
+  "scripts": {
+    "build": "npm run build -w @orbex/sonar-tokens && npm run build -w @orbex/sonar-components && npm run build -w site",
+    "dev": "npm run build -w @orbex/sonar-tokens && npm run build -w @orbex/sonar-components && npm run dev -w site",
+    "test": "npm run build -w @orbex/sonar-tokens && npm test -w @orbex/sonar-tokens && npm test -w @orbex/sonar-components",
+    "check": "npm run typecheck -w @orbex/sonar-tokens && npm run typecheck -w @orbex/sonar-components && npm run typecheck -w @orbex/sonar-patterns && npm run check -w site",
+    "changeset": "changeset",
+    "version": "changeset version"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "packageManager": "npm@11.6.2",
+  "devDependencies": {
+    "@changesets/cli": "^3.0.3"
+  }
+}

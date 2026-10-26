@@ -1,0 +1,248 @@
+---
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import ThemePair from '../../components/ThemePair.astro'
+import TokenTable from '../../components/TokenTable.astro'
+import Docs from '../../layouts/Docs.astro'
+import { group } from '../../lib/tokens.ts'
+
+const levels = [
+  { level: '1', label: 'Cards' },
+  { level: '2', label: 'Menus' },
+  { level: '3', label: 'Dialogs, toasts' },
+  { level: '4', label: 'Dragged card' },
+]
+
+/* The edges: shadows that belong to a side of the window rather than a height */
+const edges = [
+  { token: 'panel', label: 'Side panel', side: 'end' },
+  { token: 'sheet-up', label: 'Bottom sheet, drawer', side: 'bottom' },
+  { token: 'top-bar', label: 'Top bar', side: 'top' },
+  { token: 'sidebar', label: 'Sidebar', side: 'start' },
+  { token: 'edit-bar', label: 'Edit layout bar', side: 'bottom' },
+]
+
+/* Where each one is used */
+const uses = [
+  ['1', 'Cards of the overview, tables and demo frames of this site', 'Card'],
+  ['2', 'Menus, the search results, the controls of the route map, the Edit layout bar', 'Menu, SearchField'],
+  ['3', 'Dialogs and toasts', 'Dialog, Toast'],
+  ['4', 'A card while it is dragged; it settles back to 1 when dropped, over its drop placeholder', 'Editing the overview'],
+  ['panel', 'Side panels: delivery and invoice details, New order, Reorder', 'Dialog (end)'],
+  ['sheet', 'Sheets that hang from the top bar', 'Customize overview'],
+  ['sheet-up', 'Bottom sheets and the navigation drawer on phones', 'Dialog (bottom)'],
+  ['top-bar', 'The top bar over the scrolling page', 'App shell'],
+  ['sidebar', 'The sidebar’s edge: nothing in light, a hairline in dark', 'App shell'],
+  ['edit-bar', 'The bar at the foot of Edit layout: level 2 in light, a hairline in dark', 'Editing the overview'],
+]
+---
+
+<Docs title="Elevation" description="The four Sonar-DB elevation levels, the edges of panels, sheets and bars, and where each is used, in light and dark.">
+  <PageHeader
+    title="Elevation"
+    lead="Four levels, as in Material 3, for things that sit above the page, plus the edges of panels and sheets. Shadows carry the depth; in dark they are stronger, and side panels gain a hairline edge."
+  />
+
+  <Section title="Levels" id="levels">
+    <ThemePair label="The four elevation levels in light and dark">
+      <div class="levels">
+        {
+          levels.map(({ level, label }) => (
+            <div class="level" style={`box-shadow: var(--sonar-elevation-${level})`}>
+              <span class="number">{level}</span>
+              <span class="label">{label}</span>
+            </div>
+          ))
+        }
+      </div>
+    </ThemePair>
+    <div class="prose">
+      <p>
+        Each level is two shadows: a tight one that defines the edge and a soft one that sets the distance. Light shadows
+        are tinted with the darkest neutral, so they stay green-gray rather than dirty; dark shadows are pure black.
+      </p>
+    </div>
+  </Section>
+
+  <Section title="Edges" id="edges">
+    <ThemePair label="Shadows that belong to an edge of the window, in light and dark">
+      <div class="edges">
+        {
+          edges.map(({ token, label, side }) => (
+            <div class="edge" data-side={side}>
+              <span class="surface" style={`box-shadow: var(--sonar-elevation-${token})`} />
+              <span class="label">{label}</span>
+            </div>
+          ))
+        }
+      </div>
+    </ThemePair>
+    <div class="prose">
+      <p>
+        Panels, sheets and bars cast their shadow toward the page they cover. In light the shadow alone separates them; in
+        dark a shadow barely shows, so the side panel, the top bar, the sidebar and the Edit layout bar draw a 1 px edge
+        in a darker neutral instead of, or as well as, the shadow.
+      </p>
+    </div>
+  </Section>
+
+  <Section title="Where each is used" id="usage">
+    <div class="table-wrap" data-scroll-region data-label="Where each elevation is used, table">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Token</th>
+            <th scope="col">Used by</th>
+            <th scope="col">In the system</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            uses.map(([token, what, where]) => (
+              <tr>
+                <th scope="row"><code>elevation.{token}</code></th>
+                <td>{what}</td>
+                <td>{where}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section title="Tokens" id="tokens">
+    <TokenTable caption="Elevation tokens" tokens={group('elevation')} preview="shadow" />
+  </Section>
+
+  <Section title="Guidelines" id="guidelines">
+    <ul class="prose">
+      <li>Elevation follows behavior, not importance: a card is level 1 whatever it contains.</li>
+      <li>A card being dragged lifts to level 4 and settles back to level 1 when dropped.</li>
+      <li>In the dark theme a shadow alone is hard to see, so side panels and bars also draw a 1 px edge.</li>
+      <li>A menu or a list opened from something keeps one level above it: menus at 2 over cards at 1, dialogs at 3.</li>
+      <li>Never add a shadow to show state (hover, selection): elevation changes only when something lifts, as a dragged card.</li>
+    </ul>
+  </Section>
+</Docs>
+
+<style>
+  .edges {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--sonar-space-20);
+    padding: var(--sonar-space-8) 0 var(--sonar-space-16);
+  }
+
+  /* Each specimen: a page with the surface laid against one of its edges */
+  .edge {
+    position: relative;
+    display: grid;
+    align-content: end;
+    min-height: 104px;
+    padding: var(--sonar-space-10) var(--sonar-space-12);
+    overflow: hidden;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-page);
+    box-shadow: inset 0 0 0 1px var(--sonar-color-divider);
+  }
+
+  .edge .surface {
+    position: absolute;
+    background: var(--sonar-color-surface-card);
+  }
+
+  .edge[data-side='end'] .surface {
+    inset: 0 0 0 55%;
+  }
+
+  .edge[data-side='start'] .surface {
+    inset: 0 55% 0 0;
+  }
+
+  .edge[data-side='top'] .surface {
+    inset: 0 0 60% 0;
+  }
+
+  .edge[data-side='bottom'] .surface {
+    inset: 60% 0 0 0;
+  }
+
+  .edge[data-side='bottom'] {
+    align-content: start;
+  }
+
+  .edge .label {
+    position: relative;
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  .table-wrap {
+    max-width: 880px;
+    /* One axis only: wide content scrolls sideways; nothing scrolls or bounces up and down */
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font: var(--sonar-type-body-md);
+  }
+
+  th,
+  td {
+    padding: var(--sonar-space-10) var(--sonar-space-16);
+    border-bottom: 1px solid var(--sonar-color-divider);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  thead th {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+  }
+
+  tbody th {
+    color: var(--sonar-color-text-strong);
+    font-weight: var(--sonar-font-weight-medium);
+    white-space: nowrap;
+  }
+
+  .levels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+    gap: var(--sonar-space-20);
+    padding: var(--sonar-space-8) 0 var(--sonar-space-16);
+  }
+
+  .level {
+    display: grid;
+    align-content: space-between;
+    min-height: 96px;
+    padding: var(--sonar-space-12) var(--sonar-space-14);
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+  }
+
+  .number {
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-headline-sm);
+    letter-spacing: var(--sonar-type-headline-sm-tracking);
+  }
+
+  .label {
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+</style>

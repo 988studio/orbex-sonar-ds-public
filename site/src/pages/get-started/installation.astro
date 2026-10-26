@@ -1,0 +1,113 @@
+---
+import CodeBlock from '../../components/CodeBlock.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import Docs from '../../layouts/Docs.astro'
+import { componentEntries, formatWeight, packageWeight } from '../../lib/components.ts'
+import { version } from '../../lib/release.ts'
+
+const install = `npm install @orbex/sonar-tokens@${version} @orbex/sonar-components@${version} react react-dom`
+
+const layers = `/* Once, before any stylesheet (a <style> at the top of <head> is safest, since bundlers may reorder files):
+   the order of the layers. The system sits under one name, sonar: after any reset, before the app’s own styles. */
+@layer reset, sonar, app;`
+
+const tokens = `/* At the root of the app, once: every token as a CSS custom property, in both themes */
+@import '@orbex/sonar-tokens/tokens.css';
+
+/* Optional: the type roles as classes (.sonar-type-title-md …) */
+@import '@orbex/sonar-tokens/type.css';`
+
+const usingTokens = `.delivery-card {
+  background: var(--sonar-color-surface-card);
+  border-radius: var(--sonar-shape-corner-medium);
+  box-shadow: var(--sonar-elevation-1);
+  color: var(--sonar-color-text-default);
+  padding: var(--sonar-space-16) var(--sonar-space-20);
+}`
+
+const theme = `<!-- Follows the operating system by default. Force a theme on any element and everything inside it -->
+<html data-theme="dark">
+<aside data-theme="light">…</aside>`
+
+const component = `import { Button } from '@orbex/sonar-components/button'
+import '@orbex/sonar-components/button.css'
+
+export function PlaceOrder() {
+  return <Button onClick={() => console.log('Order placed')}>Place order</Button>
+}`
+
+const everything = `/* Apps that use most components: every component’s styles in one file */
+import '@orbex/sonar-components/styles.css'
+
+import { Button } from '@orbex/sonar-components/button'
+import { Status } from '@orbex/sonar-components/status'`
+
+const data = `import { tokens, sizeClasses } from '@orbex/sonar-tokens'
+
+/* Every token with its CSS variable, description and value in each theme */
+const accent = tokens.find((token) => token.name === 'color.accent')
+
+/* The window size classes, with a media query for each */
+const compact = matchMedia(sizeClasses[0].media).matches`
+---
+
+<Docs title="Installation" description="Install the Orbex Sonar-DB tokens and components, set the cascade layers and use a first component.">
+  <PageHeader
+    title="Installation"
+    lead="Two packages, released together under one version: the tokens, which any stack can use, and the React components built on them. Five steps from an empty app to a first component."
+  />
+
+  <Section title="1. Install the packages" id="install">
+    <p class="prose">
+      Node 22.18 or later, React 19.2 or later. The components depend on the tokens and on Base UI, which npm installs
+      with them.
+    </p>
+    <CodeBlock code={install} language="sh" />
+  </Section>
+
+  <Section title="2. Set the cascade layers" id="layers">
+    <p class="prose">
+      The system’s styles live in one cascade layer, <code>sonar</code>, with <code>sonar.tokens</code> and
+      <code>sonar.components</code> inside. Declare the order once, before any stylesheet loads, so a reset can never
+      override the system and the app’s own styles always win without <code>!important</code>.
+    </p>
+    <CodeBlock code={layers} language="css" />
+  </Section>
+
+  <Section title="3. Import the tokens" id="tokens">
+    <CodeBlock code={tokens} language="css" />
+    <p class="prose">
+      Style with role tokens, which describe what a value is for and change with the theme. Palette tokens stay
+      underneath: a component never reads them.
+    </p>
+    <CodeBlock code={usingTokens} language="css" />
+    <p class="prose">
+      Both themes ship in the same file. Without an attribute, the system follows the operating system;
+      <code>data-theme</code> forces a theme on an element and everything inside it.
+    </p>
+    <CodeBlock code={theme} language="html" />
+  </Section>
+
+  <Section title="4. Use a component" id="components">
+    <p class="prose">
+      Each component is its own entry point with its own stylesheet, so an app loads only what it uses. All
+      {' '}{componentEntries.length} weigh {formatWeight(packageWeight)} gzipped together, script and styles.
+    </p>
+    <CodeBlock code={component} language="tsx" />
+    <CodeBlock code={everything} language="tsx" />
+    <p class="prose">
+      Components take icons as elements: the <a href="/foundations/icons/#import">Icons</a> page shows how to make one
+      from Material Symbols.
+    </p>
+  </Section>
+
+  <Section title="5. Read tokens and props from code" id="data">
+    <p class="prose">
+      The tokens are also typed data, for scripts, charts and tools. The props of every component are published as
+      JSON, in the package as <code>@orbex/sonar-components/api.json</code> and on this site at
+      <a href="/api.json">/api.json</a>; <a href="/llms.txt">/llms.txt</a> describes the whole system for coding agents.
+    </p>
+    <CodeBlock code={data} language="ts" />
+  </Section>
+</Docs>

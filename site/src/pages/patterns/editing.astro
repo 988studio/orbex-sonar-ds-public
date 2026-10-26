@@ -1,0 +1,51 @@
+---
+import '../../styles/global.css'
+import '@orbex/sonar-components/styles.css'
+import '@orbex/sonar-patterns/patterns/edit-list.css'
+import '@orbex/sonar-patterns/patterns/edit.css'
+import Demo from '../../components/Demo.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import EditList from '@orbex/sonar-patterns/patterns/EditList.tsx'
+import editListCode from '@orbex/sonar-patterns/patterns/EditList.tsx?raw'
+import EditGrid from '@orbex/sonar-patterns/patterns/EditGrid.tsx'
+import editGridCode from '../../snippets/EditGrid.tsx?raw'
+import DoDont from '../../components/DoDont.astro'
+import Docs from '../../layouts/Docs.astro'
+---
+
+<Docs title="Editing the overview" description="How people arrange the Sonar-DB overview: which cards it shows, where and at what size, on desktops, tablets and phones.">
+  <PageHeader
+    title="Editing the overview"
+    lead="People choose which cards their overview shows, where, and at what size. On desktops and tablets they drag the cards themselves; on phones the overview becomes a list. Every edit is a draft until it is saved, and saving can be undone."
+  />
+
+  <Section title="As a list, on phones" id="list">
+    <Demo title="Edit layout on a phone" code={editListCode}><EditList client:visible /></Demo>
+  </Section>
+
+  <Section title="On desktops and tablets" id="desktop">
+    <Demo title="Edit layout at real size, on a desktop or a tablet grid" code={editGridCode} snippet layout="wide"><EditGrid client:visible /></Demo>
+    <ul class="prose">
+      <li><strong>Real size.</strong> On a 1440 px desktop the overview has three columns of 370 px with 20 px between them and 32 px margins; on an 820 px tablet, the 60 px rail, 24 px margins and two columns of 346 px. The demo draws them at 1:1 and scrolls sideways when the page is narrower; <strong>Fit to width</strong> draws the whole canvas smaller with one zoom, like the product, never each card.</li>
+      <li><strong>Edit layout</strong> turns the overview into a draft: each card gets a dashed edge, a handle on its top edge to move it, a remove button outside its top end corner and a handle on its bottom edge to resize it, with its size beside it. A bar rises at the foot: “Editing layout. Drag a card by its top handle. Pull the bottom handle to change its size.”, with Reset to default, Cancel and Save layout. Every state a card goes through is drawn on <a href="/patterns/cards/#states">Cards</a>.</li>
+      <li><strong>Moving.</strong> A card lifts while dragged: it grows to 103 % in 200 ms and rises to elevation 4. The others make room in 320 ms; its <a href="/patterns/cards/#states">drop placeholder</a> shows where it will land. Dropped, it glides into its slot in 500 ms on the expressive spring.</li>
+      <li><strong>Resizing</strong> steps through the sizes the card offers, never in between, and the card eases to its new height in 320 ms; a label over the handle names the size and says when the columns end level.</li>
+      <li><strong>Tablets</strong> take their layout from the desktop’s: cards are read top to bottom, then left to right, and each goes into the shorter column. Handles grow to 44 × 20 px and the remove button to 28 px. When the number of columns changes, every card travels to its new place in 620 ms on <code>cubic-bezier(.2,0,0,1)</code>.</li>
+      <li><strong>New element</strong> waits at the foot of the shortest column: it brings back the cards that were removed.</li>
+      <li><strong>Touch</strong> uses the same handles with a larger hit area; the handles of two neighboring cards share the gap between them.</li>
+      <li><strong>Keyboard.</strong> Every handle is a button: Space picks a card up, the arrow keys move it, Space drops it, Escape puts it back.</li>
+    </ul>
+  </Section>
+
+  <Section title="Rules" id="rules">
+    <ul class="prose">
+      <li><strong>A draft until saved.</strong> Save layout stays off until something changes. Cancel leaves at once when nothing changed, and asks before it discards changes.</li>
+      <li><strong>Save, then Undo.</strong> Saving does not ask; its toast offers to undo.</li>
+      <li><strong>Reset to default asks first.</strong> It puts every card back in its place and size; the draft can still be canceled.</li>
+      <li><strong>Each size class keeps its own layout</strong> once edited there; what is shown is shared. Hiding a card on a phone hides it everywhere.</li>
+      <li><strong>Moves are announced.</strong> “Inventory moved to position 2 of 6.”</li>
+    </ul>
+  </Section>
+  <DoDont page="editing" />
+</Docs>

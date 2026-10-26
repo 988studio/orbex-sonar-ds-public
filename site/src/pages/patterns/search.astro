@@ -1,0 +1,160 @@
+---
+import '../../styles/global.css'
+import '@orbex/sonar-components/styles.css'
+import A11yTables from '../../components/A11yTables.astro'
+import Demo from '../../components/Demo.astro'
+import DoDont from '../../components/DoDont.astro'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import SmartSearch from '@orbex/sonar-patterns/patterns/SmartSearch.tsx'
+import smartSearchCode from '../../snippets/SmartSearch.tsx?raw'
+import Docs from '../../layouts/Docs.astro'
+
+/* How the search reads a query: the words it listens for and what they become */
+const readings = [
+  ['A kind', 'deliveries, shipment, pallets, truck · invoices, payment, bill, owe', 'Only deliveries, or only invoices'],
+  ['A state', 'late, delayed, overdue, unpaid, due · paid, delivered, done · upcoming, scheduled, soon', 'Needs attention, done, or still to come'],
+  ['A day or a week', 'today, tomorrow, yesterday, this week, last week, next week', 'A range of days around May 12'],
+  ['A month', 'March, April, May, June', 'That month'],
+  ['A code', 'Any other word: 04-127, INV-77', 'Codes that contain it'],
+]
+---
+
+<Docs title="Search" description="Searching Sonar-DB in plain words: how a query is read, what the results show and how to reach them, with the search field it is built on.">
+  <PageHeader
+    title="Search"
+    lead="One field in the top bar finds deliveries, invoices and actions. People type in plain words, “delayed deliveries this week” or “INV-77”, and the results open under the field as they type, with a line that says how the words were read."
+  />
+
+  <Section title="Try it" id="demo">
+    <p class="prose">
+      The data is the overview’s: every card reads Tuesday, May 12, 2026. Choose a delivery or an invoice to open its
+      details, New order to open its panel, or a page to go to its card on the Overview. With the field empty, the list suggests a few questions.
+    </p>
+    <Demo title="Smart search in the top bar" code={smartSearchCode} snippet layout="card"><SmartSearch client:visible /></Demo>
+  </Section>
+
+  <Section title="How a query is read" id="reading">
+    <p class="prose">
+      The search listens for five things and ignores the rest of the sentence. What it understood goes in the status line
+      above the results, so a wrong reading is visible at once: “Smart search · delayed deliveries · May 9 – May 15”.
+    </p>
+    <div class="table-wrap" data-scroll-region data-label="How a query is read, table">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">What</th>
+            <th scope="col">Words</th>
+            <th scope="col">Becomes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {readings.map(([what, words, becomes]) => (
+            <tr>
+              <th scope="row">{what}</th>
+              <td>{words}</td>
+              <td>{becomes}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section title="Anatomy" id="anatomy">
+    <ol class="prose">
+      <li><strong>Field</strong>, in the top bar: a magnifier, the text and a button to clear it. While the search runs, the magnifier gives way to a pulsing spark.</li>
+      <li><strong>Status line</strong>, at the top of the list: “Understanding …” while it runs, then how the text was read and, when there are more results than shown, how many.</li>
+      <li><strong>Results</strong>: at most six deliveries and invoices, each with its kind, its day and its state in words.</li>
+      <li><strong>Actions</strong> whose name matches, after the results: New order, Release stock, a page.</li>
+      <li><strong>Suggestions</strong>, while the field is empty: questions to start from. Choosing one fills the field and searches.</li>
+    </ol>
+  </Section>
+
+  <Section title="Rules" id="rules">
+    <ul class="prose">
+      <li><strong>Nearest to today first.</strong> Results run by their distance from today; at the same distance, what needs attention comes first.</li>
+      <li><strong>Say what was understood.</strong> The status line always shows the reading, so people can rephrase instead of guessing why a result is missing.</li>
+      <li><strong>Wait for a pause.</strong> The search runs after a short pause in typing (380 ms here), not on every key.</li>
+      <li><strong>A result opens where the work is.</strong> A delivery or an invoice opens its details panel; an action opens its panel or page. The field clears behind it.</li>
+      <li><strong>No result is never a dead end.</strong> The empty list says so and suggests a query that works.</li>
+      <li><strong>State in words.</strong> Results show their state with Status, as the cards do.</li>
+    </ul>
+  </Section>
+
+  <DoDont page="search" />
+
+  <Section title="Accessibility" id="accessibility">
+    <A11yTables entry="search" />
+  </Section>
+
+  <Section title="Built with" id="built-with">
+    <p class="prose">
+      The field is <a href="/components/search-field/">Search field</a>, built on Base UI’s Autocomplete, and each row
+      is a <a href="/components/search-result/">Search result</a> with a <a href="/components/status/">Status</a>. The
+      app does the searching: it passes the results for the current text and the status line.
+    </p>
+  </Section>
+</Docs>
+
+<style>
+  .table-wrap {
+    max-width: 760px;
+    /* One axis only: wide content scrolls sideways; nothing scrolls or bounces up and down */
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font: var(--sonar-type-body-md);
+  }
+
+  th,
+  td {
+    padding: var(--sonar-space-10) var(--sonar-space-16);
+    border-bottom: 1px solid var(--sonar-color-divider);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  thead th {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+  }
+
+  tbody th {
+    color: var(--sonar-color-text-strong);
+    font-weight: var(--sonar-font-weight-medium);
+    white-space: nowrap;
+  }
+
+  :global(.smart-search) {
+    display: grid;
+    gap: var(--sonar-space-8);
+    min-height: 120px;
+  }
+
+  :global(.smart-search-bar) {
+    display: flex;
+    align-items: center;
+    padding: var(--sonar-space-10) var(--sonar-space-12);
+    border-radius: var(--sonar-shape-corner-large);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  :global(.smart-search-bar .sonar-search) {
+    flex: 1;
+    max-width: 480px;
+  }
+
+</style>

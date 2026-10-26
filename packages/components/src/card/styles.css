@@ -1,0 +1,382 @@
+/* Card: the unit of the overview. A title and its controls, a summary figure over a rule, the content, and a link
+   to the full page at the foot. In the grid its height is one of four: the header and the footer stay put and content
+   that does not fit scrolls between them. Elsewhere the card follows its content.
+   Uses Menu for UnitMenu: load menu.css with it. */
+@layer sonar.components {
+  .sonar-card {
+    --_pad-x: var(--sonar-space-28);
+
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: calc(var(--sonar-space-20) + var(--sonar-space-2)) var(--_pad-x);
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+    color: var(--sonar-color-text-default);
+  }
+
+  .sonar-card[data-size] {
+    overflow: hidden;
+  }
+
+  .sonar-card[data-size='s'] {
+    height: var(--sonar-layout-card-s);
+  }
+
+  .sonar-card[data-size='m'] {
+    height: var(--sonar-layout-card-m);
+  }
+
+  .sonar-card[data-size='l'] {
+    height: var(--sonar-layout-card-l);
+  }
+
+  .sonar-card[data-size='xl'] {
+    height: var(--sonar-layout-card-xl);
+  }
+
+  /* Phones: the column is narrower than any card was designed for, so the side padding gives way */
+  @media (width < 768px) {
+    .sonar-card {
+      --_pad-x: var(--sonar-space-20);
+    }
+  }
+
+  .sonar-card-header {
+    display: flex;
+    gap: var(--sonar-space-12);
+    justify-content: space-between;
+    align-items: center;
+    min-height: 24px;
+  }
+
+  /* A card without a summary still draws the rule under its header, at the same distance from the title */
+  .sonar-card-header:not(:has(+ .sonar-card-summary)) {
+    padding-bottom: 13px;
+    border-bottom: 1px solid var(--sonar-color-divider);
+  }
+
+  .sonar-card-title {
+    margin: 0;
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-title-lg);
+    letter-spacing: var(--sonar-type-title-lg-tracking);
+  }
+
+  .sonar-card-actions {
+    display: flex;
+    flex: none;
+    gap: var(--sonar-space-4);
+    align-items: center;
+  }
+
+  .sonar-card-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    margin: 9px 0 0;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--sonar-color-divider);
+    font: var(--sonar-type-title-sm);
+    letter-spacing: var(--sonar-type-title-sm-tracking);
+  }
+
+  .sonar-card-summary-label {
+    color: var(--sonar-color-text-strong);
+    text-transform: uppercase;
+  }
+
+  /* The bar between label and value is drawn, not typed, so it is never read aloud */
+  .sonar-card-summary-label::after {
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 0.9em;
+    margin: 0 4.5px;
+    background: var(--sonar-color-text-strong);
+    vertical-align: -0.1em;
+  }
+
+  .sonar-card-summary-value {
+    color: var(--sonar-color-text-accent);
+    font-weight: var(--sonar-font-weight-medium);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sonar-card-summary-value[data-tone='default'] {
+    color: var(--sonar-color-text-strong);
+    font-weight: var(--sonar-font-weight-semibold);
+  }
+
+  .sonar-card-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    padding-top: var(--sonar-space-12);
+  }
+
+  /* ---------- Content that does not fit: scrolls inside the card ---------- */
+
+  /* The scrolling areas reach 8 px into the side padding (and 4 px past their ends), so focus rings and the
+     overhang of small buttons are never clipped; the content keeps its place */
+  .sonar-card[data-size] .sonar-card-body,
+  .sonar-card-scroll-area {
+    margin: -4px -8px;
+    padding: 4px 8px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+
+  .sonar-card[data-size] .sonar-card-body {
+    padding-top: calc(var(--sonar-space-12) + 4px);
+  }
+
+  .sonar-card-body::-webkit-scrollbar,
+  .sonar-card-scroll-area::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* A list that gives way first: whole while it fits, scrolling when it does not */
+  .sonar-card-scroll {
+    position: relative;
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .sonar-card-scroll-area {
+    min-height: 0;
+  }
+
+  /* A fade at each edge that has more; a list that stops on its rows sets how far each reaches (1.0.0-alpha.22) */
+  :is(.sonar-card-body, .sonar-card-scroll-area)[data-scrollable] {
+    mask-image: linear-gradient(#000 calc(100% - var(--_fade-bottom, 24px)), transparent);
+  }
+
+  :is(.sonar-card-body, .sonar-card-scroll-area)[data-scrollable]:not([data-at-start]) {
+    mask-image: linear-gradient(
+      transparent,
+      #000 var(--_fade-top, 22px),
+      #000 calc(100% - var(--_fade-bottom, 24px)),
+      transparent
+    );
+  }
+
+  :is(.sonar-card-body, .sonar-card-scroll-area)[data-scrollable][data-at-end]:not([data-at-start]) {
+    mask-image: linear-gradient(transparent, #000 var(--_fade-top, 22px));
+  }
+
+  :is(.sonar-card-body, .sonar-card-scroll-area):focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: calc(-1 * var(--sonar-focus-width));
+    border-radius: var(--sonar-shape-corner-small);
+  }
+
+  /* The indicator: a 2 px thumb in the padding beside the area, shown while scrolling and fading out after */
+  .sonar-scroll-thumb {
+    position: absolute;
+    width: 2px;
+    border-radius: 1px;
+    background: var(--sonar-color-scrollbar);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms var(--sonar-motion-effects-default-easing);
+  }
+
+  .sonar-scroll-thumb[data-visible] {
+    opacity: 1;
+    transition-duration: 100ms;
+  }
+
+  .sonar-scroll-thumb[hidden] {
+    display: none;
+  }
+
+  /* 4 px from the card's edge, as in the product (1.0.0-alpha.18; it ran 6 px past the content) */
+  .sonar-card > .sonar-scroll-thumb {
+    right: 4px;
+  }
+
+  .sonar-card-scroll > .sonar-scroll-thumb {
+    right: -6px;
+  }
+
+  /* The foot takes no room of its own above the link: the content runs down to it, as in the overview */
+  .sonar-card-footer {
+    display: flex;
+    flex: none;
+    justify-content: flex-end;
+    align-items: flex-end;
+    min-height: 26px;
+    margin-top: auto;
+  }
+
+  .sonar-card-link {
+    position: relative;
+    display: inline-flex;
+    gap: var(--sonar-space-6);
+    align-items: center;
+    border-radius: var(--sonar-shape-corner-small);
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-font-weight-medium) 11px/1 var(--sonar-font-family-sans);
+    letter-spacing: -0.2px;
+    text-decoration: none;
+  }
+
+  .sonar-card-link-arrow {
+    display: grid;
+    place-items: center;
+    width: 14px;
+    height: 14px;
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-accent);
+    color: var(--sonar-color-on-accent);
+    transition: translate var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing);
+  }
+
+  .sonar-card-link-arrow > svg {
+    width: 12px;
+    height: 12px;
+    stroke-width: 1.75;
+  }
+
+  @media (hover: hover) {
+    .sonar-card-link:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .sonar-card-link:hover .sonar-card-link-arrow {
+      translate: 2px 0;
+    }
+  }
+
+  .sonar-card-link:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+  }
+
+  /* Unit menu: a 19 px outlined pill small enough for the card header, 10 px caps and a fine chevron. Open, it stays a
+     pill: its outline darkens over a faint tint and the chevron turns. */
+  .sonar-unit-menu {
+    position: relative;
+    display: inline-flex;
+    gap: var(--sonar-space-4);
+    align-items: center;
+    height: 19px;
+    box-sizing: border-box;
+    /* No extra padding above: the caps sit on the pill’s middle (the 2 px the product added put them 1.2 px low) */
+    padding: 0 7px 0 9px;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    box-shadow: inset 0 0 0 1px var(--sonar-color-text-secondary);
+    color: var(--sonar-color-text-default);
+    font: 400 10px / 1 var(--sonar-font-family-sans);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      color var(--sonar-motion-duration-state) var(--sonar-motion-easing-decelerate),
+      background-color var(--sonar-motion-duration-state) var(--sonar-motion-easing-decelerate),
+      box-shadow var(--sonar-motion-duration-state) var(--sonar-motion-easing-decelerate);
+  }
+
+  /* Optically centered: 0.25 px low (up: 0.25 px high), as the product nets it */
+  .sonar-unit-menu > svg {
+    width: 8px;
+    height: 8px;
+    translate: 0 0.25px;
+    stroke-width: 2.2;
+    transition: rotate var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing);
+  }
+
+  .sonar-unit-menu[data-popup-open] > svg {
+    translate: 0 -0.25px;
+    rotate: 180deg;
+  }
+
+  @media (hover: hover) {
+    .sonar-unit-menu:hover {
+      /* 1.1 (pending #18): v38 .pill:hover also fills it with an 8 % tint of the text */
+      background-color: color-mix(in srgb, var(--sonar-color-text-default) 8%, transparent);
+      box-shadow: inset 0 0 0 1px var(--sonar-color-text-strong);
+      color: var(--sonar-color-text-strong);
+    }
+  }
+
+  .sonar-unit-menu[data-popup-open] {
+    background: color-mix(in srgb, var(--sonar-color-text-strong) 8%, transparent);
+    box-shadow: inset 0 0 0 1px var(--sonar-color-text-strong);
+    color: var(--sonar-color-text-strong);
+  }
+
+  /* The menu: 84 px wide at least, 28 px rows of 12 px caps, the check in the accent */
+  .sonar-menu.sonar-unit-menu-popup {
+    min-width: 84px;
+    border-radius: 16px;
+  }
+
+  .sonar-unit-menu-popup .sonar-menu-item {
+    gap: 12px;
+    min-height: 28px;
+    padding-inline: 11px;
+    border-radius: 12px;
+    font: var(--sonar-font-weight-medium) 12px/1 var(--sonar-font-family-sans);
+    letter-spacing: -0.2px;
+  }
+
+  .sonar-unit-menu-popup .sonar-menu-check {
+    width: 14px;
+    height: 14px;
+  }
+
+  .sonar-unit-menu:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+  }
+
+  @media (pointer: coarse) {
+    .sonar-unit-menu::after,
+    .sonar-card-link::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: max(100%, var(--sonar-layout-touch-target));
+      height: max(100%, var(--sonar-layout-touch-target));
+      translate: -50% -50%;
+    }
+  }
+
+  /* Reduced motion: the link's arrow stays put, and the unit menu changes shape and turns its chevron without moving */
+  @media (prefers-reduced-motion: reduce) {
+    .sonar-card-link-arrow,
+    .sonar-unit-menu,
+    .sonar-unit-menu > svg {
+      transition: none;
+    }
+
+    .sonar-card-link:hover .sonar-card-link-arrow {
+      translate: none;
+    }
+
+    .sonar-scroll-thumb {
+      transition: none;
+    }
+  }
+
+  /* 1.1.3: on a desktop (a pointer that hovers and is fine: mouse or trackpad) the rows do not snap; the list stops
+     where the wheel leaves it (the wheel is still eased, internal/smooth-wheel.ts). Touch screens keep the snap. */
+  @media (hover: hover) and (pointer: fine) {
+    .sonar-card-scroll-area {
+      scroll-snap-type: none !important;
+    }
+  }
+}

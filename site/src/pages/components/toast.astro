@@ -1,0 +1,35 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Undo from '../../demos/toast/Undo.tsx'
+import undoCode from '../../demos/toast/Undo.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import { ToastVariants } from '../../demos/toast/Specimens.tsx'
+---
+
+<ComponentDoc
+  entry="toast"
+  baseUi="https://base-ui.com/react/components/toast"
+  lead="Feedback on something that just happened: one line on the inverse surface at the bottom of the window, with at most one action, usually Undo. It rises with the expressive spring, one of the two moments that bounce."
+>
+  <Demo title="Saved, and removed with undo" code={undoCode}><Undo client:visible /></Demo>
+  <SpecimenFigure slot="specimens" title="Content and action states"><ToastVariants /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>Say what happened in a few words, in the past tense: “Layout saved.”</li>
+      <li>Prefer an Undo in a toast to a confirmation before acting. Confirm only what cannot be undone.</li>
+      <li>One toast at a time: a new one replaces the last. A toast with an action stays ten seconds instead of five.</li>
+      <li>Wrap the app once in a <code>ToastProvider</code>, and show toasts from anywhere with <code>useToast</code>.</li>
+      <li>Toasts centre on the window, 24 px above its foot. In an app with a sidebar, <code>inset</code> centres them on the main area and lifts them above a footer or a bottom app bar, as the product does: <code>{`inset={{ left: '224px', bottom: '66px' }}`}</code>.</li>
+      <li><code>closeButton={`{false}`}</code> leaves out the close button (on the provider, or on one toast); the toast still goes after its time or with a swipe.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>The message is announced politely by assistive technology, without moving focus.</li>
+    <li>The timer pauses while the toast is hovered or focused, so there is time to reach the action.</li>
+    <li>It can be dismissed with its close button or swiped away, down or to the side.</li>
+  </ul>
+</ComponentDoc>

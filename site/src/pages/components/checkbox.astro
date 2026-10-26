@@ -1,0 +1,32 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Examples from '../../demos/checkbox/Examples.tsx'
+import examplesCode from '../../demos/checkbox/Examples.tsx?raw'
+import SelectAll from '../../demos/checkbox/SelectAll.tsx'
+import selectAllCode from '../../demos/checkbox/SelectAll.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import { CheckboxStates } from '../../demos/checkbox/Specimens.tsx'
+---
+
+<ComponentDoc
+  entry="checkbox"
+  lead="A native checkbox, for choices that are submitted with a form or confirmed later. A dash shows that some, not all, of the items it governs are chosen."
+>
+  <Demo title="Checked, with help, disabled" code={examplesCode} layout="stack"><Examples /></Demo>
+  <Demo title="Select all" code={selectAllCode}><SelectAll client:visible /></Demo>
+  <SpecimenFigure slot="specimens" title="States"><CheckboxStates client:visible /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>Each checkbox is independent. For one choice among several, use a SegmentedControl or a select.</li>
+      <li>The indeterminate state is only shown: a click checks the box, and the app decides what that means for its items.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>A native checkbox: Space toggles it, and the indeterminate state is announced as mixed.</li>
+    <li>The help text sits outside the label and is tied to the input with <code>aria-describedby</code>.</li>
+  </ul>
+</ComponentDoc>

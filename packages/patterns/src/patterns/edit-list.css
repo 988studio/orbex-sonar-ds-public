@@ -1,0 +1,204 @@
+/* Edit layout as a list, the phone version of editing the overview: one line a card, hidden cards below, the bar
+   at the foot */
+.edit-list {
+  position: relative;
+  display: grid;
+  /* One column no wider than the list: the bar at the foot never widens it */
+  grid-template-columns: minmax(0, 1fr);
+  width: min(100%, 420px);
+  margin-inline: auto;
+}
+
+.edit-list-head {
+  padding: var(--sonar-space-16) var(--sonar-space-2) var(--sonar-space-14);
+}
+
+.edit-list-head h3 {
+  margin: 0;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-font-weight-semibold) 24px/1.15 var(--sonar-font-family-sans);
+  letter-spacing: -0.02em;
+}
+
+.edit-list-head p {
+  max-width: 30ch;
+  margin: var(--sonar-space-6) 0 0;
+  color: var(--sonar-color-text-tertiary);
+  font: 400 12px/1.2 var(--sonar-font-family-sans);
+}
+
+.edit-list-label {
+  display: flex;
+  gap: var(--sonar-space-6);
+  margin: var(--sonar-space-6) var(--sonar-space-2) var(--sonar-space-8);
+  color: var(--sonar-color-text-tertiary);
+  font: var(--sonar-font-weight-semibold) 12px/1.2 var(--sonar-font-family-sans);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.edit-list-count {
+  color: var(--sonar-color-text-accent);
+  font-weight: var(--sonar-font-weight-medium);
+}
+
+.edit-list-rows {
+  margin: 0 0 var(--sonar-space-20);
+  padding: 0;
+  border-radius: var(--sonar-shape-corner-medium);
+  background: var(--sonar-color-surface-card);
+  box-shadow: var(--sonar-elevation-1);
+}
+
+.edit-list-row {
+  position: relative;
+  display: flex;
+  gap: var(--sonar-space-8);
+  align-items: center;
+  height: 56px;
+  box-sizing: border-box;
+  padding: 0 var(--sonar-space-14) 0 var(--sonar-space-4);
+  border-top: 1px solid var(--sonar-color-divider);
+  background: var(--sonar-color-surface-card);
+}
+
+.edit-list-row:first-child {
+  border-top: 0;
+  border-radius: var(--sonar-shape-corner-medium) var(--sonar-shape-corner-medium) 0 0;
+}
+
+.edit-list-row:last-child {
+  border-radius: 0 0 var(--sonar-shape-corner-medium) var(--sonar-shape-corner-medium);
+}
+
+.edit-list-row:only-child {
+  border-radius: var(--sonar-shape-corner-medium);
+}
+
+/* While a row is dragged the others slide out of its way with the spatial spring; when it is let go the order is
+   final and nothing slides back */
+.edit-list-rows[data-dragging] > .edit-list-row {
+  transition: translate var(--sonar-motion-spatial-fast-duration, 200ms) var(--sonar-motion-spatial-fast-easing, cubic-bezier(0.2, 0, 0, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edit-list-rows[data-dragging] > .edit-list-row {
+    transition: none;
+  }
+}
+
+/* Lifted while it is dragged or picked up from the keyboard */
+.edit-list-row[data-lifted] {
+  z-index: 2;
+  border-radius: var(--sonar-shape-corner-medium);
+  box-shadow: var(--sonar-elevation-4);
+}
+
+.edit-list-grip {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--sonar-shape-corner-small);
+  background: none;
+  color: var(--sonar-color-text-secondary);
+  cursor: grab;
+  touch-action: none;
+}
+
+.edit-list-grip svg {
+  width: 20px;
+  height: 20px;
+}
+
+.edit-list-grip:focus-visible {
+  outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+  outline-offset: calc(-1 * var(--sonar-focus-width));
+}
+
+.edit-list-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-font-weight-medium) 14px/1.3 var(--sonar-font-family-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.edit-list-row[data-off] .edit-list-name {
+  color: var(--sonar-color-text-tertiary);
+}
+
+/* The sizes, small and side by side; the chosen one sits on the card's surface */
+.edit-list-sizes {
+  display: flex;
+  flex: none;
+  gap: var(--sonar-space-2);
+  padding: var(--sonar-space-2);
+  border-radius: 14px;
+  background: var(--sonar-color-surface-container-low);
+}
+
+.edit-list-sizes button {
+  min-width: 28px;
+  height: 24px;
+  padding: 0 var(--sonar-space-6);
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--sonar-color-text-secondary);
+  font: 400 10px/1 var(--sonar-font-family-mono);
+  letter-spacing: -0.3px;
+  cursor: pointer;
+}
+
+.edit-list-sizes button[aria-pressed='true'] {
+  background: var(--sonar-color-surface-card);
+  color: var(--sonar-color-text-strong);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+}
+
+.edit-list-sizes button:focus-visible {
+  outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+  outline-offset: 1px;
+}
+
+.edit-list-row .sonar-switch {
+  margin-left: var(--sonar-space-4);
+}
+
+/* The bar stays at the foot while the list scrolls */
+.edit-list-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  gap: var(--sonar-space-10);
+  align-items: center;
+  height: 60px;
+  margin-inline: calc(-1 * var(--sonar-space-16));
+  padding: 0 var(--sonar-space-16);
+  border-radius: 28px 28px 0 0;
+  background: var(--sonar-color-surface-card);
+  box-shadow: var(--sonar-elevation-edit-bar);
+}
+
+.edit-list-bar .edit-reset {
+  flex: 0 1 auto;
+  min-width: 0;
+  margin-right: auto;
+  /* On the narrowest phones the text button gives way first, on two lines */
+  white-space: normal;
+  text-align: start;
+  line-height: 1.2;
+}
+
+@media (width < 420px) {
+  .edit-list-bar {
+    gap: var(--sonar-space-6, 6px);
+  }
+}

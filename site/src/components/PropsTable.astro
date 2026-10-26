@@ -1,0 +1,170 @@
+---
+/** The props of one component part, as written in its source: type, default and description. */
+import type { Part } from '../lib/components.ts'
+import InlineText from './InlineText.astro'
+
+interface Props {
+  part: Part
+  /** Show the part’s name as a heading: for compound components such as Menu */
+  heading?: string
+  /** Where the underlying Base UI part is documented, for props that pass through */
+  baseUi?: string
+}
+
+const { part, heading, baseUi } = Astro.props
+
+/* "Omit<ComponentProps<'button'>, 'children'>" → the native element it extends */
+const native = part.extends?.match(/ComponentProps<'(\w+)'>/)?.[1]
+const omitted = part.extends?.match(/Omit<[^,]+, ([^>]+)>/)?.[1]?.replaceAll("'", '')
+const passesThrough = part.extends?.includes('Base')
+---
+
+<div class="part">
+  {heading && <h3><code>{heading}</code></h3>}
+  {heading && part.description && <p class="description"><InlineText text={part.description} /></p>}
+  {
+    part.props.length > 0 && (
+      <div class="table-wrap" data-scroll-region data-label={`Props of ${heading ?? part.name}`}>
+        <table>
+          <caption class="visually-hidden">Props of {heading ?? part.name}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Prop</th>
+              <th scope="col">Type</th>
+              <th scope="col">Default</th>
+            </tr>
+          </thead>
+          <tbody>
+            {part.props.map((prop) => (
+              <tr>
+                <th scope="row">
+                  <code>{prop.name}</code>
+                  {prop.required && <span class="required">Required</span>}
+                  {prop.description && <p><InlineText text={prop.description} /></p>}
+                </th>
+                <td>
+                  <code class="type">{prop.type}</code>
+                </td>
+                <td>{prop.default ? <code>{prop.default}</code> : <span class="none">—</span>}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+  {
+    native && (
+      <p class="note">
+        Also takes every attribute of the native <code>{`<${native}>`}</code>
+        {omitted ? <span>, except {omitted}</span> : ''}, and a <code>ref</code> to it.
+      </p>
+    )
+  }
+  {
+    passesThrough && baseUi && (
+      <p class="note">
+        Passes every other prop to Base UI: see the <a href={baseUi}>Base UI reference</a>.
+      </p>
+    )
+  }
+</div>
+
+<style>
+  .part + .part {
+    margin-top: var(--sonar-space-32);
+  }
+
+  h3 {
+    margin-bottom: var(--sonar-space-4);
+    font: var(--sonar-type-title-md);
+  }
+
+  h3 code {
+    font: 600 14px/1.4 var(--sonar-font-family-mono);
+  }
+
+  .description {
+    max-width: var(--site-measure);
+    margin-bottom: var(--sonar-space-12);
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-body-lg);
+  }
+
+  .table-wrap {
+    /* One axis only: wide content scrolls sideways; nothing scrolls or bounces up and down */
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font: var(--sonar-type-body-md);
+    letter-spacing: var(--sonar-type-body-md-tracking);
+  }
+
+  th,
+  td {
+    padding: var(--sonar-space-12) var(--sonar-space-16);
+    border-bottom: 1px solid var(--sonar-color-divider);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  thead th {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  tbody th {
+    width: 50%;
+    font-weight: inherit;
+  }
+
+  tbody th > code {
+    color: var(--sonar-color-text-strong);
+    font: 500 12px/1.4 var(--sonar-font-family-mono);
+  }
+
+  tbody th p {
+    margin-top: var(--sonar-space-4);
+    color: var(--sonar-color-text-secondary);
+  }
+
+  .required {
+    margin-left: var(--sonar-space-8);
+    color: var(--sonar-color-text-danger);
+    font: var(--sonar-type-label-sm);
+  }
+
+  td code {
+    color: var(--sonar-color-text-default);
+    font: 400 12px/1.5 var(--sonar-font-family-mono);
+    overflow-wrap: anywhere;
+  }
+
+  .none {
+    color: var(--sonar-color-text-tertiary);
+  }
+
+  .note {
+    max-width: var(--site-measure);
+    margin-top: var(--sonar-space-12);
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-body-md);
+  }
+
+  .note a {
+    color: var(--sonar-color-text-accent);
+  }
+</style>

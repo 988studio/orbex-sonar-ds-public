@@ -1,0 +1,29 @@
+/*
+ * The document surface, deliberately outside any cascade layer.
+ *
+ * Unlayered styles beat layered ones whatever their order or specificity. Hosts that wrap a page
+ * (preview services, embedding frames, browser extensions) often inject unlayered base styles on
+ * :root and body, such as a white background or a fixed color-scheme. Keeping these few declarations
+ * unlayered, and loaded after any host styles, means the page always paints its own surface in the
+ * right theme. Everything else stays in layers.
+ */
+:root {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+  }
+}
+
+body {
+  background: var(--sonar-color-surface-page);
+  color: var(--sonar-color-text-default);
+  font: var(--sonar-type-body-lg);
+  letter-spacing: var(--sonar-type-body-lg-tracking);
+}

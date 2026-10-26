@@ -1,0 +1,140 @@
+/* Button: a native button in four weights and two sizes. Shape follows Material 3 Expressive: fully round at rest,
+   squarer while pressed. Variants only set the private properties below; one rule draws every button. */
+@layer sonar.components {
+  .sonar-button {
+    --_height: var(--sonar-size-control-medium);
+    --_icon: var(--sonar-size-icon-medium);
+    --_padding: var(--sonar-space-16);
+    --_fill: transparent;
+    --_ink: var(--sonar-color-text-strong);
+    --_edge: transparent;
+    --_hover: var(--sonar-color-state-hover);
+    --_pressed: var(--sonar-color-state-pressed);
+
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    gap: var(--sonar-space-8);
+    justify-content: center;
+    align-items: center;
+    height: var(--_height);
+    padding-inline: var(--_padding);
+    border: 0;
+    border-radius: var(--sonar-shape-corner-full);
+    background-color: var(--_fill);
+    box-shadow: inset 0 0 0 1px var(--_edge);
+    color: var(--_ink);
+    font: var(--sonar-type-button);
+    letter-spacing: var(--sonar-type-button-tracking);
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      border-radius var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing),
+      background-color var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing),
+      color var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing),
+      box-shadow var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing);
+  }
+
+  .sonar-button[data-size='small'] {
+    --_height: var(--sonar-size-control-small);
+    --_icon: var(--sonar-size-icon-small);
+    --_padding: var(--sonar-space-12);
+    gap: var(--sonar-space-6);
+  }
+
+  /* An icon at the start sits closer to the edge, so the label stays optically centered */
+  .sonar-button:has(> .sonar-button-icon:first-child) {
+    padding-inline-start: calc(var(--_padding) - var(--sonar-space-4));
+  }
+
+  .sonar-button:has(> .sonar-button-icon:last-child) {
+    padding-inline-end: calc(var(--_padding) - var(--sonar-space-4));
+  }
+
+  .sonar-button[data-variant='filled'] {
+    --_fill: var(--sonar-color-accent);
+    --_ink: var(--sonar-color-on-accent);
+    --_hover: var(--sonar-color-state-on-accent-hover);
+    --_pressed: var(--sonar-color-state-on-accent-pressed);
+  }
+
+  .sonar-button[data-variant='tonal'] {
+    --_fill: var(--sonar-color-accent-tonal);
+    --_ink: var(--sonar-color-on-accent-tonal);
+  }
+
+  .sonar-button[data-variant='outlined'] {
+    --_edge: var(--sonar-color-border-control);
+  }
+
+  .sonar-button[data-variant='text'] {
+    --_ink: var(--sonar-color-text-accent);
+    --_padding: var(--sonar-space-12);
+  }
+
+  .sonar-button-icon {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--_icon);
+    height: var(--_icon);
+  }
+
+  .sonar-button-icon > svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* State layers paint over the fill, so every variant gets the same hover and press */
+  @media (hover: hover) {
+    .sonar-button:hover:not(:disabled, [aria-disabled='true']) {
+      background-image: linear-gradient(var(--_hover), var(--_hover));
+    }
+  }
+
+  .sonar-button:active:not(:disabled, [aria-disabled='true']),
+  .sonar-button[data-popup-open] {
+    border-radius: var(--sonar-shape-corner-small);
+    background-image: linear-gradient(var(--_pressed), var(--_pressed));
+  }
+
+  .sonar-button:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+  }
+
+  .sonar-button:is(:disabled, [aria-disabled='true']) {
+    --_ink: var(--sonar-color-text-disabled);
+    cursor: default;
+  }
+
+  .sonar-button:is(:disabled, [aria-disabled='true']):is([data-variant='filled'], [data-variant='tonal']) {
+    --_fill: var(--sonar-color-surface-hover);
+  }
+
+  .sonar-button:is(:disabled, [aria-disabled='true'])[data-variant='outlined'] {
+    --_edge: var(--sonar-color-border-muted);
+  }
+
+  /* On touch screens the hit area reaches the touch target; the drawing does not change */
+  @media (pointer: coarse) {
+    .sonar-button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: max(100%, var(--sonar-layout-touch-target));
+      height: max(100%, var(--sonar-layout-touch-target));
+      translate: -50% -50%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sonar-button {
+      transition-property: background-color, color, box-shadow;
+    }
+  }
+}

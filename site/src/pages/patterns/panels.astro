@@ -1,0 +1,125 @@
+---
+import '../../styles/global.css'
+import '@orbex/sonar-components/styles.css'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import PanelDemo from '@orbex/sonar-patterns/patterns/PanelDemo.tsx'
+import '@orbex/sonar-patterns/patterns/cards.css'
+import Docs from '../../layouts/Docs.astro'
+
+/* The six panels the overview opens, gathered in one place (1.0.0-alpha.20). Each section opens the same component
+   the cards and the app shell open. */
+const panels = [
+  {
+    id: 'new-order',
+    title: 'New order',
+    opens: 'New order in the Orders card, and a search for an order that does not exist yet.',
+    anatomy: [
+      ['Header', '“New order”, “Create a new purchase order.” and ×.'],
+      ['Body', 'One line per product: the product, its quantity in the card’s unit and, from two lines on, a red ring to take it out; Add product; the delivery month and a reference.'],
+      ['Actions', 'The total, Cancel and Create order. Create order leads to Confirm order, with Back, Cancel and Confirm order, then to Order placed with Continue.'],
+    ],
+    note: 'Closing it with changes asks first: “Discard this order?”, with Keep editing and Discard.',
+  },
+  {
+    id: 'reorder',
+    title: 'Reorder',
+    opens: 'Reorder in the Recurring orders card, with the favorites chosen in it.',
+    anatomy: [
+      ['Header', '“Confirm reorder”, “Review your recurring order. Quantities are the ones you used last time.” and ×. It starts at the review: the products arrive ready.'],
+      ['Body', 'Each product with its packaging and quantity, then the delivery date, the total, where it goes and a reference.'],
+      ['Actions', 'Cancel and Confirm reorder, then Reorder placed with Continue.'],
+    ],
+  },
+  {
+    id: 'invoice',
+    title: 'Invoice details',
+    opens: 'View on an invoice in the Balance card’s payment calendar.',
+    anatomy: [
+      ['Header', '“Invoice details”, then the invoice’s code, status, amount and due date, and ×.'],
+      ['Body', 'Invoice info (customer, dates, payment terms, PO number, payment method and currency), its line items and its payment history.'],
+      ['Actions', 'Go to Balance and Download PDF.'],
+    ],
+  },
+  {
+    id: 'order',
+    title: 'Order details',
+    opens: 'Open order on a row of the Scheduled orders card. The row stays marked while the panel is open.',
+    anatomy: [
+      ['Header', '“Order details”, then the order’s code, status, items, quantity and delivery day, and ×.'],
+      ['Body', 'Order info (customer, PO number, order and delivery dates, delivery window and where it ships), its items and its schedule.'],
+      ['Actions', 'Go to Scheduled orders.'],
+    ],
+  },
+  {
+    id: 'delivery',
+    title: 'Delivery details',
+    opens: 'View on a delivery in the Deliveries card’s calendar, and Open delivery on an alert in the Notifications card.',
+    anatomy: [
+      ['Header', '“Delivery details”, then the delivery’s code, status, items, quantity and date, and ×.'],
+      ['Body', 'The route map with where it is now, its last stop and its destination, then its itinerary, step by step.'],
+      ['Actions', 'Go to Deliveries.'],
+    ],
+  },
+  {
+    id: 'system',
+    title: 'System notifications',
+    opens: 'The bell in the top bar on desktops and tablets, Alerts in the bottom app bar on phones.',
+    anatomy: [
+      ['Header', '“System notifications”, how many are unread with Mark all as read, and ×.'],
+      ['Body', 'The product’s notes on what changed, newest first. Unread ones carry a ring and a red dot; each links to the improvement and can be marked as read.'],
+      ['Actions', 'View update history.'],
+    ],
+  },
+] as const
+---
+
+<Docs title="Panels" description="The six side panels and sheets the overview opens: what opens each one, its parts, and how it opens on phones, tablets and desktops.">
+  <PageHeader
+    title="Panels"
+    lead="The overview answers some actions with a panel instead of a new page: a new order, a reorder, the details of an invoice, an order or a delivery, and the system’s notifications. They are drawn with the Dialog component and live elsewhere only as answers to a click; here they are side by side, each one live."
+  />
+
+  <Section title="By device" id="devices">
+    <ul class="prose">
+      <li><strong>Phones</strong>: a bottom sheet with a handle, from under the top bar and with no scrim. Swipe it down from the handle or the header, use ×, or press Escape to close it.</li>
+      <li><strong>Tablets</strong>: a side sheet from the right, 402 px, under the top bar and with no scrim, as <a href="/layout/navigation/#tablets">Navigation by device</a> defines it. It slides in from the right edge, all the way, on the default spatial spring, and slides back out the same way.</li>
+      <li><strong>Desktops</strong>: a side sheet from the right, under the top bar and with no scrim, as in the product. It comes in 48 px from the right as it fades in, and leaves the same way, faster.</li>
+      <li>The overview stays in view beside a side sheet, and the row a panel came from stays marked. With reduced motion requested, panels fade without moving.</li>
+    </ul>
+  </Section>
+
+  {
+    panels.map((panel) => (
+      <Section title={panel.title} id={panel.id}>
+        <p class="prose">
+          <strong>Opens from</strong>: {panel.opens}
+        </p>
+        <ul class="prose">
+          {panel.anatomy.map(([part, text]) => (
+            <li>
+              <strong>{part}</strong>: {text}
+            </li>
+          ))}
+        </ul>
+        {'note' in panel && <p class="prose">{panel.note}</p>}
+        <PanelDemo client:idle panel={panel.id} />
+      </Section>
+    ))
+  }
+
+  <Section title="Accessibility" id="accessibility">
+    <ul class="prose">
+      <li>Each panel is a dialog named by its title; its first line is its description.</li>
+      <li>Opening one moves focus into it. Tab and Shift+Tab stay inside it, Escape or × closes it, and focus goes back to what opened it.</li>
+      <li>On phones the page behind a sheet is inert, so a screen reader stays in the sheet.</li>
+      <li>What opens a panel reports it with <code>aria-expanded</code>; pressing it again closes the panel.</li>
+    </ul>
+  </Section>
+</Docs>
+
+<style>
+  :global(.panel-demo) {
+    margin-top: var(--sonar-space-16);
+  }
+</style>

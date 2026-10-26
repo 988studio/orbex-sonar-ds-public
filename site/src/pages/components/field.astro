@@ -1,0 +1,36 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Select from '../../demos/field/Select.tsx'
+import selectCode from '../../demos/field/Select.tsx?raw'
+import TextFields from '../../demos/field/TextFields.tsx'
+import textFieldsCode from '../../demos/field/TextFields.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import { FieldStates, FieldSizes } from '../../demos/field/Specimens.tsx'
+---
+
+<ComponentDoc
+  entry="field"
+  lead="Native inputs and selects with their label above, help and errors below. The edge of the box is the focus ring: 1 px at rest, 2 px while focused, red when something is wrong."
+>
+  <Demo title="Text fields" code={textFieldsCode} layout="stack"><TextFields /></Demo>
+  <Demo title="Selects" code={selectCode} layout="stack"><Select /></Demo>
+  <SpecimenFigure slot="specimens" title="States"><FieldStates /></SpecimenFigure>
+  <SpecimenFigure slot="specimens" title="Sizes"><FieldSizes /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>The label is always visible. A placeholder is an example of what to type, never the label.</li>
+      <li>An error says what is wrong and how to fix it, in one sentence. Show it when the field is left or the form is sent, not while typing.</li>
+      <li>The select is the platform’s own list: the best picker on phones, and complete keyboard and screen reader support everywhere. For searching a long list, a combobox comes later.</li>
+      <li>On touch screens fields grow to 48 px and their text to 16 px, below which iOS zooms in when a field is focused.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>The label is a <code>{'<label for>'}</code>; help and error are tied to the control with <code>aria-describedby</code>, in that order.</li>
+    <li>An error sets <code>aria-invalid</code> and is marked by an icon and by words, not by color alone.</li>
+    <li>Placeholder text reads at the tertiary level, 5.6:1 on cards.</li>
+  </ul>
+</ComponentDoc>

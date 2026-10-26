@@ -1,0 +1,30 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Examples from '../../demos/switch/Examples.tsx'
+import examplesCode from '../../demos/switch/Examples.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import { SwitchStates } from '../../demos/switch/Specimens.tsx'
+---
+
+<ComponentDoc
+  entry="switch"
+  lead="The Material 3 switch on a native checkbox. It turns something on at once, such as a card on the overview, and works before any script has loaded."
+>
+  <Demo title="On, off with help, disabled" code={examplesCode} layout="stack"><Examples /></Demo>
+  <SpecimenFigure slot="specimens" title="States"><SwitchStates /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>For settings that apply immediately. For a choice that is submitted later, use Checkbox.</li>
+      <li>Name what is turned on, not the action: “Daily shipments”, not “Show daily shipments”.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>A native checkbox with <code>role="switch"</code>: announced as a switch, on or off, toggled with Space.</li>
+    <li>The help text sits outside the label, so it describes the switch without lengthening its name.</li>
+    <li>On touch screens the row grows to 48 px.</li>
+  </ul>
+</ComponentDoc>

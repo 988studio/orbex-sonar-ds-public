@@ -1,0 +1,707 @@
+/* The product's app chrome, as documentation: the custom properties the prototype's CSS reads, resolved to the
+   system's tokens where the system has the role, and to the prototype's own values where it has none (map colors,
+   app-only fills, radii and the shell's sizes). Everything app-level in src/demos/app reads these and nothing else.
+   Wrapped in .oxa so nothing leaks into the documentation site. */
+
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: block;
+  /* A subset of the variable font with only the symbols the app chrome draws (opsz 20–48, wght 300–600, FILL 0–1) */
+  src: url('/fonts/material-symbols-outlined-orbex.woff2') format('woff2');
+}
+
+/* 1.1.1: a theme scope inside the app (data-theme on any element in .oxa, as the phone's bottom bar has) resolves the
+   app's names again from that scope's system tokens; custom properties keep the value they got where they were
+   declared, so without this the scope would still read the page's theme. --m-nav-shadow is declared on .oxa only,
+   so the floating bar's shadow is always the page's own (it falls on the page, not on the bar) */
+.oxa,
+.oxa [data-theme] {
+  --accent: var(--sonar-color-accent);
+  --on-accent: var(--sonar-color-on-accent);
+  --on-accent-fixed: var(--sonar-color-on-emphasis);
+  --accent-container: var(--sonar-color-accent-container);
+  --accent-tonal: var(--sonar-color-accent-tonal);
+  --on-accent-tonal: var(--sonar-color-on-accent-tonal);
+  --accent-inverse: var(--sonar-color-accent-inverse);
+  --danger: var(--sonar-color-danger);
+  --warning: var(--sonar-color-warning);
+  --warning-text: var(--sonar-color-text-warning);
+  --text-strong: var(--sonar-color-text-strong);
+  --text: var(--sonar-color-text-default);
+  --text-secondary: var(--sonar-color-text-secondary);
+  --text-muted: var(--sonar-color-text-muted);
+  --text-meta: var(--sonar-color-text-meta);
+  --text-faint: var(--sonar-color-text-placeholder);
+  --text-disabled: var(--sonar-color-text-disabled);
+  --text-inverse: var(--sonar-color-text-inverse);
+  --surface-canvas: var(--sonar-color-surface-canvas);
+  --surface-page: var(--sonar-color-surface-page);
+  --surface-raised: var(--sonar-color-surface-raised);
+  --surface-card: var(--sonar-color-surface-card);
+  --surface-container: var(--sonar-color-surface-container);
+  --surface-container-low: var(--sonar-color-surface-container-low);
+  --surface-well: var(--sonar-color-surface-well);
+  --surface-menu: var(--sonar-color-surface-menu);
+  --surface-hover: var(--sonar-color-surface-hover);
+  --surface-selected: var(--sonar-color-surface-selected);
+  --surface-inverse: var(--sonar-color-surface-inverse);
+  --scrim: var(--sonar-color-scrim);
+  --divider: var(--sonar-color-divider);
+  --border-contrast: var(--sonar-color-border-strong);
+  --border-control: var(--sonar-color-border-control);
+  --border-muted: var(--sonar-color-border-muted);
+  --border-subtle: var(--sonar-color-border-subtle);
+  --border-faint: var(--sonar-color-border-faint);
+  --fill-strong: var(--sonar-color-fill-strong);
+  --fill-faint: var(--sonar-color-fill-faint);
+  --fill-muted: var(--sonar-color-fill-muted);
+  --fill-subtle: var(--sonar-color-fill-subtle);
+  --state-hover: var(--sonar-color-state-hover);
+  --state-pressed: var(--sonar-color-state-pressed);
+  --chart-primary: var(--sonar-color-chart-primary);
+  --chart-secondary: var(--sonar-color-chart-secondary);
+  --chart-grid: var(--sonar-color-chart-grid);
+  --chart-axis: var(--sonar-color-chart-axis);
+  --chart-hold: var(--sonar-color-danger);
+  --shadow-card: var(--sonar-elevation-1);
+  --elevation-2: var(--sonar-elevation-2);
+  --elevation-3: var(--sonar-elevation-3);
+  --shadow-lift: var(--sonar-elevation-4);
+  --shadow-panel: var(--sonar-elevation-panel);
+  --shadow-topbar: var(--sonar-elevation-top-bar);
+  --shadow-sidebar: var(--sonar-elevation-sidebar);
+  --shadow-ebar: var(--sonar-elevation-edit-bar);
+  --sans: var(--sonar-font-family-sans);
+  --cond: var(--sonar-font-family-condensed);
+  --mono: var(--sonar-font-family-mono);
+  --sp-fast: var(--sonar-motion-spatial-fast-easing);
+  --sp-fast-d: var(--sonar-motion-spatial-fast-duration);
+  --sp-def: var(--sonar-motion-spatial-default-easing);
+  --sp-def-d: var(--sonar-motion-spatial-default-duration);
+  --sp-expr: var(--sonar-motion-spatial-expressive-easing);
+  --sp-expr-d: var(--sonar-motion-spatial-expressive-duration);
+  --fx-fast: var(--sonar-motion-effects-fast-easing);
+  --fx-fast-d: var(--sonar-motion-effects-fast-duration);
+  --fx-def: var(--sonar-motion-effects-default-easing);
+  --fx-def-d: var(--sonar-motion-effects-default-duration);
+  --fx-slow: var(--sonar-motion-effects-slow-easing);
+  --fx-slow-d: var(--sonar-motion-effects-slow-duration);
+  --emph-accel: var(--sonar-motion-easing-exit);
+  --ease-out: var(--sonar-motion-easing-decelerate);
+  --side-e: var(--sonar-motion-easing-standard);
+  --d-fast: var(--sonar-motion-duration-state);
+  --orange-78: #FFB040;
+  --orange-77: #FFAC32;
+  --orange-73: #F2A23F;
+  --orange-66: #DD8E35;
+  --text-soft: #525B50;
+  --text-dim: #6C766A;
+  --icon-disabled: #B4BEB1;
+  --surface-sidebar: #EFEFEF;
+  --surface-footer: #F2F2F2;
+  --surface-search: #F1F4F0;
+  --border-text: #2C342B;
+  --border-soft: #525B50;
+  --border-meta: #737D71;
+  --fill-soft: #525B50;
+  --overlay-on-accent: rgba(255,255,255,.1);
+  --overlay-on-accent-strong: rgba(255,255,255,.12);
+  --overlay-on-accent-light: rgba(255,255,255,.12);
+  --chart-off: #B4BEB1;
+  --calendar-dim: #AAB4A8;
+  --scroll-thumb: #DCE5D9;
+  --map-bg: #E3EADF;
+  --map-road: #FDFDFC;
+  --map-casing: #CFD7CB;
+  --map-park: #CFE6CF;
+  --map-water: #D1E2E8;
+  --map-label: #343C33;
+  --map-halo: rgba(253,254,252,.9);
+  --map-pin: #171D16;
+  --pill-border: #3D453B;
+  --pill-text: #2C342B;
+  --pill-border-hover: #171D16;
+  --addbtn-hover: #DCE5D9;
+  --newel-plus-bg: transparent;
+  --newel-plus-hover: color-mix(in srgb,#1E8A3A 8%,transparent);
+  --search-head: #F1F4F0;
+  --search-item-active: #E0E9DD;
+  --banner-bg: color-mix(in srgb,#CDEFD0 60%,transparent);
+  --banner-alt-bg: color-mix(in srgb,#171D16 6%,#FDFDFC);
+  --placeholder-bg: color-mix(in srgb,#CDEFD0 55%,transparent);
+  --notice-info-bg: color-mix(in srgb,#171D16 5%,#FDFDFC);
+  --notice-ok-bg: color-mix(in srgb,#1E8A3A 10%,#FDFDFC);
+  --notice-alert-bg: color-mix(in srgb,#DD3535 12%,#FDFDFC);
+  --notice-info-icon-bg: #CBD5C8;
+  --notice-info-icon: #2C342B;
+  --carrier-bg: #2C342B;
+  --carrier-text: #FFFFFF;
+  --cta-off-bg: #CBD5C8;
+  --cta-off-text: #6C766A;
+  --switch-track: #E0E9DD;
+  --viewmode-moon-dot: #525B50;
+  --viewmode-sun-dot: #FFFFFF;
+  --menu-hover: color-mix(in srgb,#171D16 8%,#EEF3EA);
+  --shadow-sheet-left: -6px 0 18px -7px rgba(23,29,22,.2);
+  --shadow-sheet-down: var(--sonar-elevation-sheet);
+  --shadow-search: none;
+  --pop-shadow: drop-shadow(0 1px 3px rgba(0,0,0,.12));
+  --t14m: 500 14px/1.2 "IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --icon-ctrl: "FILL" 0,"wght" 500,"GRAD" 0,"opsz" 20;
+  --r-card: 12px;
+  --r-panel: 28px;
+  --r-menu: 16px;
+  --r-field: 12px;
+  --r-chip: 8px;
+  --r-banner: 16px;
+  --r-toast: 14px;
+  --r-cta: 14px;
+  --r-cta-press: 8px;
+  --r-btn: 16px;
+  --r-bubble: 20px;
+  --r-input: 24px;
+  --r-search: 28px;
+  --r-handle: 12px;
+  --r-round: 50%;
+  --gutter: 33px;
+  --gap: 20px;
+  --pad: 28px;
+  --side-w: 224px;
+  --col: 370px;
+  --ebar-h: 46px;
+  /* the top bar's height; the sidebar's logo row matches it (shell.css) */
+  --top-h: 69px;
+  --ease-io: ease-in-out;
+  --side-d: .4s;
+  --d-base: .2s;
+  --d-reveal: .22s;
+  --press-scale: 1;
+  --sa-t: 0px;
+  --sa-b: 0px;
+}
+
+[data-theme="dark"] .oxa:where(:not([data-theme="dark"] [data-theme="light"] *)), .oxa[data-theme="dark"], .oxa [data-theme="dark"] {
+  --text-soft: #9CA699;
+  --text-dim: #889285;
+  --icon-disabled: #7D887B;
+  --surface-sidebar: #171D16;
+  --surface-footer: #0C140C;
+  --surface-search: #263026;
+  --border-text: #DCE5D9;
+  --border-soft: #9CA699;
+  --border-meta: #889285;
+  --fill-soft: #9CA699;
+  --overlay-on-accent: rgba(0,0,0,.1);
+  --overlay-on-accent-strong: rgba(0,0,0,.12);
+  --chart-off: #4B574A;
+  --calendar-dim: #6C766A;
+  --scroll-thumb: #262D26;
+  --map-bg: #303A31;
+  --map-road: #566557;
+  --map-casing: #222B22;
+  --map-park: #33603B;
+  --map-water: #2E5B70;
+  --map-label: #EEF3EA;
+  --map-halo: rgba(34,43,35,.92);
+  --map-pin: #E3EADF;
+  --pill-border: #3A433A;
+  --pill-text: #9CA699;
+  --pill-border-hover: #889285;
+  --addbtn-hover: #364336;
+  --newel-plus-bg: color-mix(in srgb,#76B27C 10%,transparent);
+  --newel-plus-hover: color-mix(in srgb,#76B27C 10%,transparent);
+  --search-head: #252C25;
+  /* 1.0.0-alpha.17, flagged for review: the assistant header in dark takes the active search row's tone, a clear
+     step above the window and the bubbles; its grey line moves to the icons' grey to keep AA (4.78:1) */
+  --chat-head: #2E392E;
+  --chat-head-meta: #9CA699;
+  --search-item-active: #2E392E;
+  --banner-bg: rgba(56,187,75,.1);
+  --banner-alt-bg: color-mix(in srgb,#E3EADF 8%,#1F251F);
+  --placeholder-bg: rgba(56,187,75,.07);
+  --notice-info-bg: color-mix(in srgb,#E3EADF 7%,#1F251F);
+  --notice-ok-bg: rgba(56,187,75,.1);
+  --notice-alert-bg: rgba(240,75,75,.11);
+  --notice-info-icon-bg: #3A433A;
+  --notice-info-icon: #E3EADF;
+  --carrier-bg: #3A433A;
+  --carrier-text: #E3EADF;
+  --cta-off-bg: #3A433A;
+  --cta-off-text: #9CA699;
+  --switch-track: #3A433A;
+  --viewmode-moon-dot: #6C766A;
+  --menu-hover: color-mix(in srgb,#E3EADF 10%,#222B22);
+  --shadow-sheet-left: -6px 0 18px -7px rgba(0,0,0,.7);
+  --shadow-sheet-down: var(--sonar-elevation-sheet);
+  --shadow-search: inset 0 0 0 1px #232A23;
+  --pop-shadow: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .oxa:not([data-theme="light"]):where(:not([data-theme="light"] *)) {
+    --text-soft: #9CA699;
+    --text-dim: #889285;
+    --icon-disabled: #7D887B;
+    --surface-sidebar: #171D16;
+    --surface-footer: #0C140C;
+    --surface-search: #263026;
+    --border-text: #DCE5D9;
+    --border-soft: #9CA699;
+    --border-meta: #889285;
+    --fill-soft: #9CA699;
+    --overlay-on-accent: rgba(0,0,0,.1);
+    --overlay-on-accent-strong: rgba(0,0,0,.12);
+    --chart-off: #4B574A;
+    --calendar-dim: #6C766A;
+    --scroll-thumb: #262D26;
+    --map-bg: #303A31;
+    --map-road: #566557;
+    --map-casing: #222B22;
+    --map-park: #33603B;
+    --map-water: #2E5B70;
+    --map-label: #EEF3EA;
+    --map-halo: rgba(34,43,35,.92);
+    --map-pin: #E3EADF;
+    --pill-border: #3A433A;
+    --pill-text: #9CA699;
+    --pill-border-hover: #889285;
+    --addbtn-hover: #364336;
+    --newel-plus-bg: color-mix(in srgb,#76B27C 10%,transparent);
+    --newel-plus-hover: color-mix(in srgb,#76B27C 10%,transparent);
+    --search-head: #252C25;
+    --chat-head: #2E392E;
+    --chat-head-meta: #9CA699;
+    --search-item-active: #2E392E;
+    --banner-bg: rgba(56,187,75,.1);
+    --banner-alt-bg: color-mix(in srgb,#E3EADF 8%,#1F251F);
+    --placeholder-bg: rgba(56,187,75,.07);
+    --notice-info-bg: color-mix(in srgb,#E3EADF 7%,#1F251F);
+    --notice-ok-bg: rgba(56,187,75,.1);
+    --notice-alert-bg: rgba(240,75,75,.11);
+    --notice-info-icon-bg: #3A433A;
+    --notice-info-icon: #E3EADF;
+    --carrier-bg: #3A433A;
+    --carrier-text: #E3EADF;
+    --cta-off-bg: #3A433A;
+    --cta-off-text: #9CA699;
+    --switch-track: #3A433A;
+    --viewmode-moon-dot: #6C766A;
+    --menu-hover: color-mix(in srgb,#E3EADF 10%,#222B22);
+    --shadow-sheet-left: -6px 0 18px -7px rgba(0,0,0,.7);
+    --shadow-sheet-down: var(--sonar-elevation-sheet);
+    --shadow-search: inset 0 0 0 1px #232A23;
+    --pop-shadow: none;
+  }
+  
+}
+
+/* The prototype's page defaults, for the app chrome only */
+.oxa {
+  --m-nav-shadow: var(--sonar-elevation-2);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 12px;
+  line-height: 1.2;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* The product's resets reach the app chrome only. The overview cards inside the frame (.edit-body) are the system's
+   own components and keep the site's reset, exactly as on the Overview page: these rules are unlayered, so they beat
+   every component rule, and inside the cards they indented the lists, squeezed the charts, dropped the pagers and
+   flattened the buttons and unit pills (1.0.0-alpha.17). The same for the side panels and sheets the frame holds,
+   System notifications among them (1.0.0-alpha.18), and Edit layout's bar, list and New element (1.0.0-alpha.20).
+   1.1.1: the top bar's SearchField too (.sonar-search). The margin reset took the clear button's margin-left: auto, so on
+   touch the × fell over the text; the outline below drew a second green box inside the pill */
+.oxa :where(*:not(.sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot, :is(.edit-body, .sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot) *)),
+.oxa :where(*:not(.sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot, :is(.edit-body, .sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot) *))::before,
+.oxa :where(*:not(.sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot, :is(.edit-body, .sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot) *))::after {
+  box-sizing: border-box;
+}
+
+.oxa :where(button:not(.sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot, :is(.edit-body, .sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot) *)) {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.oxa :where(a:not(.sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot, :is(.edit-body, .sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot) *)) {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The site resets margins, draws svg as blocks and balances headings; the product keeps the browser's defaults */
+.oxa :where(*:not(.sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot, :is(.edit-body, .sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot) *)) {
+  margin: revert;
+  text-wrap: revert;
+}
+
+.oxa :where(img, svg):where(:not(.sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot, :is(.edit-body, .sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot) *)) {
+  display: revert;
+  max-width: revert;
+}
+
+.oxa :where(h1, h2, h3, h4):where(:not(.sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot, :is(.edit-body, .sonar-dialog, .sonar-search, .edit-bar, .edit-list, .edit-new-slot) *)) {
+  color: inherit;
+}
+
+/* The cards read in the site's type, as on the Overview page, not the prototype's 12 px page default */
+.oxa .edit-body,
+.oxa .edit-new-slot,
+.oxa .edit-list,
+.oxa .sonar-dialog {
+  color: var(--sonar-color-text-default);
+  font: var(--sonar-type-body-lg);
+  letter-spacing: var(--sonar-type-body-lg-tracking);
+  text-rendering: auto;
+}
+
+.oxa .sonar-dialog:focus-visible {
+  outline: 0;
+}
+
+/* 1.1.1: not inside the SearchField, which draws its own focus (the pill's ring; the clear button's own outline) */
+.oxa :focus-visible:where(:not(.sonar-search *)) {
+  border-radius: 2px;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+
+
+/* from overview.css */
+.oxa .ms {
+  font-family:"Material Symbols Outlined";
+  font-weight:normal;
+  font-style:normal;
+  font-size:20px;
+  line-height:1;
+  letter-spacing:normal;
+  text-transform:none;
+  display:inline-block;
+  white-space:nowrap;
+  direction:ltr;
+  -webkit-font-feature-settings:"liga";
+  font-feature-settings:"liga";
+  font-variation-settings:"FILL" 0,"wght" 300,"GRAD" 0,"opsz" 20;
+  flex:none;
+  user-select:none;
+}
+.oxa .ms.f {
+  font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 20;
+}
+.oxa .t18sb {
+  font-size:18px;
+  font-weight:600;
+  letter-spacing:-.015em;
+}
+.oxa .t18m {
+  font-size:18px;
+  font-weight:500;
+  letter-spacing:-.015em;
+}
+.oxa .t14r {
+  font-size:14px;
+  font-weight:400;
+  line-height:28.97px;
+}
+.oxa .t14m {
+  font-size:14px;
+  font-weight:500;
+}
+.oxa .t14sb {
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:-.2px;
+  line-height:1.4;
+}
+.oxa .t12r {
+  font-size:12px;
+  font-weight:400;
+  letter-spacing:-.4px;
+  line-height:1.2;
+}
+.oxa .t12m {
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:-.2px;
+}
+.oxa .t12sb {
+  font-size:12px;
+  font-weight:600;
+}
+.oxa .t12ra {
+  font-size:12px;
+  font-weight:400;
+  letter-spacing:0;
+  line-height:normal;
+}
+.oxa .t11m {
+  font-weight:500;
+  letter-spacing:-.02em;
+}
+.oxa .t10m {
+  font-weight:500;
+  letter-spacing:-.2px;
+  line-height:1.2;
+}
+.oxa .mono10 {
+  font-family:var(--mono);
+  font-weight:400;
+  letter-spacing:-.3px;
+}
+.oxa .green {
+  color:var(--accent);
+}
+.oxa .red {
+  color:var(--danger);
+}
+.oxa .grey {
+  color:var(--text-meta);
+}
+.oxa .black {
+  color:var(--text-strong);
+}
+.oxa .sep {
+  font-weight:300;
+  margin:0 3px;
+}
+.oxa .row .sep {
+  margin:0 5px;
+}
+.oxa .collapse .ms {
+  font-size:16px;
+}
+.oxa .nav .ms {
+  color:var(--text-soft);
+  width:20px;
+  font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20;
+}
+.oxa .nav .ms.f {
+  font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 20;
+}
+.oxa .ms.cv {
+  font-variation-settings:"FILL" 0,"wght" 500,"GRAD" 0,"opsz" 20;
+}
+.oxa .sup .ms {
+  font-size:13px;
+  color:var(--accent);
+}
+.oxa .toggle .ms {
+  font-size:14px;
+}
+.oxa .accts .ms {
+  color:var(--text-strong);
+  font-size:22px;
+}
+.oxa .circ .ms {
+  font-size:22px;
+}
+.oxa .search .ms {
+  font-size:22px;
+  color:var(--text);
+}
+.oxa .navrow .ms {
+  font-size:18px;
+}
+.oxa .addbtn .ms {
+  font-size:20px;
+}
+.oxa .due .arr .ms {
+  font-size:24px;
+  color:var(--text-strong);
+}
+.oxa .seg .ms {
+  font-size:16px;
+}
+.oxa .month .arr .ms {
+  font-size:24px;
+  color:var(--text-strong);
+}
+.oxa .week .ms {
+  font-size:14px;
+  color:var(--text-strong);
+}
+.oxa .recur .h .ms {
+  color:var(--accent);
+  font-size:26px;
+  width:26px;
+  height:26px;
+  line-height:1;
+  text-align:center;
+  margin-right:-4.5px;
+}
+.oxa .it .k .ms {
+  font-size:13px;
+  color:var(--accent);
+}
+.oxa .cb .ms {
+  font-size:13px;
+  font-variation-settings:"FILL" 0,"wght" 500,"GRAD" 0,"opsz" 20;
+}
+.oxa .banner .bm .ms {
+  font-size:18px;
+}
+.oxa .cta .ms {
+  font-size:18px;
+}
+.oxa .sup.t11m, .oxa .viewmode.t11m {
+  font-size:12px;
+}
+.oxa .orders .navrow.t10m, .oxa .orders .legend.t10m {
+  font-size:11px;
+}
+.oxa .go.t10m {
+  font-size:11px;
+}
+.oxa .sup .ms.qm {
+  font-variation-settings:"FILL" 0,"wght" 600,"GRAD" 0,"opsz" 20;
+}
+[data-theme="dark"] .oxa .toggle .ms:first-child:where(:not([data-theme="dark"] [data-theme="light"] *)) {
+  font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 20;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .oxa .toggle .ms:first-child:where(:not([data-theme="light"] *)) {
+    font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 20;
+  }
+}
+[data-theme="dark"] .oxa .toggle .ms.f:where(:not([data-theme="dark"] [data-theme="light"] *)) {
+  font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .oxa .toggle .ms.f:where(:not([data-theme="light"] *)) {
+    font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20;
+  }
+}
+.oxa.s-col .nav .ms {
+  font-size:20px;
+  text-align:center;
+}
+.oxa.s-col .nav:hover .ms, .oxa.s-col .nav.hov .ms {
+  color:var(--text-strong);
+}
+.oxa .sup:hover .ms, .oxa .sup:focus-visible .ms {
+  transform:translateX(-4px);
+}
+@media (prefers-reduced-motion:reduce) {
+  .oxa .sup .ms {
+    transition:none;
+  }
+}
+
+/* Icons and the text styles of the product (their names are the Figma styles) */
+
+
+
+/* from overview.css */
+.oxa .ms {
+  font-family:"Material Symbols Outlined";
+  font-weight:normal;
+  font-style:normal;
+  font-size:20px;
+  line-height:1;
+  letter-spacing:normal;
+  text-transform:none;
+  display:inline-block;
+  white-space:nowrap;
+  direction:ltr;
+  -webkit-font-feature-settings:"liga";
+  font-feature-settings:"liga";
+  font-variation-settings:"FILL" 0,"wght" 300,"GRAD" 0,"opsz" 20;
+  flex:none;
+  user-select:none;
+}
+.oxa .ms.f {
+  font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 20;
+}
+.oxa .t18sb {
+  font-size:18px;
+  font-weight:600;
+  letter-spacing:-.015em;
+}
+.oxa .t18m {
+  font-size:18px;
+  font-weight:500;
+  letter-spacing:-.015em;
+}
+.oxa .t14r {
+  font-size:14px;
+  font-weight:400;
+  line-height:28.97px;
+}
+.oxa .t14m {
+  font-size:14px;
+  font-weight:500;
+}
+.oxa .t14sb {
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:-.2px;
+  line-height:1.4;
+}
+.oxa .t12r {
+  font-size:12px;
+  font-weight:400;
+  letter-spacing:-.4px;
+  line-height:1.2;
+}
+.oxa .t12m {
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:-.2px;
+}
+.oxa .t12sb {
+  font-size:12px;
+  font-weight:600;
+}
+.oxa .t12ra {
+  font-size:12px;
+  font-weight:400;
+  letter-spacing:0;
+  line-height:normal;
+}
+.oxa .t11m {
+  font-weight:500;
+  letter-spacing:-.02em;
+}
+.oxa .t10m {
+  font-weight:500;
+  letter-spacing:-.2px;
+  line-height:1.2;
+}
+.oxa .mono10 {
+  font-family:var(--mono);
+  font-weight:400;
+  letter-spacing:-.3px;
+}
+.oxa .green {
+  color:var(--accent);
+}
+.oxa .red {
+  color:var(--danger);
+}
+.oxa .grey {
+  color:var(--text-meta);
+}
+.oxa .black {
+  color:var(--text-strong);
+}
+.oxa .sep {
+  font-weight:300;
+  margin:0 3px;
+}
+.oxa .ms.cv {
+  font-variation-settings:"FILL" 0,"wght" 500,"GRAD" 0,"opsz" 20;
+}
+.oxa .sup.t11m, .oxa .viewmode.t11m {
+  font-size:12px;
+}
+.oxa .go.t10m {
+  font-size:11px;
+}

@@ -1,0 +1,16 @@
+{
+  "shape": {
+    "$description": "Corner radius scale from Material 3 Expressive. Larger containers take larger corners.",
+    "corner": {
+      "$type": "dimension",
+      "none": { "$value": { "value": 0, "unit": "px" } },
+      "extra-small": { "$value": { "value": 4, "unit": "px" }, "$description": "Tooltips, small marks." },
+      "small": { "$value": { "value": 8, "unit": "px" }, "$description": "Chips, pressed buttons." },
+      "medium": { "$value": { "value": 12, "unit": "px" }, "$description": "Cards, fields, menu items." },
+      "large": { "$value": { "value": 16, "unit": "px" }, "$description": "Menus, banners, buttons." },
+      "large-increased": { "$value": { "value": 20, "unit": "px" }, "$description": "The step between large and extra-large in the Material 3 scale. No component uses it yet." },
+      "extra-large": { "$value": { "value": 28, "unit": "px" }, "$description": "Side panels, search field." },
+      "full": { "$value": { "value": 9999, "unit": "px" }, "$description": "Pills, avatars, status dots." }
+    }
+  }
+}

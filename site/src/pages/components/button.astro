@@ -1,0 +1,41 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Disabled from '../../demos/button/Disabled.tsx'
+import disabledCode from '../../demos/button/Disabled.tsx?raw'
+import Sizes from '../../demos/button/Sizes.tsx'
+import sizesCode from '../../demos/button/Sizes.tsx?raw'
+import Variants from '../../demos/button/Variants.tsx'
+import variantsCode from '../../demos/button/Variants.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import { ButtonStates, ButtonSizes } from '../../demos/button/Specimens.tsx'
+---
+
+<ComponentDoc
+  entry="button"
+  lead="A native button in four weights. Fully round at rest and squarer while pressed, as in Material 3 Expressive; small and steady in size, because the dashboard is dense."
+>
+  <Demo title="Variants" code={variantsCode}><Variants /></Demo>
+  <Demo title="Sizes and icons" code={sizesCode}><Sizes /></Demo>
+  <Demo title="Disabled" code={disabledCode}><Disabled /></Demo>
+  <SpecimenFigure slot="specimens" title="States"><ButtonStates /></SpecimenFigure>
+  <SpecimenFigure slot="specimens" title="Sizes and icons"><ButtonSizes /></SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li><strong>One filled button per view</strong>, for the action the view exists for: Place order, Save layout.</li>
+      <li><strong>Tonal</strong> for frequent secondary actions; <strong>outlined</strong> for the rest; <strong>text</strong> for actions inside a card or a list, such as View all.</li>
+      <li>Medium in forms, panels and dialogs; small in cards and toolbars. Labels are verbs, in sentence case.</li>
+      <li>For navigation, use a link with the same look: <code>{'<a class="sonar-button" data-variant="text" data-size="medium">'}</code>. A button that only navigates confuses screen readers and breaks opening in a new tab.</li>
+      <li>Prefer leaving an action enabled and explaining what is missing when it is used. A disabled button cannot say why.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>A native <code>{'<button>'}</code> with <code>type="button"</code> by default, so it never submits a form by accident.</li>
+    <li>Icons are hidden from assistive technology; the label names the action.</li>
+    <li>The focus ring is drawn outside the button in <code>color.focus</code>, at 3:1 or more on every surface.</li>
+    <li>On touch screens the hit area grows to 48 px around the button without changing how it looks.</li>
+  </ul>
+</ComponentDoc>

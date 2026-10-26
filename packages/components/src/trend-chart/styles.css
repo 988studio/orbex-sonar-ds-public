@@ -1,0 +1,184 @@
+/* Trend chart: a daily line and its running total. Figures use the data type role, in the mono face; a series
+   turned off keeps its name at the tertiary level with a hollow marker, never a faded one. */
+@layer sonar.components {
+  /* A column that can shrink: the chart measures its frame, so the frame must never take its width from the chart */
+  /* Positioned, so the text kept for screen readers stays inside the component, even within a scrolling container */
+  .sonar-trend-chart {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sonar-space-8);
+    min-width: 0;
+    margin: 0;
+  }
+
+  .sonar-trend-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sonar-space-4) var(--sonar-space-16);
+    justify-content: space-between;
+  }
+
+  .sonar-trend-legend button {
+    position: relative;
+    display: inline-flex;
+    gap: var(--sonar-space-6);
+    align-items: center;
+    padding: var(--sonar-space-2) var(--sonar-space-4);
+    border: 0;
+    border-radius: var(--sonar-shape-corner-small);
+    background: none;
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    cursor: pointer;
+  }
+
+  .sonar-trend-legend button[data-series='primary'] {
+    color: var(--sonar-color-text-accent);
+  }
+
+  /* Off: the name drops to tertiary at full opacity and the marker turns hollow */
+  .sonar-trend-legend button[aria-pressed='false'] {
+    color: var(--sonar-color-text-tertiary);
+  }
+
+  /* The legend draws each series as its line: the series in short dashes, the running total dotted */
+  .sonar-trend-marker {
+    width: 14px;
+    height: 2px;
+    background: repeating-linear-gradient(to right, var(--sonar-color-chart-primary) 0 2px, transparent 2px 4.2px);
+  }
+
+  [data-series='cumulative'] > .sonar-trend-marker {
+    height: 0;
+    border-top: 2px dotted var(--sonar-color-chart-secondary);
+    background: none;
+  }
+
+  [aria-pressed='false'] > .sonar-trend-marker {
+    background: none;
+    width: 8px;
+    height: 8px;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+  }
+
+  @media (hover: hover) {
+    .sonar-trend-legend button:hover {
+      background: var(--sonar-color-state-hover);
+    }
+  }
+
+  .sonar-trend-legend button:focus-visible,
+  .sonar-trend-frame:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+  }
+
+  .sonar-trend-frame {
+    position: relative;
+    min-width: 0;
+    border-radius: var(--sonar-shape-corner-small);
+    touch-action: pan-y;
+  }
+
+  .sonar-trend-frame svg {
+    display: block;
+    overflow: visible;
+  }
+
+  .sonar-trend-grid {
+    stroke: var(--sonar-color-chart-grid);
+    stroke-dasharray: 1 3;
+  }
+
+  .sonar-trend-axis {
+    fill: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-data);
+    letter-spacing: var(--sonar-type-data-tracking);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sonar-trend-line {
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* The series in short dashes, as in the product: 2 px of line and 2.2 px of gap once the round caps are drawn */
+  .sonar-trend-line[data-series='primary'] {
+    stroke: var(--sonar-color-chart-primary);
+    stroke-dasharray: 0.5 3.7;
+  }
+
+  .sonar-trend-line[data-series='cumulative'] {
+    stroke: var(--sonar-color-chart-secondary);
+    stroke-dasharray: 1.5 3;
+  }
+
+  .sonar-trend-focus line {
+    stroke: var(--sonar-color-border-emphasis);
+    stroke-dasharray: 2 2;
+  }
+
+  .sonar-trend-focus circle {
+    stroke: var(--sonar-color-surface-card);
+    stroke-width: 2;
+  }
+
+  .sonar-trend-focus circle[data-series='primary'] {
+    fill: var(--sonar-color-chart-primary);
+  }
+
+  .sonar-trend-focus circle[data-series='cumulative'] {
+    fill: var(--sonar-color-chart-secondary);
+  }
+
+  .sonar-trend-hit {
+    fill: transparent;
+    cursor: crosshair;
+  }
+
+  .sonar-trend-tip {
+    position: absolute;
+    top: 0;
+    display: grid;
+    gap: var(--sonar-space-2);
+    padding: var(--sonar-space-8) var(--sonar-space-10);
+    border-radius: var(--sonar-shape-corner-small);
+    background: var(--sonar-color-surface-inverse);
+    color: var(--sonar-color-text-inverse);
+    font: var(--sonar-type-label-sm);
+    letter-spacing: var(--sonar-type-label-sm-tracking);
+    white-space: nowrap;
+    translate: -50% -100%;
+    pointer-events: none;
+  }
+
+  .sonar-trend-tip strong {
+    font: var(--sonar-type-title-sm);
+  }
+
+  .sonar-trend-readout {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  @media (pointer: coarse) {
+    .sonar-trend-legend button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: max(100%, var(--sonar-layout-touch-target));
+      translate: 0 -50%;
+    }
+  }
+}

@@ -1,0 +1,40 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Confirm from '../../demos/dialog/Confirm.tsx'
+import confirmCode from '../../demos/dialog/Confirm.tsx?raw'
+import Sheet from '../../demos/dialog/Sheet.tsx'
+import sheetCode from '../../demos/dialog/Sheet.tsx?raw'
+import SidePanel from '../../demos/dialog/SidePanel.tsx'
+import sidePanelCode from '../../demos/dialog/SidePanel.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+---
+
+<ComponentDoc
+  entry="dialog"
+  lead="A dialog on the native dialog element, in three placements: centered for a decision, over a scrim; at the end for a side panel beside the page, with no scrim; at the bottom for a sheet on phones. The browser handles focus."
+>
+  <Demo title="Confirmation" code={confirmCode}><Confirm client:visible /></Demo>
+  <Demo title="Side panel" code={sidePanelCode}><SidePanel client:visible /></Demo>
+  <Demo title="Bottom sheet" code={sheetCode}><Sheet client:visible /></Demo>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>Confirm only what cannot be undone, such as resetting a layout. Everything else gets an undo in a toast.</li>
+      <li>The title asks the question; the main action answers it with a verb, last in the row.</li>
+      <li>Panels open at the end on tablets and desktops, from 600 px wide (an iPad mini in portrait keeps them at the side), and from the bottom on phones, 44 px from the top of the window. On a tablet this departs from the product’s 768 px size class, on purpose: the side panel keeps the overview in view. On desktops a side panel slides in 48 px with a fade, as in the product; on tablets it slides all the way in from the right edge, as <a href="/layout/navigation/#tablets">Navigation by device</a> defines.</li>
+      <li>Nothing in a panel or sheet shows the system’s scrollbar: its body scrolls with the product’s thin indicator, 4 px from the edge.</li>
+      <li>A side panel is not modal (<code>modal={'{false}'}</code>): it starts under the top bar, has no scrim, and the overview stays in view with the row it came from marked. Only decisions, such as a confirmation, take a scrim.</li>
+      <li>The six panels the overview opens are gathered, live, in <a href="/patterns/panels/">Patterns › Panels</a>.</li>
+      <li>Turn <code>dismissible</code> off when a stray click outside would lose what someone typed.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>Modal: <code>showModal()</code> moves focus into the dialog, keeps it there, makes the rest of the page inert and returns focus to the trigger on close.</li>
+    <li>Side panel: focus moves into the panel when it opens and back to the trigger when it closes. Tab and Shift+Tab go round inside it, so focus never lands on the page behind; the page stays in view and a click on it still works. On phones, where it is a sheet over the page, the rest of the page is inert while it is open. Escape or a click outside closes it.</li>
+    <li>The title names the dialog and the description is read with it.</li>
+    <li>Escape and the close button always close it, whatever <code>dismissible</code> says.</li>
+    <li>With reduced motion, the dialog fades without moving.</li>
+  </ul>
+</ComponentDoc>

@@ -1,0 +1,37 @@
+---
+import '@orbex/sonar-patterns/patterns/edit.css'
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import SpecimenFigure from '../../components/SpecimenFigure.astro'
+import ThemePair from '../../components/ThemePair.astro'
+import Basic from '../../demos/card/Basic.tsx'
+import basicCode from '../../demos/card/Basic.tsx?raw'
+import { CardStates } from '@orbex/sonar-patterns/patterns/CardStates.tsx'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+import { gridMetrics } from '../../lib/layout-metrics.ts'
+---
+
+<ComponentDoc
+  entry="card"
+  lead="The unit of the overview: a titled region with one figure that sums it up, its detail and a way to the full page. In the grid it takes one of four heights and scrolls what does not fit between its header and footer."
+>
+  <Demo title="Orders, with a unit, a summary, a tick bar and its link" code={basicCode} layout="card"><Basic client:visible /></Demo>
+  <SpecimenFigure slot="specimens" title="States, at rest and while the overview is edited">
+    <ThemePair label="The states of a card while the overview is edited, in light and dark"><CardStates /></ThemePair>
+  </SpecimenFigure>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li><strong>Size</strong>: S, M, L or XL ({gridMetrics.heights.s}, {gridMetrics.heights.m}, {gridMetrics.heights.l} and {gridMetrics.heights.xl} px) in the overview grid. Without a size, the card follows its content.</li>
+      <li><strong>Summary</strong>: one figure with its unit; tone default for figures that are not the card’s main one.</li>
+      <li><strong>Actions</strong>: a Unit menu, and nothing else. <strong>Footer</strong>: a Card link and at most one action.</li>
+      <li><strong>Label</strong>: only when the same card shows twice on a page, as on <a href="/patterns/cards/#sizes">Cards</a>.</li>
+      <li>How the six cards of the overview are composed, and their rules, are in <a href="/patterns/cards/">Patterns › Cards</a>.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>The card is a region named by its title, so the overview reads as a list of landmarks.</li>
+    <li>The title’s level follows the page: <code>titleAs="h3"</code> under a page section.</li>
+  </ul>
+</ComponentDoc>

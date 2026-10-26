@@ -1,0 +1,270 @@
+---
+import { contrastRules, NOTICE_SURFACES, TEXT_SURFACES } from '@orbex/sonar-tokens/accessibility'
+import type { TokenName } from '@orbex/sonar-tokens'
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import Docs from '../../layouts/Docs.astro'
+import { contrastOf, formatRatio, THEMES } from '../../lib/tokens.ts'
+
+/* One row per rule: the lowest ratio across its backgrounds is the one that matters */
+const contract = contrastRules.map(({ foreground, backgrounds, minimum }) => ({
+  foreground,
+  on:
+    backgrounds === TEXT_SURFACES
+      ? 'Every text surface'
+      : backgrounds === NOTICE_SURFACES
+        ? 'Every notice: the neutral container, and each tint over card and page'
+        : backgrounds.map((background) => background.replace('/', ' over ')).join(', '),
+  minimum,
+  lowest: THEMES.map((theme) =>
+    Math.min(...backgrounds.map((background) => contrastOf(`color.${foreground}` as TokenName, `color.${background}` as TokenName, theme))),
+  ),
+}))
+const pairs = contrastRules.reduce((sum, { backgrounds }) => sum + backgrounds.length, 0)
+
+const split = [
+  ['The system', 'Contrast of every color pair, focus rings, target sizes, keyboard behavior, roles and states of every component, reduced motion.'],
+  ['The app', 'Page titles and headings, the language of the page, the names it gives to components (labels, button text, chart labels), error messages that say how to fix the error, and the order of content.'],
+]
+---
+
+<Docs title="Accessibility" description="How the Orbex Sonar-DB Design System meets WCAG 2.2 AA: contrast, focus, target sizes, motion, keyboard and screen readers, and how each is checked.">
+  <PageHeader
+    title="Accessibility"
+    lead="The system aims at WCAG 2.2, level AA, for everything it ships: tokens, components and patterns. What it can guarantee is built in and tested on every build; what only an app can know is written down as rules."
+  />
+
+  <Section title="Who does what" id="scope">
+    <div class="table-wrap" data-scroll-region data-label="Who does what, table">
+      <table>
+        <caption class="visually-hidden">What the system guarantees and what each app provides</caption>
+        <tbody>
+          {split.map(([who, what]) => <tr><th scope="row">{who}</th><td>{what}</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section title="Contrast" id="contrast">
+    <div class="prose">
+      <p>
+        Every text level meant to be read, placeholders included, reaches <strong>4.5:1</strong> on every surface that
+        carries text, in both themes (WCAG 1.4.3). Control boundaries, the focus ring and marks such as checkboxes and
+        chart alerts reach <strong>3:1</strong> (1.4.11). Disabled text is exempt from both; the system still keeps it at
+        3:1 so it can be read.
+      </p>
+      <p>
+        The {pairs} pairs below are a contract in the tokens package, <code>lib/accessibility.ts</code>. The token tests
+        measure each one in both themes on every build, and a change that breaks one fails the build. Each row shows the
+        lowest ratio across its backgrounds, measured now. Every text level on every surface is in the matrix of
+        <a href="/foundations/color/#contrast">Color</a>.
+      </p>
+    </div>
+    <div class="table-wrap" data-scroll-region data-label="Contrast contract">
+      <table class="contract">
+        <caption class="visually-hidden">Contrast pairs and their measured ratios</caption>
+        <thead>
+          <tr>
+            <th scope="col">Foreground</th>
+            <th scope="col">On</th>
+            <th scope="col">Minimum</th>
+            <th scope="col">Lowest, light</th>
+            <th scope="col">Lowest, dark</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            contract.map(({ foreground, on, minimum, lowest }) => (
+              <tr>
+                <th scope="row"><code>{foreground}</code></th>
+                <td>{on.startsWith('Every') ? on : <code>{on}</code>}</td>
+                <td>{minimum}:1</td>
+                {lowest.map((ratio) => <td>{formatRatio(ratio)}</td>)}
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section title="Focus" id="focus">
+    <ul class="prose">
+      <li>
+        Every control shows a ring when it is reached from the keyboard (2.4.7): <code>focus.width</code> 2 px, at
+        <code>focus.offset</code> 2 px, in <code>color.focus</code>, which keeps 3:1 against every surface it can sit on.
+        A ring is never removed without another visible indicator in its place.
+      </li>
+      <li>
+        Pointer clicks draw no ring; <code>:focus-visible</code> decides, as the browser does for its own controls.
+      </li>
+      <li>
+        Nothing covers what has focus (2.4.11). On phones and tablets the top bar is sticky, so the page keeps room for it
+        above anything scrolled into view; menus and tooltips open beside their trigger, never over it.
+      </li>
+      <li>A modal dialog moves focus in and returns it to what opened it; nothing else moves focus on its own.</li>
+    </ul>
+  </Section>
+
+  <Section title="Target size" id="target-size">
+    <ul class="prose">
+      <li>
+        WCAG 2.2 asks for targets of at least 24 × 24 px (2.5.8). Controls are 28 or 36 px tall, and spaced so that
+        neighbors never overlap.
+      </li>
+      <li>
+        On touch screens every control’s hit area grows to 48 × 48 px, <code>layout.touch-target</code>, without changing
+        how it looks. Labels of checkboxes and switches are part of the target.
+      </li>
+    </ul>
+  </Section>
+
+  <Section title="Motion" id="motion">
+    <ul class="prose">
+      <li>
+        Under <code>prefers-reduced-motion</code>, every component stops moving things across the screen: menus, dialogs,
+        sheets and toasts appear in place, and shapes change without traveling. Short fades and color changes remain,
+        so state changes are still visible.
+      </li>
+      <li>Nothing animates on load, nothing flashes, and nothing moves on its own for more than a moment.</li>
+    </ul>
+  </Section>
+
+  <Section title="Keyboard" id="keyboard">
+    <ul class="prose">
+      <li>Everything that works with a pointer works with a keyboard (2.1.1), in the order the page is read.</li>
+      <li>
+        Tab moves between controls; arrow keys move inside a group of options, a menu or a chart, as the platform does.
+        Each component page lists its keys under Accessibility.
+      </li>
+      <li>Only a modal dialog keeps focus inside it, by design, and Escape always leaves it (2.1.2).</li>
+    </ul>
+  </Section>
+
+  <Section title="Screen readers" id="screen-readers">
+    <ul class="prose">
+      <li>
+        <strong>Native first.</strong> Buttons, checkboxes, switches, radios, fields and dialogs are the browser’s own
+        elements, so their roles and states are right in every screen reader. Base UI supplies the rest (menus,
+        tooltips, toasts) following the WAI-ARIA patterns.
+      </li>
+      <li><strong>Every control has a name.</strong> Icon buttons require one; icons are hidden; repeated buttons say what they act on.</li>
+      <li><strong>Never color alone</strong> (1.4.1). States are written; legends name every color; charts list their values in words.</li>
+      <li>
+        <strong>Changes are announced.</strong> Toasts arrive in a polite live region, and a card announces what its
+        step buttons change: the day, the due date, the month.
+      </li>
+      <li><strong>Regions.</strong> Each card of the overview is a region named by its title, so the overview can be read card by card.</li>
+    </ul>
+  </Section>
+
+  <Section title="Reflow and text" id="reflow">
+    <ul class="prose">
+      <li>
+        Pages reflow down to 320 px without scrolling sideways (1.4.10). Long code and wide tables scroll inside their
+        own block, which can be focused and scrolled from the keyboard.
+      </li>
+      <li>Text sizes are in the type roles and scale with the browser’s text size (1.4.4); nothing is set to stop zoom.</li>
+      <li>
+        Cards in the overview grid have one of four heights. With very large text or extra text spacing (1.4.12)
+        nothing is cut: content that no longer fits scrolls inside the card, between its header and footer, and can be
+        scrolled from the keyboard.
+      </li>
+    </ul>
+  </Section>
+
+  <Section title="How it is checked" id="checks">
+    <ul class="prose">
+      <li><strong>On every build, automatically:</strong> the {pairs} contrast pairs in both themes; every component rendered and checked with axe in its tests.</li>
+      <li>
+        <strong>Before every release, by hand and with scripts:</strong> every page of this site at 360, 390, 430, 834, 1024 and 1440 px, light and
+        dark, with every code block open, checked for anything that scrolls the page sideways; a keyboard pass through
+        every component; VoiceOver on iOS and macOS through every component; text at 200%.
+      </li>
+    </ul>
+  </Section>
+
+  <Section title="Known limits" id="limits">
+    <ul class="prose">
+      <li>
+        <strong>The Sonar-DB dashboard</strong> is audited on its own, once it is built on these tokens and components;
+        this site covers the system, the patterns and their live examples.
+      </li>
+    </ul>
+  </Section>
+</Docs>
+
+<style>
+  .table-wrap {
+    max-width: 880px;
+    /* One axis only: wide content scrolls sideways; nothing scrolls or bounces up and down */
+    overflow: auto hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  .prose + .table-wrap {
+    margin-top: var(--sonar-space-20);
+  }
+
+  .table-wrap:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font: var(--sonar-type-body-md);
+    letter-spacing: var(--sonar-type-body-md-tracking);
+  }
+
+  th,
+  td {
+    padding: var(--sonar-space-10) var(--sonar-space-16);
+    border-bottom: 1px solid var(--sonar-color-divider);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  thead th {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    white-space: nowrap;
+  }
+
+  tbody th {
+    color: var(--sonar-color-text-strong);
+    font-weight: var(--sonar-font-weight-medium);
+  }
+
+  td {
+    color: var(--sonar-color-text-secondary);
+  }
+
+  table code {
+    font: 500 12px/1.4 var(--sonar-font-family-mono);
+  }
+
+  .contract {
+    min-width: 600px;
+  }
+
+  .contract td:nth-child(n + 3) {
+    color: var(--sonar-color-text-default);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .contract thead th:nth-child(n + 3) {
+    text-align: right;
+  }
+</style>

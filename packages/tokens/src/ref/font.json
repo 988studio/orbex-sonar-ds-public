@@ -1,0 +1,17 @@
+{
+  "font": {
+    "$description": "IBM Plex: one superfamily for interface text, condensed labels and data.",
+    "family": {
+      "$type": "fontFamily",
+      "sans": { "$value": ["IBM Plex Sans", "IBM Plex Sans Fallback", "ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "sans-serif"], "$description": "Interface text. IBM Plex Sans Fallback is Arial resized to Plex’s width and line metrics, so the page does not move when Plex arrives; the site declares it." },
+      "condensed": { "$value": ["IBM Plex Sans Condensed", "IBM Plex Sans", "Arial Narrow", "sans-serif"], "$description": "Weekday initials and the wordmark, where width is scarce." },
+      "mono": { "$value": ["IBM Plex Mono", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"], "$description": "Chart axes and section overlines." }
+    },
+    "weight": {
+      "$type": "fontWeight",
+      "regular": { "$value": 400 },
+      "medium": { "$value": 500 },
+      "semibold": { "$value": 600 }
+    }
+  }
+}

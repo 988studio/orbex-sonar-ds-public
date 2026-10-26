@@ -1,0 +1,32 @@
+{
+  "name": "site",
+  "private": true,
+  "author": "988©STUDIO",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/check-islands.mjs",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/react": "7.0.1",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "@fontsource/ibm-plex-sans-condensed": "5.3.0",
+    "@material-symbols/svg-500": "^0.47.6",
+    "@orbex/sonar-components": "*",
+    "@orbex/sonar-patterns": "*",
+    "@orbex/sonar-tokens": "*",
+    "astro": "7.3.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@material-symbols/svg-400": "0.47.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "typescript": "^5.9.3"
+  }
+}

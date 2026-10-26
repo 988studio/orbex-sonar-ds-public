@@ -1,0 +1,120 @@
+/* Icon button: a round button with one icon. Same weights and state layers as Button; squarer while pressed.
+   Its colors change in 160 ms on the decelerate curve, as the product's round icon buttons do (.circ in the top bar);
+   Button keeps the effects spring of the product's filled buttons. */
+@layer sonar.components {
+  .sonar-icon-button {
+    --_size: var(--sonar-size-control-medium);
+    --_icon: var(--sonar-size-icon-medium);
+    --_fill: transparent;
+    --_ink: var(--sonar-color-text-secondary);
+    --_edge: transparent;
+    --_hover: var(--sonar-color-state-hover);
+    --_pressed: var(--sonar-color-state-pressed);
+
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: var(--_size);
+    height: var(--_size);
+    padding: 0;
+    border: 0;
+    border-radius: var(--sonar-shape-corner-full);
+    background-color: var(--_fill);
+    box-shadow: inset 0 0 0 1px var(--_edge);
+    color: var(--_ink);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      border-radius var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing),
+      background-color var(--sonar-motion-duration-state) var(--sonar-motion-easing-decelerate),
+      color var(--sonar-motion-duration-state) var(--sonar-motion-easing-decelerate),
+      box-shadow var(--sonar-motion-duration-state) var(--sonar-motion-easing-decelerate);
+  }
+
+  .sonar-icon-button[data-size='small'] {
+    --_size: var(--sonar-size-control-small);
+    --_icon: var(--sonar-size-icon-small);
+  }
+
+  .sonar-icon-button[data-variant='filled'] {
+    --_fill: var(--sonar-color-accent);
+    --_ink: var(--sonar-color-on-accent);
+    --_hover: var(--sonar-color-state-on-accent-hover);
+    --_pressed: var(--sonar-color-state-on-accent-pressed);
+  }
+
+  .sonar-icon-button[data-variant='tonal'] {
+    --_fill: var(--sonar-color-accent-tonal);
+    --_ink: var(--sonar-color-on-accent-tonal);
+  }
+
+  .sonar-icon-button[data-variant='outlined'] {
+    --_edge: var(--sonar-color-border-control);
+    --_ink: var(--sonar-color-text-strong);
+  }
+
+  .sonar-icon-button-icon {
+    display: grid;
+    place-items: center;
+    width: var(--_icon);
+    height: var(--_icon);
+  }
+
+  .sonar-icon-button-icon > svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (hover: hover) {
+    .sonar-icon-button:hover:not(:disabled, [aria-disabled='true']) {
+      background-image: linear-gradient(var(--_hover), var(--_hover));
+    }
+
+    .sonar-icon-button[data-variant='standard']:hover:not(:disabled, [aria-disabled='true']) {
+      color: var(--sonar-color-text-strong);
+    }
+  }
+
+  .sonar-icon-button:active:not(:disabled, [aria-disabled='true']),
+  .sonar-icon-button[data-popup-open] {
+    border-radius: var(--sonar-shape-corner-medium);
+    background-image: linear-gradient(var(--_pressed), var(--_pressed));
+  }
+
+  .sonar-icon-button:focus-visible {
+    outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+    outline-offset: var(--sonar-focus-offset);
+  }
+
+  .sonar-icon-button:is(:disabled, [aria-disabled='true']) {
+    --_ink: var(--sonar-color-text-disabled);
+    cursor: default;
+  }
+
+  .sonar-icon-button:is(:disabled, [aria-disabled='true']):is([data-variant='filled'], [data-variant='tonal']) {
+    --_fill: var(--sonar-color-surface-hover);
+  }
+
+  .sonar-icon-button:is(:disabled, [aria-disabled='true'])[data-variant='outlined'] {
+    --_edge: var(--sonar-color-border-muted);
+  }
+
+  @media (pointer: coarse) {
+    .sonar-icon-button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: max(100%, var(--sonar-layout-touch-target));
+      height: max(100%, var(--sonar-layout-touch-target));
+      translate: -50% -50%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sonar-icon-button {
+      transition-property: background-color, color;
+    }
+  }
+}

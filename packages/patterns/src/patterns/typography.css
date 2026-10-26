@@ -1,0 +1,44 @@
+/* Type shared by the cards and their side panels: section headings, figures and the lines under them */
+
+/* A section heading inside a card: May 2026, Overdue */
+.card-heading {
+  margin: 0;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-title-sm);
+  letter-spacing: var(--sonar-type-title-sm-tracking);
+  text-transform: uppercase;
+}
+
+.card-row {
+  display: flex;
+  gap: var(--sonar-space-8);
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-rule {
+  margin: var(--sonar-space-12) 0;
+  border: 0;
+  border-top: 1px solid var(--sonar-color-divider);
+}
+
+.card-figure {
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-label-md);
+  letter-spacing: var(--sonar-type-label-md-tracking);
+  font-variant-numeric: tabular-nums;
+}
+
+.card-figure[data-tone='accent'] {
+  color: var(--sonar-color-text-accent);
+}
+
+.card-figure[data-tone='danger'] {
+  color: var(--sonar-color-text-danger);
+}
+
+.card-meta {
+  color: var(--sonar-color-text-meta);
+  font: var(--sonar-type-body-md);
+  letter-spacing: var(--sonar-type-body-md-tracking);
+}

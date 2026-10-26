@@ -1,0 +1,548 @@
+---
+/**
+ * The overview at any window width: size class, columns, column width and where each card goes.
+ * Every measure comes from the tokens at build time and travels as data; the script only runs the grid functions.
+ */
+import { designedOverview, type GridMetrics } from '../lib/overview-grid.ts'
+
+interface Props {
+  metrics: GridMetrics
+}
+
+const { metrics } = Astro.props
+
+/* A representative window for each size class: width and height */
+const devices: Record<string, { label: string; width: number; height: number }> = {
+  compact: { label: 'Phones', width: 390, height: 844 },
+  medium: { label: 'Tablets', width: 834, height: 1194 },
+  expanded: { label: 'Desktops', width: 1440, height: 900 },
+  large: { label: 'Wide monitors', width: 2560, height: 1440 },
+  'extra-large': { label: 'Ultra-wide monitors', width: 3440, height: 1440 },
+}
+const MIN_WIDTH = 360
+const MAX_WIDTH = 3440
+const span = MAX_WIDTH - MIN_WIDTH
+const ruler = metrics.classes.map((sizeClass, index) => {
+  const end = metrics.classes[index + 1]?.min ?? MAX_WIDTH + 1
+  const start = Math.max(sizeClass.min, MIN_WIDTH)
+  return { ...sizeClass, ...devices[sizeClass.name], share: (end - start) / span }
+})
+const data = JSON.stringify({ metrics, devices, designed: designedOverview })
+const initial = devices.expanded.width
+---
+
+<figure class="simulator" data-grid={data}>
+  <div class="controls">
+    <div class="width">
+      <label for="grid-width">Window width</label>
+      <output for="grid-width" id="grid-width-value">{initial} px</output>
+    </div>
+    <input id="grid-width" type="range" min={MIN_WIDTH} max={MAX_WIDTH} step="1" value={initial} />
+    <div class="ruler" role="group" aria-label="Size classes">
+      {
+        ruler.map(({ name, label, columns, width, share }) => (
+          <button type="button" style={`--share: ${share}`} data-class={name} data-width={width} aria-label={`${name}, ${label.toLowerCase()}, ${columns} ${columns === 1 ? 'column' : 'columns'}: show at ${width} px`}>
+            <span class="name">{name}</span>
+            <span class="count" aria-hidden="true">{columns}</span>
+          </button>
+        ))
+      }
+    </div>
+    <label class="switch">
+      <input type="checkbox" role="switch" checked />
+      <span class="track" aria-hidden="true"></span>
+      <span>Sidebar open <span class="hint">(desktops)</span></span>
+    </label>
+  </div>
+
+  <dl class="readout">
+    <div><dt>Size class</dt><dd data-out="class">expanded</dd></div>
+    <div><dt>Columns</dt><dd data-out="columns">3</dd></div>
+    <div><dt>Column width</dt><dd data-out="column">370 px</dd></div>
+    <div><dt>Margins</dt><dd data-out="margin">32 px</dd></div>
+    <div><dt>Navigation</dt><dd data-out="navigation">Sidebar, 224 px</dd></div>
+  </dl>
+  <p class="visually-hidden" aria-live="polite" data-out="announce"></p>
+
+  <div class="stage">
+  <div class="screen" aria-hidden="true">
+    <div class="scroller">
+      <div class="canvas">
+        <div class="navigation"></div>
+        <div class="top-bar"></div>
+        {
+          designedOverview.flat().map((card) => (
+            <div class="card" data-id={card.id}>
+              <span class="order" />
+              <span class="title">{card.title}</span>
+              <span class="size">{card.size.toUpperCase()}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+    <div class="bottom-bar"><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+  </div>
+  <figcaption>
+    Cards are numbered in the reading order of the desktop layout. With any other number of columns, each card goes, in
+    that order, into the shortest column.
+  </figcaption>
+</figure>
+
+<script>
+  import {
+    columnWidth, layoutFor, navigationWidth, placeCards, sizeClassAt,
+    type Card, type GridMetrics,
+  } from '../lib/overview-grid.ts'
+
+  interface Data {
+    metrics: GridMetrics
+    devices: Record<string, { label: string; width: number; height: number }>
+    designed: Card[][]
+  }
+
+  for (const figure of document.querySelectorAll<HTMLElement>('.simulator')) {
+    const { metrics, devices, designed } = JSON.parse(figure.dataset.grid!) as Data
+    const $ = <T extends Element>(selector: string) => figure.querySelector<T>(selector)!
+    const range = $<HTMLInputElement>('input[type="range"]')
+    const sidebar = $<HTMLInputElement>('.switch input')
+    const output = $<HTMLOutputElement>('output')
+    const screen = $<HTMLElement>('.screen')
+    const stage = $<HTMLElement>('.stage')
+    const canvas = $<HTMLElement>('.canvas')
+    const out = (name: string) => $<HTMLElement>(`[data-out="${name}"]`)
+    const cards = new Map([...figure.querySelectorAll<HTMLElement>('.card')].map((element) => [element.dataset.id!, element]))
+    const buttons = [...figure.querySelectorAll<HTMLButtonElement>('.ruler button')]
+    const MAX_SCALE = 0.6
+    const MAX_SCREEN_HEIGHT = 560
+    let lastClass = ''
+
+    function render({ animate = false } = {}) {
+      const width = Number(range.value)
+      const sizeClass = sizeClassAt(width, metrics)
+      const device = devices[sizeClass.name]
+      const open = sidebar.checked
+      const navigation = navigationWidth(sizeClass, metrics, open)
+      const column = columnWidth(width, sizeClass, metrics, open)
+      const layout = layoutFor(sizeClass.columns, designed, metrics)
+      const placed = placeCards(layout, column, metrics, designed)
+      const contentHeight = Math.max(...placed.map(({ y, height }) => y + height))
+      const bottomBar = sizeClass.navigation === 'bar' ? metrics.bottomBar : 0
+
+      /* Window pixels to screen pixels: fit the width, never above 60% */
+      const { paddingLeft, paddingRight } = getComputedStyle(figure)
+      const available = figure.clientWidth - parseFloat(paddingLeft) - parseFloat(paddingRight)
+      const k = Math.min(available / width, MAX_SCALE)
+      const windowHeight = (device.height / device.width) * width
+      const px = (value: number) => `${value * k}px`
+      const changed = sizeClass.name !== lastClass
+      figure.toggleAttribute('data-animate', animate || (changed && lastClass !== ''))
+      figure.dataset.navigation = sizeClass.navigation
+
+      /* The stage keeps one height for every width, so moving the slider never moves the page under it */
+      const stageHeight = Math.min(MAX_SCREEN_HEIGHT, Math.round(available * 1.2))
+      stage.style.height = `${stageHeight}px`
+      screen.style.width = px(width)
+      screen.style.height = `${Math.min(windowHeight * k, stageHeight)}px`
+      canvas.style.height = px(sizeClass.topBar + 2 * sizeClass.margin + contentHeight + bottomBar)
+      canvas.style.setProperty('--navigation', px(navigation))
+      canvas.style.setProperty('--top-bar', px(sizeClass.topBar))
+      screen.style.setProperty('--bottom-bar', px(metrics.bottomBar))
+
+      for (const card of placed) {
+        const element = cards.get(card.id)!
+        element.style.translate = `${px(navigation + sizeClass.margin + card.x)} ${px(sizeClass.topBar + sizeClass.margin + card.y)}`
+        element.style.width = px(card.width)
+        element.style.height = px(card.height)
+        element.querySelector('.order')!.textContent = String(card.order)
+      }
+
+      output.value = `${width} px`
+      out('class').textContent = sizeClass.name
+      out('columns').textContent = String(sizeClass.columns)
+      out('column').textContent = `${column} px`
+      out('margin').textContent = `${sizeClass.margin} px`
+      out('navigation').textContent =
+        sizeClass.navigation === 'bar' ? `Bottom bar, ${metrics.bottomBar} px high`
+        : sizeClass.navigation === 'rail' ? `Rail, ${metrics.rail} px; opens over the content`
+        : open ? `Sidebar, ${metrics.sidebar} px` : `Collapsed to the rail, ${metrics.rail} px`
+      if (changed) out('announce').textContent = `${sizeClass.name}: ${sizeClass.columns} ${sizeClass.columns === 1 ? 'column' : 'columns'}`
+      sidebar.disabled = sizeClass.navigation !== 'sidebar'
+      for (const button of buttons) button.setAttribute('aria-pressed', String(button.dataset.class === sizeClass.name))
+      lastClass = sizeClass.name
+    }
+
+    range.addEventListener('input', () => render())
+    sidebar.addEventListener('change', () => render({ animate: true }))
+    for (const button of buttons) {
+      button.addEventListener('click', () => {
+        range.value = button.dataset.width!
+        render({ animate: true })
+      })
+    }
+    /* Only a change of width redraws: the figure’s own height follows the drawing and must not trigger it again */
+    let measured = 0
+    new ResizeObserver(() => {
+      if (figure.clientWidth === measured) return
+      measured = figure.clientWidth
+      render()
+    }).observe(figure)
+    render()
+  }
+</script>
+
+<style>
+  /* One column that can shrink to nothing: the screen’s measured width must never widen the card it is measured in */
+  .simulator {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    gap: var(--sonar-space-20);
+    padding: var(--sonar-space-24);
+    border-radius: var(--sonar-shape-corner-large);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  /* ---------- Controls ---------- */
+
+  .controls {
+    display: grid;
+    gap: var(--sonar-space-12);
+  }
+
+  .width {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-label-lg);
+    letter-spacing: var(--sonar-type-label-lg-tracking);
+  }
+
+  output {
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-title-md);
+    font-variant-numeric: tabular-nums;
+  }
+
+  input[type='range'] {
+    width: 100%;
+    margin: 0;
+    accent-color: var(--sonar-color-accent);
+  }
+
+  /* Size classes drawn to scale under the slider; each one jumps to its typical window */
+  .ruler {
+    display: flex;
+    gap: var(--sonar-space-2);
+    container-type: inline-size;
+  }
+
+  .ruler button {
+    flex: var(--share) 1 0;
+    min-width: 0;
+    min-height: 40px;
+    padding: var(--sonar-space-4);
+    border: 0;
+    border-radius: var(--sonar-shape-corner-extra-small);
+    background: var(--sonar-color-surface-container);
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    cursor: pointer;
+    transition: background-color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing),
+      color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);
+  }
+
+  .ruler button:first-child {
+    border-start-start-radius: var(--sonar-shape-corner-small);
+    border-end-start-radius: var(--sonar-shape-corner-small);
+  }
+
+  .ruler button:last-child {
+    border-start-end-radius: var(--sonar-shape-corner-small);
+    border-end-end-radius: var(--sonar-shape-corner-small);
+  }
+
+  .ruler button:hover {
+    color: var(--sonar-color-text-strong);
+  }
+
+  .ruler button[aria-pressed='true'] {
+    background: var(--sonar-color-accent-tonal);
+    color: var(--sonar-color-on-accent-tonal);
+  }
+
+  .ruler .count {
+    display: none;
+  }
+
+  /* Too narrow for names: each class shows its column count instead */
+  @container (width < 600px) {
+    .ruler .name {
+      display: none;
+    }
+
+    .ruler .count {
+      display: inline;
+    }
+  }
+
+  .switch {
+    display: inline-flex;
+    gap: var(--sonar-space-12);
+    align-items: center;
+    justify-self: start;
+    min-height: 40px;
+    color: var(--sonar-color-text-default);
+    font: var(--sonar-type-label-lg);
+    letter-spacing: var(--sonar-type-label-lg-tracking);
+    cursor: pointer;
+  }
+
+  .switch input {
+    position: absolute;
+    opacity: 0;
+  }
+
+  .track {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--sonar-color-surface-container);
+    box-shadow: inset 0 0 0 2px var(--sonar-color-border-control);
+    transition: background-color var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing);
+  }
+
+  .track::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--sonar-color-border-control);
+    transition: translate var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing),
+      scale var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing);
+  }
+
+  .switch input:checked + .track {
+    background: var(--sonar-color-accent);
+    box-shadow: none;
+  }
+
+  .switch input:checked + .track::after {
+    background: var(--sonar-color-on-accent);
+    translate: 20px 0;
+    scale: 1.33;
+  }
+
+  .switch input:focus-visible + .track {
+    outline: 2px solid var(--sonar-color-accent);
+    outline-offset: 2px;
+  }
+
+  .hint {
+    color: var(--sonar-color-text-tertiary);
+  }
+
+  .switch:has(input:disabled) {
+    color: var(--sonar-color-text-disabled);
+    cursor: default;
+  }
+
+  /* Below desktops the setting does not apply: the switch keeps its position but loses its color */
+  .switch input:disabled + .track {
+    background: none;
+    box-shadow: inset 0 0 0 2px var(--sonar-color-text-disabled);
+  }
+
+  .switch input:disabled + .track::after {
+    background: var(--sonar-color-text-disabled);
+  }
+
+  /* ---------- Readout ---------- */
+
+  .readout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+    gap: var(--sonar-space-12) var(--sonar-space-20);
+    margin: 0;
+  }
+
+  dt {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  /* The navigation readout may take two lines at some widths: it keeps room for both, so nothing below moves */
+  dd[data-out='navigation'] {
+    min-height: 2lh;
+  }
+
+  dd {
+    margin: var(--sonar-space-2) 0 0;
+    color: var(--sonar-color-text-strong);
+    font: var(--sonar-type-title-sm);
+    letter-spacing: var(--sonar-type-title-sm-tracking);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Screen ---------- */
+
+  .stage {
+    display: grid;
+    place-items: start center;
+    min-width: 0;
+  }
+
+  .screen {
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+    border-radius: var(--sonar-shape-corner-medium);
+    /* Bars meet the edge: the clip keeps the corners round in every browser */
+    clip-path: inset(0 round var(--sonar-shape-corner-medium));
+    border: 1px solid var(--sonar-color-divider);
+    background: var(--sonar-color-surface-page);
+  }
+
+  .scroller {
+    height: 100%;
+    /* One axis only: nothing scrolls sideways */
+    overflow: hidden auto;
+    scrollbar-width: thin;
+  }
+
+  /* At least the window’s height, so the navigation reaches the bottom on short layouts */
+  .canvas {
+    position: relative;
+    min-height: 100%;
+  }
+
+  .navigation {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--navigation);
+    background: var(--sonar-color-surface-card);
+    box-shadow: 1px 0 0 var(--sonar-color-divider);
+  }
+
+  .top-bar {
+    position: absolute;
+    top: 0;
+    left: var(--navigation);
+    right: 0;
+    height: var(--top-bar);
+    background: var(--sonar-color-surface-raised);
+    box-shadow: 0 1px 0 var(--sonar-color-divider);
+  }
+
+  [data-navigation='bar'] .navigation {
+    display: none;
+  }
+
+  .bottom-bar {
+    position: absolute;
+    inset: auto 0 0;
+    display: none;
+    justify-content: space-around;
+    align-items: center;
+    height: var(--bottom-bar);
+    background: var(--sonar-color-surface-raised);
+    box-shadow: 0 -1px 0 var(--sonar-color-divider);
+  }
+
+  .bottom-bar i {
+    width: 14px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--sonar-color-fill-muted);
+  }
+
+  .bottom-bar i:first-child {
+    background: var(--sonar-color-accent);
+  }
+
+  [data-navigation='bar'] .bottom-bar {
+    display: flex;
+  }
+
+  .card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    gap: var(--sonar-space-6);
+    align-items: flex-start;
+    padding: var(--sonar-space-6);
+    overflow: hidden;
+    border-radius: var(--sonar-shape-corner-small);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+    container-type: inline-size;
+  }
+
+  [data-animate] .card,
+  [data-animate] .navigation,
+  [data-animate] .top-bar {
+    transition-property: translate, width, height, left;
+    transition-duration: var(--sonar-motion-spatial-default-duration);
+    transition-timing-function: var(--sonar-motion-spatial-default-easing);
+  }
+
+  .order {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--sonar-color-accent-tonal);
+    color: var(--sonar-color-on-accent-tonal);
+    font: var(--sonar-type-label-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--sonar-color-text-default);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .size {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-sm);
+    line-height: 20px;
+  }
+
+  @container (width < 96px) {
+    .title,
+    .size {
+      display: none;
+    }
+  }
+
+  figcaption {
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-body-md);
+    letter-spacing: var(--sonar-type-body-md-tracking);
+  }
+
+  @container page (width < 608px) {
+    .simulator {
+      padding: var(--sonar-space-16);
+    }
+  }
+</style>

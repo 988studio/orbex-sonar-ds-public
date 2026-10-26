@@ -1,0 +1,11 @@
+---
+/** Text from source comments, where `backticks` mark code: rendered as <code>, never shown as backticks. */
+interface Props {
+  text: string
+}
+
+const { text } = Astro.props
+const segments = text.split(/`([^`]+)`/)
+---
+
+{segments.map((segment, index) => (index % 2 ? <code>{segment}</code> : segment))}

@@ -1,0 +1,23 @@
+---
+/**
+ * The index page of a section of the navigation: its name and purpose, then its pages as cards.
+ */
+import { navigation } from '../lib/navigation.ts'
+import Docs from '../layouts/Docs.astro'
+import PageCards from './PageCards.astro'
+import PageHeader from './PageHeader.astro'
+
+interface Props {
+  href: string
+}
+
+const section = navigation.find(({ href }) => href === Astro.props.href)
+if (!section?.label || !section.description) throw new Error(`No section at ${Astro.props.href}`)
+const items = section.items.filter((item) => item.href).map(({ label, href, description }) => ({ title: label, href: href!, description }))
+---
+
+<Docs title={section.label} description={section.description}>
+  <PageHeader title={section.label} lead={section.description} />
+  <PageCards items={items} headingLevel={2} />
+  <slot />
+</Docs>

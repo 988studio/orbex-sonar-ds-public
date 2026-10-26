@@ -1,0 +1,99 @@
+---
+import PageHeader from '../../components/PageHeader.astro'
+import Section from '../../components/Section.astro'
+import Docs from '../../layouts/Docs.astro'
+import { group, toneOf } from '../../lib/tokens.ts'
+
+interface Dimension { value: number; unit: string }
+
+const corners = group('shape.corner').map((doc) => ({
+  name: toneOf(doc.name),
+  cssVar: doc.cssVar,
+  value: (doc.light.resolved as Dimension).value,
+  use: doc.description,
+}))
+---
+
+<Docs title="Shape" description="The Material 3 Expressive corner scale as used in Sonar-DB, and which components take each corner.">
+  <PageHeader
+    title="Shape"
+    lead="The corner scale of Material 3 Expressive. Corners grow with the container: a chip is barely rounded, a side panel is generously so, and pills and dots are fully round."
+  />
+
+  <Section title="Corner scale" id="corners">
+    <ul class="corners" role="list">
+      {
+        corners.map(({ name, cssVar, value, use }) => (
+          <li>
+            <span class="shape" style={`border-radius: var(${cssVar})`} />
+            <h3>{name}</h3>
+            <p class="value">{value >= 9999 ? 'Full' : `${value} px`}</p>
+            {use && <p class="use">{use}</p>}
+            <code>{cssVar}</code>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section title="Guidelines" id="guidelines">
+    <ul class="prose">
+      <li>Nested shapes take a smaller corner than their container, so the curves stay parallel.</li>
+      <li>
+        A pressed button changes shape instead of shrinking: its corner goes from large to small, the Material 3 Expressive
+        way of acknowledging a tap.
+      </li>
+      <li>Only edges that float get rounded. A sheet attached to the bottom of the screen is rounded on top only.</li>
+    </ul>
+  </Section>
+</Docs>
+
+<style>
+  .corners {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+    gap: var(--sonar-space-20);
+    padding: 0;
+  }
+
+  .corners li {
+    padding: var(--sonar-space-20);
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+  }
+
+  .shape {
+    display: block;
+    width: 96px;
+    height: 72px;
+    margin-bottom: var(--sonar-space-16);
+    border: 2px solid var(--sonar-color-accent);
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    background: var(--sonar-color-accent-container);
+  }
+
+  h3 {
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+  }
+
+  .value {
+    color: var(--sonar-color-text-default);
+    font: var(--sonar-type-label-md);
+  }
+
+  .use {
+    margin-top: var(--sonar-space-8);
+    color: var(--sonar-color-text-secondary);
+    font: var(--sonar-type-body-md);
+  }
+
+  code {
+    display: block;
+    margin-top: var(--sonar-space-8);
+    color: var(--sonar-color-text-tertiary);
+    font-size: 11px;
+  }
+</style>

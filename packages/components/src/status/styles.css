@@ -1,0 +1,64 @@
+/* Status: a colored dot and the state in words. The text stays at a reading level; only the dot and the chip's
+   tint carry the hue, so the label passes AA on every surface. */
+@layer sonar.components {
+  .sonar-status {
+    --_hue: var(--sonar-color-fill-faint);
+
+    display: inline-flex;
+    justify-self: start;
+    gap: var(--sonar-space-6);
+    align-items: center;
+    color: var(--sonar-color-text-default);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+    white-space: nowrap;
+  }
+
+  .sonar-status[data-tone='positive'] {
+    --_hue: var(--sonar-color-accent);
+  }
+
+  .sonar-status[data-tone='warning'] {
+    --_hue: var(--sonar-color-warning);
+  }
+
+  .sonar-status[data-tone='danger'] {
+    --_hue: var(--sonar-color-danger);
+  }
+
+  .sonar-status-dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--sonar-shape-corner-full);
+    background: var(--_hue);
+  }
+
+  .sonar-status[data-appearance='chip'] {
+    height: 22px;
+    padding-inline: var(--sonar-space-8) var(--sonar-space-10);
+    border-radius: var(--sonar-shape-corner-small);
+    background: color-mix(in srgb, var(--_hue) 14%, transparent);
+    font: var(--sonar-type-label-sm);
+    letter-spacing: var(--sonar-type-label-sm-tracking);
+  }
+
+  .sonar-status[data-appearance='chip'] .sonar-status-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  /* Dot only: the state is still read, from text kept out of sight */
+  .sonar-status[data-label='hidden'] {
+    gap: 0;
+  }
+
+  .sonar-status-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

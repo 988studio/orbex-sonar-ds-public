@@ -1,0 +1,46 @@
+---
+interface Props {
+  title: string
+  id: string
+}
+
+const { title, id } = Astro.props
+---
+
+<section class="section" aria-labelledby={id}>
+  <h2 id={id}><a href={`#${id}`}>{title}</a></h2>
+  <slot />
+</section>
+
+<style>
+  .section {
+    max-width: var(--site-content-width);
+  }
+
+  .section + :global(.section) {
+    margin-top: 72px;
+  }
+
+  h2 {
+    margin-bottom: var(--sonar-space-16);
+    font: var(--site-heading-2);
+    letter-spacing: -0.01em;
+  }
+
+  h2 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  h2 a:hover {
+    text-decoration: underline;
+  }
+
+  .section > :global(* + *) {
+    margin-top: var(--sonar-space-24);
+  }
+
+  .section > :global(h2 + *) {
+    margin-top: 0;
+  }
+</style>

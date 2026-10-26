@@ -1,0 +1,22 @@
+---
+import Demo from '../../components/Demo.astro'
+import Section from '../../components/Section.astro'
+import Results from '../../demos/search/Results.tsx'
+import resultsCode from '../../demos/search/Results.tsx?raw'
+import ComponentDoc from '../../layouts/ComponentDoc.astro'
+---
+
+<ComponentDoc entry="search-result" lead="One row of results: an icon for the kind of thing, a title, a line under it with the kind and the day, and its state at the end.">
+  <Demo title="A delivery, an invoice and a page" code={resultsCode}><Results /></Demo>
+
+  <Section slot="guidance" title="Usage" id="usage">
+    <ul class="prose">
+      <li>Return it from the search field’s <code>renderItem</code>; the field makes it an option of its list.</li>
+      <li>Title: the code and its key figure. Description: the kind and the day. Trailing: a Status, in words.</li>
+    </ul>
+  </Section>
+
+  <ul slot="accessibility" class="prose">
+    <li>The icon is hidden; the description already says what kind of result it is.</li>
+  </ul>
+</ComponentDoc>

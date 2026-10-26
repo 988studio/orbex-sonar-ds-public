@@ -1,0 +1,113 @@
+---
+/**
+ * How a component is used from the keyboard and what it gives assistive technology, from lib/a11y.ts. Two narrow
+ * tables that wrap rather than scroll, so they read on a phone.
+ */
+import { a11y } from '../lib/a11y.ts'
+import InlineText from './InlineText.astro'
+
+interface Props {
+  entry: string
+}
+
+const data = a11y[Astro.props.entry]
+if (!data) throw new Error(`No accessibility data for ${Astro.props.entry}`)
+const tables = [
+  { title: 'Keyboard', head: ['Key', 'What it does'], rows: data.keyboard },
+  { title: 'Roles and attributes', head: ['Element or attribute', 'What it gives'], rows: data.aria },
+]
+---
+
+<div class="a11y">
+  {
+    tables.map(({ title, head, rows }) => (
+      <div class="block">
+        <h3>{title}</h3>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">{head[0]}</th>
+              <th scope="col">{head[1]}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(([what, why]) => (
+              <tr>
+                <th scope="row">{what.includes('<') || /^[a-z-]+(=|,|$| and)/.test(what) ? <code>{what}</code> : what}</th>
+                <td><InlineText text={why} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .a11y {
+    display: grid;
+    gap: var(--sonar-space-28);
+    max-width: 880px;
+  }
+
+  h3 {
+    margin-bottom: var(--sonar-space-8);
+    font: var(--sonar-type-title-md);
+    letter-spacing: var(--sonar-type-title-md-tracking);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: var(--sonar-shape-corner-medium);
+    background: var(--sonar-color-surface-card);
+    box-shadow: var(--sonar-elevation-1);
+    font: var(--sonar-type-body-md);
+    letter-spacing: var(--sonar-type-body-md-tracking);
+  }
+
+  th,
+  td {
+    padding: var(--sonar-space-10) var(--sonar-space-16);
+    border-bottom: 1px solid var(--sonar-color-divider);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  thead th {
+    color: var(--sonar-color-text-tertiary);
+    font: var(--sonar-type-label-md);
+    letter-spacing: var(--sonar-type-label-md-tracking);
+  }
+
+  tbody th {
+    width: 34%;
+    color: var(--sonar-color-text-strong);
+    font-weight: var(--sonar-font-weight-medium);
+  }
+
+  tbody th code {
+    font: 400 12px/1.5 var(--sonar-font-family-mono);
+    overflow-wrap: anywhere;
+  }
+
+  td {
+    color: var(--sonar-color-text-secondary);
+  }
+
+  @container page (width < 608px) {
+    th,
+    td {
+      padding: var(--sonar-space-10) var(--sonar-space-12);
+    }
+
+    tbody th {
+      width: 40%;
+    }
+  }
+</style>

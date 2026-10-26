@@ -1,0 +1,1425 @@
+/* Layout inside the overview cards. Only arrangement lives here: every color, type and size comes from the
+   components and the tokens. */
+
+@import './typography.css';
+
+/* ---------- Card tokens ----------
+   Distances inside the cards are steps of the spacing scale. A few values are not, because a card's rhythm depends on
+   them; each is named here with its reason, and nothing else in this file uses a bare distance. */
+.sonar-card {
+  /* Deliveries and Balance: a row of a day is 38 px between rules, one line of 14 px text, so its air is 11.5 px
+     above and below. Rows of every card line up with it */
+  --card-row-height: 38px;
+  --card-row-line: 14px;
+  --card-row-air: calc((var(--card-row-height) - var(--card-row-line) - 1px) / 2);
+  /* Deliveries: the band that holds the chosen day between two rules. 41 px gives the date the same air as a row,
+     and the rules stay put while the rows scroll */
+  --card-day-band: 41px;
+  /* Recurring orders: one distance between anything and its rule, so a product row is 80 px: 13 + 54 + 13 */
+  --card-list-rhythm: 13px;
+  --card-thumbnail: 54px;
+}
+
+.card-pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: var(--sonar-space-10) calc(-1 * var(--sonar-space-8)) 0;
+}
+
+/* Two icon buttons that step through days or months */
+.card-steps {
+  display: inline-flex;
+  margin: calc(-1 * var(--sonar-space-4)) calc(-1 * var(--sonar-space-8)) calc(-1 * var(--sonar-space-4)) 0;
+}
+
+.card-footer-row {
+  display: flex;
+  flex: 1;
+  gap: var(--sonar-space-12);
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+/* The thin bar between the parts of a line of metadata; wider in the rows of a day */
+.sep {
+  margin: 0 3px;
+  font-weight: 300;
+}
+
+.cal-rows .sep {
+  margin: 0 5px;
+}
+
+/* ---------- Orders ---------- */
+
+.orders-months {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px;
+}
+
+.orders-month {
+  display: grid;
+  align-content: start;
+}
+
+/* Three figures a month, 22.5 px apart */
+.orders-month ul {
+  display: grid;
+  gap: 9px;
+  margin: 9px 0 0;
+}
+
+.orders-month li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  height: 14.4px;
+}
+
+.orders-month li .legend-dot {
+  margin-left: 1px;
+}
+
+/* Pending, the part still to come, reads at the metadata level */
+.orders-month li:last-child .card-figure {
+  color: var(--sonar-color-text-meta);
+}
+
+.orders-month .sonar-tick-bar {
+  /* 8 px above the 14 px tick bar of 1.0.0-alpha.12 (10 px until 1.0.0-alpha.16, 13 px above the 11 px bar before):
+     the 2 px go to the space under the bars, and the card's content still fits its height */
+  margin-top: 8px;
+}
+
+.legend-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--_dot);
+}
+
+.legend-dot[data-tone='accent'] { --_dot: var(--sonar-color-chart-primary); }
+.legend-dot[data-tone='strong'] { --_dot: var(--sonar-color-chart-secondary); }
+.legend-dot[data-tone='muted'] { --_dot: var(--sonar-color-chart-rest); }
+.legend-dot[data-tone='danger'] { --_dot: var(--sonar-color-chart-alert); }
+
+/* M: the named pager, the legend centered under it, then New order between two rules. The pager is 11 px, black,
+   with bold chevrons, whether or not a step can move */
+/* The months' pager and the legend stand apart from the figures and bars above them (1.0.0-alpha.16): 19 px from the
+   bars to the pager (15 before) and 10 px from the pager to the legend (8 before); New order comes 8 px under the
+   legend (12 before), so the card's content still fits its height. Written on .sonar-card so the app demos, whose
+   product CSS reverts every margin (.oxa :where(*)), keep them too: there the pager touched the bars */
+.sonar-card .orders-steps {
+  margin: 19px 0 0;
+}
+
+.orders-steps .sonar-button,
+.orders-steps .sonar-button[aria-disabled='true'] {
+  --_ink: var(--sonar-color-text-strong);
+  --_padding: 0;
+  gap: 6px;
+  --_icon: 18px;
+  height: 18px;
+  padding-inline: 0;
+  font: var(--sonar-font-weight-medium) 11px/1.2 var(--sonar-font-family-sans);
+  letter-spacing: -0.2px;
+}
+
+.orders-steps .sonar-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.orders-legend.sonar-chart-legend,
+.orders-pager .sonar-chart-legend {
+  gap: 30px;
+  justify-content: center;
+}
+
+.sonar-card .orders-legend {
+  margin: 10px 0 0;
+}
+
+.orders-legend > li,
+.orders-pager .sonar-chart-legend > li {
+  gap: 9px;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-font-weight-medium) 11px/1.2 var(--sonar-font-family-sans);
+  letter-spacing: -0.2px;
+}
+
+.orders-legend > li::before,
+.orders-pager .sonar-chart-legend > li::before {
+  width: 5px;
+  height: 5px;
+}
+
+/* New order: a pale, rounded square with the outlined plus */
+.sonar-icon-button.orders-new-add {
+  width: 44px;
+  height: 44px;
+  margin-right: 12px;
+  border-radius: 16px;
+  /* 1.1 (pending #19): background-color, not the shorthand, so the button keeps the state layers of IconButton (the
+     shorthand, unlayered, wiped them and New order had no hover) */
+  background-color: var(--sonar-color-surface-well);
+  color: var(--sonar-color-accent);
+}
+
+/* v38 .addbtn:hover: the well turns neutral 90 (dark: neutral 27), with no tint over it */
+@media (hover: hover) {
+  .sonar-icon-button.orders-new-add:hover:not(:disabled) {
+    background-color: var(--sonar-color-surface-well-hover);
+    background-image: none;
+  }
+}
+
+.sonar-icon-button.orders-new-add svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sonar-card .orders-new {
+  box-sizing: border-box;
+  display: flex;
+  gap: var(--sonar-space-12);
+  justify-content: space-between;
+  align-items: center;
+  /* The same room above and below the add button, so the button and the text sit centred between the lines (988©STUDIO,
+     1.0.0-alpha.23: the product has 9 px above and 6 px below; the 15 px are shared, so the card keeps its height) */
+  margin-top: 8px;
+  padding: 7.5px 0;
+  border-top: 1px solid var(--sonar-color-divider);
+  border-bottom: 1px solid var(--sonar-color-divider);
+}
+
+/* Its two lines centred between the rules too: the heading's line box is 0.8 px taller above its letters than the
+   line under it is below them, so the pair moves 0.4 px down (alpha.23) */
+.sonar-card .orders-new > div:first-child {
+  margin-top: 0.8px;
+}
+
+/* The line under New order sits 2 px below it, as in the product */
+.orders-new p {
+  margin: 2px 0 0;
+}
+
+/* S: the same figures, a little higher; the pager sits around the legend at the foot */
+.sonar-card[data-size='s'] .orders-months {
+  margin-top: calc(-1 * var(--sonar-space-4));
+}
+
+.sonar-card[data-size='s'] .orders-month .sonar-tick-bar {
+  margin-top: var(--sonar-space-10);
+}
+
+/* High enough that the chevrons' touch targets stay inside the card, so it never scrolls on phones */
+.orders-pager {
+  margin: calc(-1 * var(--sonar-space-4)) calc(-1 * var(--sonar-space-8)) calc(-1 * var(--sonar-space-6));
+}
+
+.orders-pager .sonar-chart-legend {
+  justify-content: center;
+}
+
+/* ---------- Inventory ---------- */
+
+/* The ring is centered on the card; each figure sits 15 px from it, On hold a little above the ring's middle and
+   Available a little below. The ring keeps its size (128 px, 160 in M) and only shrinks, down to 72 px, when the
+   widest figure (--label, measured) would not fit beside it. The names sit at the foot. */
+.inventory {
+  --gap: 15px;
+  --ring-min: 72px;
+  --ring-max: 128px;
+  --cy: 76px;
+  --ring: clamp(var(--ring-min), 100% - 2 * (var(--gap) + var(--label, 0px)), var(--ring-max));
+
+  position: relative;
+  height: 144px;
+  margin-top: -12px;
+}
+
+.inventory[data-size='m'] {
+  --ring-max: 160px;
+  --cy: calc(50% - 12px);
+
+  flex: 1;
+  height: auto;
+}
+
+.inventory-ring {
+  position: absolute;
+  top: var(--cy);
+  left: 50%;
+  width: var(--ring);
+  margin: 0;
+  translate: -50% -50%;
+}
+
+.inventory-figure {
+  position: absolute;
+  color: var(--sonar-color-text-meta);
+  font: var(--sonar-font-weight-semibold) 14px/1.4 var(--sonar-font-family-sans);
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.inventory-figure[data-part='onHold'] {
+  top: calc(var(--cy) - 31.7px);
+  right: calc(50% + var(--ring) / 2 + var(--gap));
+  color: var(--sonar-color-text-danger);
+  text-align: right;
+}
+
+.inventory-figure[data-part='available'] {
+  top: calc(var(--cy) - 9.8px);
+  left: calc(50% + var(--ring) / 2 + var(--gap));
+}
+
+.inventory-name {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: var(--sonar-color-text-meta);
+  font: var(--sonar-font-weight-medium) 14px/1.2 var(--sonar-font-family-sans);
+}
+
+.inventory-name i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--sonar-color-chart-rest);
+}
+
+.inventory-name[data-part='onHold'] {
+  left: 2px;
+  color: var(--sonar-color-text-danger);
+}
+
+.inventory-name[data-part='onHold'] i {
+  background: var(--sonar-color-chart-alert);
+}
+
+.inventory-name[data-part='available'] {
+  right: 0;
+}
+
+/* ---------- Daily shipments ---------- */
+
+.card-heading.shipments-month {
+  margin-top: var(--sonar-space-2);
+}
+
+.card-rule.shipments-rule {
+  margin: var(--sonar-space-12) 0 var(--sonar-space-16);
+}
+
+.shipments-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sonar-space-14) var(--sonar-space-16);
+  margin: 0;
+}
+
+.shipments-stats {
+  margin-top: calc(-1 * var(--sonar-space-2));
+}
+
+.shipments-stats + .shipments-rule {
+  margin: var(--sonar-space-14) 0 18px;
+}
+
+.shipments-stats div {
+  display: flex;
+  gap: var(--sonar-space-4);
+  height: 14px;
+  align-items: center;
+}
+
+.shipments-stats div:nth-child(even) {
+  justify-content: flex-end;
+}
+
+.shipments-stats dt {
+  color: var(--sonar-color-text-strong);
+  font: 400 12px/1.2 var(--sonar-font-family-sans);
+  letter-spacing: -0.4px;
+}
+
+.shipments-stats dt::after {
+  content: ':';
+}
+
+.shipments-stats dd {
+  margin: 0;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-title-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ‹ Apr  Jun ›: 12 px, black, with bold 22 px chevrons; a month that cannot be reached is disabled */
+.shipments-pager {
+  margin: 20px 0 0;
+}
+
+.shipments-pager .sonar-button {
+  --_ink: var(--sonar-color-text-strong);
+  --_padding: 0;
+  gap: 6px;
+  --_icon: 22px;
+  height: 22px;
+  padding-inline: 0;
+  font: var(--sonar-font-weight-medium) 12px/1.2 var(--sonar-font-family-sans);
+  letter-spacing: -0.2px;
+}
+
+.shipments-pager .sonar-button:disabled {
+  --_ink: var(--sonar-color-text-disabled);
+}
+
+.shipments-pager .sonar-button svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ---------- Balance ---------- */
+
+/* Overdue: its label, the amount in green, the tick bar and its share centered under it; then what falls due, in
+   green on one line, with bold arrows; then the payment calendar's heading between two rules */
+.balance-block {
+  display: grid;
+}
+
+.balance-amount {
+  color: var(--sonar-color-text-accent);
+  font: var(--sonar-font-weight-medium) 12px/1.2 var(--sonar-font-family-sans);
+  letter-spacing: -0.2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.balance-overdue .card-heading {
+  margin-top: 5px;
+}
+
+.balance-overdue .balance-amount {
+  margin: 15px 0 8px 2px;
+}
+
+.balance-share {
+  margin: 6px 0 0;
+  color: var(--sonar-color-text-accent);
+  font: 400 12px/1.2 var(--sonar-font-family-sans);
+  text-align: center;
+}
+
+/* Rules and headings below add to typography.css, which may load after this file: two classes win either way */
+.card-rule.balance-rule {
+  margin: 18px 0 0;
+}
+
+.balance-due-block {
+  margin-top: 9px;
+}
+
+.balance-due-block .card-row {
+  min-height: 24px;
+}
+
+.balance-due-amount {
+  margin: 9px 0 19px;
+}
+
+.balance-due-share {
+  font-weight: 400;
+  letter-spacing: -0.4px;
+}
+
+.balance-due-block + .balance-rule {
+  margin-top: 0;
+}
+
+/* The arrows of Balance and of the calendar's month are 24 px, bold and black; Balance's stay black whether or not
+   they can move. The day arrows beside the week are 14 px, also black. A month out of reach is disabled. */
+.balance-steps .sonar-icon-button,
+.balance-steps .sonar-icon-button[aria-disabled='true'],
+.cal-months .sonar-icon-button,
+.cal-week .sonar-icon-button {
+  --_ink: var(--sonar-color-text-strong);
+  --_icon: 24px;
+}
+
+.cal-week .sonar-icon-button {
+  --_icon: 14px;
+}
+
+.cal-months .sonar-icon-button:disabled,
+.cal-week .sonar-icon-button:disabled {
+  --_ink: var(--sonar-color-text-disabled);
+}
+
+.balance-steps .sonar-icon-button svg,
+.cal-months .sonar-icon-button svg {
+  width: 24px;
+  height: 24px;
+}
+
+.cal-week .sonar-icon-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* S: tighter */
+.sonar-card[data-size='s'] .card-rule.balance-rule {
+  margin-top: 10px;
+}
+
+/* ---------- Calendar: Deliveries and Balance's payments ---------- */
+
+.cal {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.cal-head {
+  display: flex;
+  gap: var(--sonar-space-8);
+  align-items: center;
+  min-height: 32px;
+  margin-top: calc(-1 * var(--sonar-space-4));
+}
+
+.cal-head .card-heading {
+  min-width: 7ch;
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+.cal-months {
+  margin-left: auto;
+}
+
+/* The week: seven days visible, the chosen one in the middle under a fixed dot */
+.cal-week {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  margin: var(--sonar-space-8) calc(-1 * var(--sonar-space-8)) 0;
+}
+
+/* The frame holds the needle, so it stays put while the strip scrolls under it */
+.cal-frame {
+  position: relative;
+  min-width: 0;
+}
+
+/* The needle: one dot, always under the middle day */
+.cal-frame::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  border-radius: 50%;
+  background: var(--sonar-color-fill-strong);
+  pointer-events: none;
+}
+
+/* A native scroller, sideways only, that snaps day by day; no bar, no bounce into the card */
+.cal-strip {
+  container-type: inline-size;
+  padding: 0 0 3px;
+  overflow: auto hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  cursor: grab;
+}
+
+.cal-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.cal-strip:active {
+  cursor: grabbing;
+}
+
+/* Three empty days' room at each end, so the first and last days can reach the middle */
+.cal-track {
+  display: flex;
+  width: max-content;
+  padding-inline: calc(100cqw * 3 / 7);
+}
+
+.cal-cell {
+  flex: none;
+  width: calc(100cqw / 7);
+  scroll-snap-align: center;
+}
+
+.cal-day {
+  position: relative;
+  z-index: 0;
+  display: grid;
+  gap: 9px;
+  justify-items: center;
+  padding: var(--sonar-space-2) 0;
+  border: 0;
+  background: none;
+  color: var(--sonar-color-text-meta);
+  font: var(--sonar-type-label-md);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  cursor: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cal-wd {
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-label-md-condensed);
+  text-decoration: none;
+}
+
+.cal-dn {
+  transition: color var(--sonar-motion-effects-fast-duration) linear;
+}
+
+/* The pill shows only under the pointer; the chosen day is told by its strong figure and the dot under it */
+.cal-day .cal-dn::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  bottom: 0;
+  left: 50%;
+  width: 32px;
+  height: 22px;
+  margin-left: -16px;
+  border-radius: var(--sonar-shape-corner-full);
+  background: var(--sonar-color-state-hover);
+  opacity: 0;
+  transform: scale(0.88);
+  transition:
+    opacity var(--sonar-motion-effects-fast-duration) linear,
+    transform var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing);
+}
+
+@media (hover: hover) {
+  .cal-day:hover .cal-dn {
+    color: var(--sonar-color-text-strong);
+  }
+
+  .cal-day:hover .cal-dn::before {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.cal-day:active .cal-dn::before {
+  opacity: 1;
+  transform: scale(0.94);
+}
+
+.cal-day[aria-pressed='true'] {
+  color: var(--sonar-color-text-strong);
+  font-weight: var(--sonar-font-weight-semibold);
+}
+
+.cal-day:focus-visible,
+.cal-date:focus-visible {
+  outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+  outline-offset: calc(-1 * var(--sonar-focus-width));
+  border-radius: var(--sonar-shape-corner-small);
+}
+
+/* The month: a grid from Monday; the chosen day is strong, with the dot under it */
+.cal-month {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  margin: var(--sonar-space-4) 0 var(--sonar-space-4);
+  text-align: center;
+}
+
+.cal-month .cal-wd {
+  padding: var(--sonar-space-4) 0 var(--sonar-space-8);
+}
+
+.cal-date {
+  position: relative;
+  z-index: 0;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-label-md);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.cal-date::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  border-radius: 50%;
+  background: var(--sonar-color-state-hover);
+  opacity: 0;
+  transform: scale(0.88);
+  transition:
+    opacity var(--sonar-motion-effects-fast-duration) linear,
+    transform var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing);
+}
+
+@media (hover: hover) {
+  .cal-date:hover::before {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.cal-date[data-out] {
+  color: var(--sonar-color-text-disabled);
+}
+
+span.cal-date {
+  display: grid;
+  place-items: center;
+  cursor: default;
+}
+
+.cal-date[aria-pressed='true'] {
+  font: var(--sonar-type-title-sm);
+  cursor: default;
+}
+
+.cal-date[aria-pressed='true']::after {
+  content: '';
+  position: absolute;
+  bottom: 7px;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  border-radius: 50%;
+  background: var(--sonar-color-fill-strong);
+}
+
+/* The chosen day and its rows */
+.cal-day-block {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.cal-day-block:has(> .cal-empty) {
+  flex: 1;
+}
+
+/* The day between two rules, in its band: the same air above and under the date, and as much again under the rule
+   before the first row. Both rules stay put when the rows scroll. */
+.cal-dayhead {
+  box-sizing: border-box;
+  flex: none;
+  height: var(--card-day-band);
+  margin-top: var(--sonar-space-14);
+  border-top: 1px solid var(--sonar-color-divider);
+  border-bottom: 1px solid var(--sonar-color-divider);
+}
+
+.cal-dayhead .card-figure {
+  font-weight: var(--sonar-font-weight-semibold);
+}
+
+.cal-total {
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-font-weight-semibold) 14px/1.4 var(--sonar-font-family-sans);
+  letter-spacing: -0.2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cal-rows {
+  display: grid;
+  margin: 0;
+}
+
+/* One line a row, 38 px between rules: the code and its figures, the state as a dot in a 16 px column and View,
+   56 px wide. The figures share the code's ink; thin bars separate them. */
+.cal-rows li {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 16px 56px;
+  gap: var(--sonar-space-12);
+  align-items: center;
+  min-height: var(--card-row-height);
+  border-bottom: 1px solid var(--sonar-color-divider);
+}
+
+/* The row whose details are open stays marked */
+.cal-rows li[data-open] {
+  background: linear-gradient(90deg, transparent, var(--sonar-color-surface-selected) 10%, var(--sonar-color-surface-selected) 90%, transparent);
+}
+
+.cal-row-id {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  color: var(--sonar-color-text-strong);
+  font: 400 12px/1.2 var(--sonar-font-family-sans);
+  white-space: nowrap;
+}
+
+.cal-row-id strong {
+  font-weight: 600;
+}
+
+.cal-row-meta {
+  overflow: hidden;
+  letter-spacing: -0.4px;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+}
+
+/* The alert mark follows the last figure */
+.cal-row-id .cal-alert {
+  margin-left: var(--sonar-space-12);
+}
+
+/* The state: a dot, centered a little left of its column */
+.cal-rows .sonar-status {
+  justify-self: center;
+  translate: -6px 0;
+}
+
+/* View: a 56 × 19 pill, its label 11 px; a filled pill for a row that needs attention. The pointer and the finger
+   get a 25 px target over the row's air. */
+.cal-rows .sonar-button.cal-view {
+  position: relative;
+  width: 56px;
+  min-width: 0;
+  height: 19px;
+  /* Even padding: the label's caps sit on the pill's middle */
+  padding: 0;
+  border-radius: 10px;
+  font: var(--sonar-font-weight-medium) 11px/1 var(--sonar-font-family-sans);
+  letter-spacing: -0.22px;
+}
+
+.cal-rows .sonar-button.cal-view[data-variant='outlined'] {
+  --_edge: var(--sonar-color-accent);
+  --_ink: var(--sonar-color-text-accent);
+}
+
+.cal-rows .sonar-button.cal-view::after {
+  content: '';
+  position: absolute;
+  inset: -3px 0;
+}
+
+.cal-empty {
+  display: grid;
+  flex: 1;
+  gap: var(--sonar-space-4);
+  place-content: center;
+  justify-items: center;
+  padding: var(--sonar-space-20) 0;
+  border-bottom: 1px solid var(--sonar-color-divider);
+  text-align: center;
+}
+
+.cal-empty svg {
+  width: 28px;
+  height: 28px;
+  margin-bottom: var(--sonar-space-4);
+  color: var(--sonar-color-text-disabled);
+}
+
+.cal-empty p {
+  margin: 0;
+}
+
+/* Under the day, faded: the next day (month) or the next day with rows (week, XL). It takes no focus. */
+.cal-peek {
+  opacity: 0.4;
+}
+
+.cal-peek[data-view='week'] {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(#000 calc(100% - 44px), transparent);
+}
+
+.cal-peek .cal-dayhead {
+  margin-top: var(--sonar-space-14);
+}
+
+/* A new day comes in from the side it was reached from; today and tomorrow in Balance too */
+@keyframes cal-enter {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--dir, 0) * 10px));
+  }
+}
+
+[data-enter] {
+  animation: cal-enter var(--sonar-motion-spatial-default-duration) var(--sonar-motion-spatial-default-easing) both;
+  animation-delay: calc(var(--i, 0) * 24ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-enter] {
+    animation: none;
+  }
+
+  .cal-day .cal-dn::before,
+  .cal-date::before {
+    transition: none;
+  }
+}
+
+/* ---------- Balance: the payment calendar, folded ---------- */
+
+.balance-calendar-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  flex: none;
+  width: calc(100% + 2 * var(--sonar-space-8));
+  height: var(--sonar-layout-touch-target);
+  margin: 0 calc(-1 * var(--sonar-space-8));
+  padding: 0 var(--sonar-space-8);
+  border: 0;
+  border-radius: var(--sonar-shape-corner-small);
+  /* The rule under it, drawn inside the side margins so it lines up with the others */
+  background: linear-gradient(var(--sonar-color-divider), var(--sonar-color-divider)) no-repeat var(--sonar-space-8) 100% / calc(100% - 2 * var(--sonar-space-8)) 1px;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-title-lg);
+  letter-spacing: var(--sonar-type-title-lg-tracking);
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .balance-calendar-toggle:hover {
+    background-color: var(--sonar-color-state-hover);
+  }
+}
+
+.balance-calendar-toggle:focus-visible {
+  outline: var(--sonar-focus-width) solid var(--sonar-color-focus);
+  outline-offset: calc(-1 * var(--sonar-focus-width));
+}
+
+.balance-calendar-chevron {
+  width: 24px;
+  height: 24px;
+  transition: transform var(--sonar-motion-spatial-default-duration) var(--sonar-motion-spatial-default-easing);
+}
+
+.balance-calendar-toggle[aria-expanded='true'] .balance-calendar-chevron {
+  transform: rotate(180deg);
+}
+
+.balance-calendar:not([hidden]) {
+  margin-top: var(--sonar-space-12);
+  animation: cal-fade var(--sonar-motion-effects-default-duration) var(--sonar-motion-effects-default-easing) both;
+}
+
+@keyframes cal-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .balance-calendar-chevron {
+    transition: none;
+  }
+
+  .balance-calendar:not([hidden]) {
+    animation: none;
+  }
+}
+
+/* ---------- Recurring orders ---------- */
+
+/* Quick action: a 20 px chip in the accent, 10 px caps */
+.recurring-quick {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  height: 20px;
+  margin: -4px 0 6px;
+  padding: 0 7px;
+  box-sizing: border-box;
+  border-radius: 3px;
+  background: var(--sonar-color-accent);
+  color: var(--sonar-color-on-accent);
+  font: var(--sonar-font-weight-semibold) 10px/1 var(--sonar-font-family-sans);
+  letter-spacing: 0.015em;
+  text-transform: uppercase;
+}
+
+.recurring-card .sonar-card-header {
+  align-items: end;
+}
+
+/* The summary reads as a sentence here, lower under the title; the list starts at its rule */
+.recurring-card .sonar-card-summary {
+  margin-top: var(--sonar-space-20);
+  padding-bottom: var(--sonar-space-12);
+  font: var(--sonar-type-label-md);
+}
+
+.recurring-card .sonar-card-summary-label {
+  color: var(--sonar-color-text-strong);
+  text-transform: none;
+}
+
+.recurring-card .sonar-card-summary-value {
+  font-weight: inherit;
+}
+
+.recurring-card .sonar-card-body {
+  padding-top: 0;
+}
+
+.recurring-card[data-size] .sonar-card-body {
+  padding-top: 4px;
+}
+
+/* Recurring orders alone (1.0.0-alpha.24, 988©STUDIO): the bottom fade ends above Reorder rather than level with it, clear of
+   the button by half the room from the button to the card's foot (22 px / 2). The list reaches 4 px past its end, so
+   the fade is lifted 4 + 11 px; it keeps its 24 px. Scrolled to the end there is no bottom fade, as before. */
+.recurring-card .sonar-card-scroll-area[data-scrollable]:not([data-at-end]) {
+  --_fade-lift: 15px;
+  mask-image: linear-gradient(#000 calc(100% - var(--_fade-bottom, 24px) - var(--_fade-lift)), transparent calc(100% - var(--_fade-lift)));
+}
+
+.recurring-card .sonar-card-scroll-area[data-scrollable]:not([data-at-end], [data-at-start]) {
+  mask-image: linear-gradient(
+    transparent,
+    #000 var(--_fade-top, 22px),
+    #000 calc(100% - var(--_fade-bottom, 24px) - var(--_fade-lift)),
+    transparent calc(100% - var(--_fade-lift))
+  );
+}
+
+
+.recurring-bolt {
+  width: 24px;
+  height: 24px;
+  color: var(--sonar-color-accent);
+}
+
+@keyframes recurring-count {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.recurring-count {
+  display: inline-block;
+  animation: recurring-count var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing) both;
+}
+
+/* Scrolled to its end, the list keeps the same distance between its last rule and the footer's button as between
+   a row's last line and its rule */
+.recurring-list {
+  display: grid;
+  margin: 0;
+  padding-bottom: var(--card-list-rhythm);
+}
+
+/* One distance between anything and its rule: rule, thumbnail, rule; a suggestion under a product, then a rule */
+.recurring-list > li {
+  padding: var(--card-list-rhythm) 0;
+  border-bottom: 1px solid var(--sonar-color-divider);
+}
+
+.recurring-list > li:has(+ .recurring-alternative-wrap[data-open]),
+.recurring-list > li:has(> .recurring-banner) {
+  border-bottom: 0;
+}
+
+.recurring-list > li:has(> .recurring-banner) {
+  padding-top: 0;
+  border-bottom: 1px solid var(--sonar-color-divider);
+}
+
+.recurring-list > li:has(+ li > .recurring-banner) {
+  border-bottom: 0;
+}
+
+.recurring-product {
+  display: grid;
+  grid-template-columns: var(--card-thumbnail) minmax(0, 1fr);
+  gap: var(--sonar-space-12);
+  align-items: start;
+}
+
+/* The checkbox sits at the end of the row, the product's name and lines before it */
+.recurring-product .sonar-checkbox-main {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  min-height: 0;
+}
+
+.recurring-product .sonar-checkbox-label {
+  margin-top: 3px;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-label-md);
+}
+
+.recurring-product .recurring-stock {
+  margin-top: 4px;
+}
+
+.recurring-product .sonar-checkbox-description {
+  display: grid;
+  gap: 0;
+  padding-left: 0;
+}
+
+/* A suggestion from the market: a 49 px band, its two lines beside a green bookmark with an info mark */
+.recurring-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 49px;
+  margin: 1px 0 0;
+  padding: 4px 12px 4px 66px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--sonar-color-accent-container) 60%, transparent);
+  color: var(--sonar-color-text-strong);
+  font: 400 12px/16px var(--sonar-font-family-sans);
+  letter-spacing: -0.02em;
+}
+
+.recurring-banner a {
+  color: inherit;
+  font-weight: var(--sonar-font-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.recurring-bookmark {
+  position: absolute;
+  top: 0;
+  left: 14px;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 39px;
+  padding-bottom: 6px;
+  box-sizing: border-box;
+  background: var(--sonar-color-accent);
+  color: var(--sonar-color-on-accent);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%);
+}
+
+.recurring-bookmark svg {
+  width: 18px;
+  height: 18px;
+}
+
+.recurring-pack {
+  color: var(--sonar-color-text-meta);
+}
+
+.recurring-stock {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-label-md);
+}
+
+.recurring-stock svg {
+  width: 13px;
+  height: 13px;
+  color: var(--sonar-color-accent);
+}
+
+.recurring-stock[data-out],
+.recurring-stock[data-out] svg {
+  color: var(--sonar-color-text-danger);
+}
+
+.recurring-product[data-out] .recurring-well {
+  opacity: 0.55;
+}
+
+/* When it is back: gray, after a thin bar */
+.recurring-stock[data-out] .recurring-eta {
+  color: var(--sonar-color-text-meta);
+  font-weight: 400;
+}
+
+.recurring-tag {
+  margin-left: var(--sonar-space-4);
+  padding: 0 var(--sonar-space-6);
+  border-radius: var(--sonar-shape-corner-extra-small);
+  background: var(--sonar-color-accent-tonal);
+  color: var(--sonar-color-on-accent-tonal);
+  font: var(--sonar-type-label-sm);
+}
+
+.recurring-well {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--card-thumbnail);
+  height: var(--card-thumbnail);
+  border-radius: var(--sonar-shape-corner-medium);
+  background: var(--sonar-color-surface-well);
+  color: var(--sonar-color-text-secondary);
+}
+
+.recurring-well svg {
+  width: 30px;
+  height: 30px;
+}
+
+/* The alternative unfolds under the product that ran out, and folds back faster */
+.recurring-list > .recurring-alternative-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  padding: 0;
+  border-bottom: 0;
+  transition: grid-template-rows var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing);
+}
+
+.recurring-list > .recurring-alternative-wrap[data-open] {
+  grid-template-rows: 1fr;
+  border-bottom: 1px solid var(--sonar-color-divider);
+  transition-duration: var(--sonar-motion-spatial-default-duration);
+}
+
+.recurring-alternative-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.recurring-alternative {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: center;
+  min-height: 49px;
+  box-sizing: border-box;
+  margin-bottom: var(--sonar-space-12);
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--sonar-color-text-strong) 6%, var(--sonar-color-surface-card));
+  opacity: 0;
+  transition: opacity var(--sonar-motion-effects-fast-duration) linear;
+}
+
+[data-open] > .recurring-alternative-clip > .recurring-alternative {
+  opacity: 1;
+  transition-delay: 60ms;
+}
+
+.sonar-button.recurring-swap {
+  --_edge: var(--sonar-color-accent);
+  --_ink: var(--sonar-color-text-accent);
+}
+
+.recurring-alternative p {
+  margin: 0;
+  color: var(--sonar-color-text-strong);
+  font: var(--sonar-type-label-md);
+}
+
+.recurring-alternative-thumb {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--sonar-color-surface-card);
+  color: var(--sonar-color-text-default);
+}
+
+.recurring-alternative-thumb svg {
+  width: 26px;
+  height: 26px;
+}
+
+.recurring-alternative-mark {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--sonar-color-accent);
+  box-shadow: 0 0 0 2px var(--sonar-color-surface-container);
+  color: var(--sonar-color-on-accent);
+}
+
+.recurring-alternative-mark svg {
+  width: 12px;
+  height: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recurring-count {
+    animation: none;
+  }
+
+  .recurring-list > .recurring-alternative-wrap,
+  .recurring-alternative {
+    transition: none;
+  }
+}
+
+/* ---------- The overview ---------- */
+
+/* The columns follow the overview's own width: one for every 320 px a card needs (with the gap), up to three. Each
+   layout's rows are fixed tracks between the edges the cards start and end on (Overview.tsx writes them), so the
+   cards are in their places from the first frame, before any script runs. The gap is inside the tracks, below each
+   card. */
+.overview-frame {
+  container: overview / inline-size;
+}
+
+.overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: var(--rows-1);
+  column-gap: var(--sonar-layout-gap);
+  align-items: start;
+  /* The last track ends with a gap below the lowest card */
+  margin-bottom: calc(-1 * var(--sonar-layout-gap));
+}
+
+.overview-slot {
+  --i: var(--i-1);
+
+  grid-row: var(--row-1);
+  grid-column: var(--col-1);
+  min-width: 0;
+}
+
+@container overview (width >= 660px) {
+  .overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: var(--rows-2);
+  }
+
+  .overview-slot {
+    --i: var(--i-2);
+
+    grid-row: var(--row-2);
+    grid-column: var(--col-2);
+  }
+}
+
+@container overview (width >= 1000px) {
+  .overview {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: var(--rows-3);
+  }
+
+  .overview-slot {
+    --i: var(--i-3);
+
+    grid-row: var(--row-3);
+    grid-column: var(--col-3);
+  }
+}
+
+/* Until the entrance runs, the cards wait unseen in their places: they appear once, rising into place, instead of
+   being drawn, hidden and drawn again. Without scripts, or with reduced motion, they are there from the first frame */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .overview:not(.shown) .overview-slot {
+    opacity: 0;
+  }
+}
+
+/* ---------- Sizes, side by side in the documentation ---------- */
+
+.card-sizes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 400px));
+  gap: var(--sonar-space-24);
+  align-items: start;
+}
+
+.card-sizes figure {
+  display: grid;
+  gap: var(--sonar-space-8);
+  margin: 0;
+}
+
+.card-sizes figcaption {
+  color: var(--sonar-color-text-meta);
+  font: var(--sonar-type-label-md);
+  letter-spacing: var(--sonar-type-label-md-tracking);
+}
+
+/* A card reached by a link (#card-deliveries) stops clear of the top bar through the page’s scroll padding alone
+   (the top bar and 16 px on phones and tablets, 24 px on desktops); a margin here would add to it */
+.overview-slot {
+  scroll-margin-top: 0;
+}
+
+
+/* ---------- Entrance: the first time the overview shows (the product's .intro) ----------
+   Each card slot fades in and rises 14 px in 440 ms on the spatial default spring, 55 ms after the one before it in
+   reading order; the tick bars inside draw from the left in 780 ms on the effects slow curve, 240 ms after their card.
+   With reduced motion, nothing moves. */
+@keyframes overview-slot-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@keyframes overview-ticks-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.overview.intro .overview-slot {
+  animation: overview-slot-in 440ms var(--sonar-motion-spatial-default-easing) both;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+
+.overview.intro .overview-slot .sonar-tick-bar {
+  animation: overview-ticks-in 780ms var(--sonar-motion-effects-slow-easing) both;
+  animation-delay: calc(var(--i, 0) * 55ms + 240ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overview.intro .overview-slot,
+  .overview.intro .overview-slot .sonar-tick-bar {
+    animation: none;
+  }
+}
