@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en" data-astro-cid-lpetmyok>
+  <head>
+    <meta charset="utf-8">
+    <!-- The order of the cascade layers, before any stylesheet: bundling may load the files in any order -->
+    <style>
+      @layer reset, base, sonar;
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <!-- iOS would turn dates and figures into links, changing the elements React hydrates -->
+    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+    <title>Motion · Orbex Sonar-DB Design System</title>
+    <meta name="description" content="Sonar-DB motion: springs defined by duration and bounce, generated as CSS easing curves, and when to use each.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/assets/ibm-plex-sans-latin-400-normal.CDDApCn2.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-500-normal.6ng42L7E.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-600-normal.CuJfVYMP.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-normal.CRd5VyFf.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-italic.CDUi4ehg.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-400-normal.DMJ8VG8y.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-500-normal.DSY6xOcd.woff2" as="font" type="font/woff2" crossorigin>
+    <script>
+      try {
+        const theme = localStorage.getItem('sonar-ds-theme')
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {}
+
+      /* A page opened from a link starts at the top. Browsers do this already; some embedded viewers keep the previous
+         page’s scroll instead. Going back, reloading and links to a section are left to the browser, and the reset
+         stops as soon as the reader scrolls. */
+      try {
+        const navigation = performance.getEntriesByType('navigation')[0]
+        if (!location.hash && (!navigation || navigation.type === 'navigate')) {
+          const toTop = () => scrollTo(0, 0)
+          const stop = () => {
+            removeEventListener('DOMContentLoaded', toTop)
+            removeEventListener('load', toTop)
+          }
+          toTop()
+          addEventListener('DOMContentLoaded', toTop, { once: true })
+          addEventListener('load', toTop, { once: true })
+          for (const type of ['wheel', 'touchstart', 'keydown']) addEventListener(type, stop, { once: true, passive: true })
+        }
+      } catch {}
+    </script>
+  <style>.code-block[data-astro-cid-c6nuo4je]{min-width:0;max-width:var(--site-measure);border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-container-low)}.bar[data-astro-cid-c6nuo4je]{padding:var(--sonar-space-6) var(--sonar-space-8) 0 var(--sonar-space-24);justify-content:space-between;align-items:center;display:flex}.language[data-astro-cid-c6nuo4je]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-sm);letter-spacing:var(--sonar-type-label-sm-tracking);text-transform:uppercase}pre[data-astro-cid-c6nuo4je]{overscroll-behavior-x:contain;padding:var(--sonar-space-8) var(--sonar-space-24) var(--sonar-space-20);color:var(--sonar-color-text-strong);font:400 13px/1.6 var(--sonar-font-family-mono);overflow:auto hidden}pre[data-astro-cid-c6nuo4je]:focus-visible{outline:var(--sonar-focus-width) solid var(--sonar-color-focus);outline-offset:calc(-1 * var(--sonar-focus-width));border-radius:0 0 var(--sonar-shape-corner-medium) var(--sonar-shape-corner-medium)}code[data-astro-cid-c6nuo4je]{font:inherit}.copy[data-astro-cid-c6nuo4je]{min-height:32px;padding:0 var(--sonar-space-12);border-radius:var(--sonar-shape-corner-full);color:var(--sonar-color-text-secondary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);cursor:pointer;transition:background-color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);background:0 0;border:0}.copy[data-astro-cid-c6nuo4je]:hover{background:var(--sonar-color-state-hover);color:var(--sonar-color-text-strong)}.copy[data-astro-cid-c6nuo4je]:focus-visible{outline:2px solid var(--sonar-color-accent);outline-offset:2px}
+.motion[data-astro-cid-kjjv3c3o]{gap:var(--sonar-space-12) var(--sonar-space-24);padding:var(--sonar-space-20) var(--sonar-space-24);border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);box-shadow:var(--sonar-elevation-1);grid-template-columns:160px minmax(0,1fr);grid-template-areas:"curve about""curve track";align-items:center;display:grid;position:relative}svg[data-astro-cid-kjjv3c3o]{grid-area:curve;width:160px;overflow:visible}path[data-astro-cid-kjjv3c3o]{fill:none;stroke:var(--sonar-color-accent);stroke-width:2px;stroke-linejoin:round}.guide[data-astro-cid-kjjv3c3o]{stroke:var(--sonar-color-divider);stroke-dasharray:2 3}.about[data-astro-cid-kjjv3c3o]{grid-area:about;padding-right:72px}h3[data-astro-cid-kjjv3c3o] code[data-astro-cid-kjjv3c3o]{color:var(--sonar-color-text-strong);font:500 12px/1.4 var(--sonar-font-family-mono);overflow-wrap:anywhere}.spec[data-astro-cid-kjjv3c3o]{margin-top:var(--sonar-space-2);color:var(--sonar-color-text-default);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}.description[data-astro-cid-kjjv3c3o]{margin-top:var(--sonar-space-4);color:var(--sonar-color-text-secondary);font:var(--sonar-type-body-md)}.track[data-astro-cid-kjjv3c3o]{border-radius:var(--sonar-shape-corner-full);background:var(--sonar-color-surface-container-low);grid-area:track;height:24px;position:relative;container-type:inline-size}.piece[data-astro-cid-kjjv3c3o]{border-radius:var(--sonar-shape-corner-full);background:var(--sonar-color-accent);width:16px;height:16px;transition:translate var(--duration) var(--easing);position:absolute;top:4px;left:4px}[data-astro-cid-kjjv3c3o][data-moved] .piece[data-astro-cid-kjjv3c3o]{translate:calc(100cqw - 24px)}.play[data-astro-cid-kjjv3c3o]{top:var(--sonar-space-20);right:var(--sonar-space-24);min-height:32px;padding:0 var(--sonar-space-16);border:1px solid var(--sonar-color-border-strong);border-radius:var(--sonar-shape-corner-full);color:var(--sonar-color-text-strong);font:var(--sonar-type-button);letter-spacing:var(--sonar-type-button-tracking);cursor:pointer;background:0 0;position:absolute}.play[data-astro-cid-kjjv3c3o]:hover{background:var(--sonar-color-state-hover)}@container page (width<608px){.motion[data-astro-cid-kjjv3c3o]{grid-template-columns:1fr;grid-template-areas:"about""curve""track"}}.curves[data-astro-cid-rgankpeh]{gap:var(--sonar-space-16);display:grid}.table-wrap[data-astro-cid-rgankpeh]{overscroll-behavior-x:contain;border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);min-width:0;box-shadow:var(--sonar-elevation-1);overflow:auto hidden}.table-wrap[data-astro-cid-rgankpeh] table[data-astro-cid-rgankpeh]{border-collapse:collapse;width:100%;font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);font-variant-numeric:tabular-nums}.table-wrap[data-astro-cid-rgankpeh] caption[data-astro-cid-rgankpeh]{padding:var(--sonar-space-16) var(--sonar-space-16) var(--sonar-space-8);color:var(--sonar-color-text-strong);font:var(--sonar-type-title-md);letter-spacing:var(--sonar-type-title-md-tracking);text-align:left}.table-wrap[data-astro-cid-rgankpeh] [data-astro-cid-rgankpeh]:is(th,td){padding:var(--sonar-space-8) var(--sonar-space-16);border-top:1px solid var(--sonar-color-divider);text-align:left;vertical-align:top}.table-wrap[data-astro-cid-rgankpeh] thead[data-astro-cid-rgankpeh] th[data-astro-cid-rgankpeh]{color:var(--sonar-color-text-tertiary);font-weight:var(--sonar-font-weight-medium);white-space:nowrap}.table-wrap[data-astro-cid-rgankpeh] code[data-astro-cid-rgankpeh]{white-space:nowrap}
+.page-header[data-astro-cid-b2i3gsw2]{max-width:var(--site-content-width);margin-bottom:var(--sonar-space-48)}h1[data-astro-cid-b2i3gsw2]{font:var(--site-heading-1);letter-spacing:-.01em}.lead[data-astro-cid-b2i3gsw2]{max-width:var(--site-measure);margin-top:var(--sonar-space-16);color:var(--sonar-color-text-secondary);font:var(--site-lead)}
+.section[data-astro-cid-w6ymvdtg]{max-width:var(--site-content-width)}.section[data-astro-cid-w6ymvdtg]+.section{margin-top:72px}h2[data-astro-cid-w6ymvdtg]{margin-bottom:var(--sonar-space-16);font:var(--site-heading-2);letter-spacing:-.01em}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]{color:inherit;text-decoration:none}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]:hover{text-decoration:underline}.section[data-astro-cid-w6ymvdtg]>*+*{margin-top:var(--sonar-space-24)}.section[data-astro-cid-w6ymvdtg]>h2+*{margin-top:0}
+</style>
+<link rel="stylesheet" href="/assets/Docs.pfYhGa-X.css"></head>
+  <body data-astro-cid-lpetmyok>
+    <a class="skip-link" href="#content" data-astro-cid-lpetmyok>Skip to content</a>
+
+    <header class="masthead" data-astro-cid-lpetmyok>
+      <div class="brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  <span class="wordmark-system" data-astro-cid-qisgtjgl>Design system</span>
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a></div>
+      <button class="menu-button" type="button" popovertarget="sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation" data-astro-cid-lpetmyok>
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" data-astro-cid-lpetmyok><path d="M4 7h16M4 12h16M4 17h16" data-astro-cid-lpetmyok></path></svg>
+      </button>
+    </header>
+
+    <div class="shell" data-astro-cid-lpetmyok>
+      <nav class="sidebar" id="sidebar" popover aria-label="Documentation" data-astro-cid-lpetmyok>
+        
+        <div class="sidebar-brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a><span class="sidebar-version" data-astro-cid-lpetmyok><a class="version-chip" href="/resources/changelog/" data-astro-cid-2qsy24n7>v1.1.4<span class="visually-hidden" data-astro-cid-2qsy24n7>, changelog</span></a></span></div>
+        <div class="sidebar-scroll" data-astro-cid-lpetmyok>
+          <p class="outline-title" data-astro-cid-lpetmyok>Design system</p>
+          <div class="navigation" data-astro-cid-yxete6jp>
+  <section aria-labelledby="nav-Get started" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Get started" data-astro-cid-yxete6jp>
+            Get started
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/" data-astro-cid-yxete6jp>
+                  Introduction
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/get-started/installation/" data-astro-cid-yxete6jp>
+                  Installation
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Foundations" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Foundations" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/foundations/" data-astro-cid-yxete6jp>
+                Foundations
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/foundations/principles/" data-astro-cid-yxete6jp>
+                  Principles
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/accessibility/" data-astro-cid-yxete6jp>
+                  Accessibility
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/color/" data-astro-cid-yxete6jp>
+                  Color
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/typography/" data-astro-cid-yxete6jp>
+                  Typography
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/icons/" data-astro-cid-yxete6jp>
+                  Icons
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/spacing/" data-astro-cid-yxete6jp>
+                  Spacing
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/shape/" data-astro-cid-yxete6jp>
+                  Shape
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/elevation/" data-astro-cid-yxete6jp>
+                  Elevation
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/motion/" aria-current="page" data-astro-cid-yxete6jp>
+                  Motion
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Layout" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Layout" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/layout/" data-astro-cid-yxete6jp>
+                Layout
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/layout/grid/" data-astro-cid-yxete6jp>
+                  Breakpoints and grid
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/layout/navigation/" data-astro-cid-yxete6jp>
+                  Navigation by device
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Components" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Components" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/components/" data-astro-cid-yxete6jp>
+                Components
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/components/button/" data-astro-cid-yxete6jp>
+                  Button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/icon-button/" data-astro-cid-yxete6jp>
+                  Icon button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/badge/" data-astro-cid-yxete6jp>
+                  Badge
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/status/" data-astro-cid-yxete6jp>
+                  Status
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/switch/" data-astro-cid-yxete6jp>
+                  Switch
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/checkbox/" data-astro-cid-yxete6jp>
+                  Checkbox
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/segmented-control/" data-astro-cid-yxete6jp>
+                  Segmented control
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/field/" data-astro-cid-yxete6jp>
+                  Text field and select
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/notice/" data-astro-cid-yxete6jp>
+                  Notice
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/toast/" data-astro-cid-yxete6jp>
+                  Toast
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/menu/" data-astro-cid-yxete6jp>
+                  Menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tooltip/" data-astro-cid-yxete6jp>
+                  Tooltip
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/dialog/" data-astro-cid-yxete6jp>
+                  Dialog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/scroll-area/" data-astro-cid-yxete6jp>
+                  Scroll area
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card/" data-astro-cid-yxete6jp>
+                  Card
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-link/" data-astro-cid-yxete6jp>
+                  Card link
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-scroll/" data-astro-cid-yxete6jp>
+                  Card scroll
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/unit-menu/" data-astro-cid-yxete6jp>
+                  Unit menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tick-bar/" data-astro-cid-yxete6jp>
+                  Tick bar
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/ring-chart/" data-astro-cid-yxete6jp>
+                  Ring chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/trend-chart/" data-astro-cid-yxete6jp>
+                  Trend chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/chart-legend/" data-astro-cid-yxete6jp>
+                  Chart legend
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-field/" data-astro-cid-yxete6jp>
+                  Search field
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-result/" data-astro-cid-yxete6jp>
+                  Search result
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Patterns" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Patterns" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/patterns/" data-astro-cid-yxete6jp>
+                Patterns
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/patterns/overview/" data-astro-cid-yxete6jp>
+                  Overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/cards/" data-astro-cid-yxete6jp>
+                  Cards
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/charts/" data-astro-cid-yxete6jp>
+                  Charts
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/search/" data-astro-cid-yxete6jp>
+                  Search
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/editing/" data-astro-cid-yxete6jp>
+                  Editing the overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/panels/" data-astro-cid-yxete6jp>
+                  Panels
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/feedback/" data-astro-cid-yxete6jp>
+                  Feedback
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/app-shell/" data-astro-cid-yxete6jp>
+                  App shell
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/assistant/" data-astro-cid-yxete6jp>
+                  AI assistant
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/customize/" data-astro-cid-yxete6jp>
+                  Customize overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/unbuilt/" data-astro-cid-yxete6jp>
+                  Unbuilt modules
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Resources" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Resources" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/resources/" data-astro-cid-yxete6jp>
+                Resources
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/resources/changelog/" data-astro-cid-yxete6jp>
+                  Changelog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/downloads/" data-astro-cid-yxete6jp>
+                  Downloads
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/llms.txt" data-astro-cid-yxete6jp>
+                  llms.txt
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/contributing/" data-astro-cid-yxete6jp>
+                  Contributing
+                </a>
+            </li>
+        </ul>
+      </section>
+</div>
+        </div>
+        <div class="sidebar-footer" data-astro-cid-lpetmyok><fieldset class="theme-switch" data-astro-cid-hds7qqbe>
+  <legend class="visually-hidden" data-astro-cid-hds7qqbe>Theme</legend>
+  <label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="system" checked data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>System</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="light" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Light</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="dark" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Dark</span>
+      </label>
+</fieldset>
+
+<script type="module" src="/assets/ThemeSwitch.astro_astro_type_script_index_0_lang.BMJDsczV.js"></script></div>
+      </nav>
+
+      <main id="content" tabindex="-1" data-astro-cid-lpetmyok>
+        
+        <div class="page-body" data-astro-cid-lpetmyok>
+          <nav class="breadcrumb" aria-label="Breadcrumb" data-astro-cid-lpetmyok>
+                <a href="/foundations/" data-astro-cid-lpetmyok>Foundations</a>
+                <span aria-hidden="true" data-astro-cid-lpetmyok>/</span>
+                <span aria-current="page" data-astro-cid-lpetmyok>Motion</span>
+              </nav>
+          
+  <header class="page-header" data-astro-cid-b2i3gsw2>
+  <h1 data-astro-cid-b2i3gsw2>Motion</h1>
+  <p class="lead" data-astro-cid-b2i3gsw2>Short, decelerating, and without bounce by default. The interface is a working tool: motion explains what changed and gets out of the way. A small bounce is kept for two moments that deserve it.</p>
+  
+</header>
+
+  <section class="section" aria-labelledby="springs" data-astro-cid-w6ymvdtg>
+  <h2 id="springs" data-astro-cid-w6ymvdtg><a href="#springs" data-astro-cid-w6ymvdtg>Springs</a></h2>
+  
+    <div class="prose" data-astro-cid-rgankpeh>
+      <p data-astro-cid-rgankpeh>
+        Springs are described as designers talk about them: a <strong data-astro-cid-rgankpeh>duration</strong>, the time the spring takes to
+        settle within 0.2% of its target, and a <strong data-astro-cid-rgankpeh>bounce</strong>. The build turns each pair into
+        a CSS <code data-astro-cid-rgankpeh>linear()</code> curve, so the motion runs like any transition, with no JavaScript.
+      </p>
+      <p data-astro-cid-rgankpeh>
+        <strong data-astro-cid-rgankpeh>Spatial</strong> springs move things: position, size, shape. <strong data-astro-cid-rgankpeh>Effects</strong> springs change how
+        things look: opacity and color. Effects are quicker, because a fade that lags reads as slowness.
+      </p>
+    </div>
+    <div class="curves" data-astro-cid-rgankpeh>
+      <article class="motion" style="--duration: 200ms; --easing: linear(0, 0.0138, 0.0493, 0.0991, 0.1576, 0.2207, 0.2855, 0.3496, 0.4117, 0.4707, 0.526, 0.5773, 0.6243, 0.6672, 0.7061, 0.7411, 0.7724, 0.8004, 0.8253, 0.8473, 0.8668, 0.884, 0.8991, 0.9123, 0.9239, 0.9341, 0.9429, 0.9507, 0.9574, 0.9632, 0.9683, 0.9726, 0.9764, 0.9797, 0.9826, 0.985, 0.9871, 0.9889, 0.9905, 0.9919, 0.993, 0.994, 0.9949, 0.9956, 0.9963, 0.9968, 0.9973, 0.9977, 1)" data-astro-cid-kjjv3c3o>
+  <svg viewBox="0 0 160 96" aria-hidden="true" data-astro-cid-kjjv3c3o>
+    <line class="guide" x1="0" x2="160" y1="12" y2="12" data-astro-cid-kjjv3c3o></line>
+    <line class="guide" x1="0" x2="160" y1="84" y2="84" data-astro-cid-kjjv3c3o></line>
+    <path d="M0.0 84.0 L3.3 83.0 L6.7 80.5 L10.0 76.9 L13.3 72.7 L16.7 68.1 L20.0 63.4 L23.3 58.8 L26.7 54.4 L30.0 50.1 L33.3 46.1 L36.7 42.4 L40.0 39.1 L43.3 36.0 L46.7 33.2 L50.0 30.6 L53.3 28.4 L56.7 26.4 L60.0 24.6 L63.3 23.0 L66.7 21.6 L70.0 20.4 L73.3 19.3 L76.7 18.3 L80.0 17.5 L83.3 16.7 L86.7 16.1 L90.0 15.5 L93.3 15.1 L96.7 14.6 L100.0 14.3 L103.3 14.0 L106.7 13.7 L110.0 13.5 L113.3 13.3 L116.7 13.1 L120.0 12.9 L123.3 12.8 L126.7 12.7 L130.0 12.6 L133.3 12.5 L136.7 12.4 L140.0 12.4 L143.3 12.3 L146.7 12.3 L150.0 12.2 L153.3 12.2 L156.7 12.2 L160.0 12.0" data-astro-cid-kjjv3c3o></path>
+  </svg>
+  <div class="about" data-astro-cid-kjjv3c3o>
+    <h3 data-astro-cid-kjjv3c3o><code data-astro-cid-kjjv3c3o>sonar-motion-spatial-fast</code></h3>
+    <p class="spec" data-astro-cid-kjjv3c3o>200 ms, bounce 0</p>
+    <p class="description" data-astro-cid-kjjv3c3o>Small elements: switches, chips, menus.</p>
+  </div>
+  <div class="track" data-astro-cid-kjjv3c3o>
+    <span class="piece" data-astro-cid-kjjv3c3o></span>
+  </div>
+  <button class="play" type="button" aria-label="Play sonar-motion-spatial-fast" data-astro-cid-kjjv3c3o>Play</button>
+</article>
+
+<script type="module">for(let e of document.querySelectorAll(`.motion .play`))e.addEventListener(`click`,()=>{e.closest(`.motion`).toggleAttribute(`data-moved`)});</script><article class="motion" style="--duration: 320ms; --easing: linear(0, 0.0138, 0.0493, 0.0991, 0.1576, 0.2207, 0.2855, 0.3496, 0.4117, 0.4707, 0.526, 0.5773, 0.6243, 0.6672, 0.7061, 0.7411, 0.7724, 0.8004, 0.8253, 0.8473, 0.8668, 0.884, 0.8991, 0.9123, 0.9239, 0.9341, 0.9429, 0.9507, 0.9574, 0.9632, 0.9683, 0.9726, 0.9764, 0.9797, 0.9826, 0.985, 0.9871, 0.9889, 0.9905, 0.9919, 0.993, 0.994, 0.9949, 0.9956, 0.9963, 0.9968, 0.9973, 0.9977, 1)" data-astro-cid-kjjv3c3o>
+  <svg viewBox="0 0 160 96" aria-hidden="true" data-astro-cid-kjjv3c3o>
+    <line class="guide" x1="0" x2="160" y1="12" y2="12" data-astro-cid-kjjv3c3o></line>
+    <line class="guide" x1="0" x2="160" y1="84" y2="84" data-astro-cid-kjjv3c3o></line>
+    <path d="M0.0 84.0 L3.3 83.0 L6.7 80.5 L10.0 76.9 L13.3 72.7 L16.7 68.1 L20.0 63.4 L23.3 58.8 L26.7 54.4 L30.0 50.1 L33.3 46.1 L36.7 42.4 L40.0 39.1 L43.3 36.0 L46.7 33.2 L50.0 30.6 L53.3 28.4 L56.7 26.4 L60.0 24.6 L63.3 23.0 L66.7 21.6 L70.0 20.4 L73.3 19.3 L76.7 18.3 L80.0 17.5 L83.3 16.7 L86.7 16.1 L90.0 15.5 L93.3 15.1 L96.7 14.6 L100.0 14.3 L103.3 14.0 L106.7 13.7 L110.0 13.5 L113.3 13.3 L116.7 13.1 L120.0 12.9 L123.3 12.8 L126.7 12.7 L130.0 12.6 L133.3 12.5 L136.7 12.4 L140.0 12.4 L143.3 12.3 L146.7 12.3 L150.0 12.2 L153.3 12.2 L156.7 12.2 L160.0 12.0" data-astro-cid-kjjv3c3o></path>
+  </svg>
+  <div class="about" data-astro-cid-kjjv3c3o>
+    <h3 data-astro-cid-kjjv3c3o><code data-astro-cid-kjjv3c3o>sonar-motion-spatial-default</code></h3>
+    <p class="spec" data-astro-cid-kjjv3c3o>320 ms, bounce 0</p>
+    <p class="description" data-astro-cid-kjjv3c3o>Most layout changes: accordions, cards settling, panels resizing.</p>
+  </div>
+  <div class="track" data-astro-cid-kjjv3c3o>
+    <span class="piece" data-astro-cid-kjjv3c3o></span>
+  </div>
+  <button class="play" type="button" aria-label="Play sonar-motion-spatial-default" data-astro-cid-kjjv3c3o>Play</button>
+</article>
+
+<article class="motion" style="--duration: 500ms; --easing: linear(0, 0.0166, 0.0607, 0.1243, 0.2009, 0.285, 0.3722, 0.4589, 0.5425, 0.6211, 0.6933, 0.7584, 0.8159, 0.8658, 0.9083, 0.9437, 0.9726, 0.9956, 1.0134, 1.0266, 1.0358, 1.0417, 1.045, 1.046, 1.0453, 1.0433, 1.0405, 1.037, 1.0331, 1.0291, 1.0251, 1.0213, 1.0176, 1.0143, 1.0113, 1.0086, 1.0063, 1.0043, 1.0027, 1.0013, 1.0003, 0.9994, 0.9988, 0.9984, 0.9981, 0.9979, 0.9979, 0.9979, 1)" data-astro-cid-kjjv3c3o>
+  <svg viewBox="0 0 160 96" aria-hidden="true" data-astro-cid-kjjv3c3o>
+    <line class="guide" x1="0" x2="160" y1="12" y2="12" data-astro-cid-kjjv3c3o></line>
+    <line class="guide" x1="0" x2="160" y1="84" y2="84" data-astro-cid-kjjv3c3o></line>
+    <path d="M0.0 84.0 L3.3 82.8 L6.7 79.6 L10.0 75.1 L13.3 69.5 L16.7 63.5 L20.0 57.2 L23.3 51.0 L26.7 44.9 L30.0 39.3 L33.3 34.1 L36.7 29.4 L40.0 25.3 L43.3 21.7 L46.7 18.6 L50.0 16.1 L53.3 14.0 L56.7 12.3 L60.0 11.0 L63.3 10.1 L66.7 9.4 L70.0 9.0 L73.3 8.8 L76.7 8.7 L80.0 8.7 L83.3 8.9 L86.7 9.1 L90.0 9.3 L93.3 9.6 L96.7 9.9 L100.0 10.2 L103.3 10.5 L106.7 10.7 L110.0 11.0 L113.3 11.2 L116.7 11.4 L120.0 11.5 L123.3 11.7 L126.7 11.8 L130.0 11.9 L133.3 12.0 L136.7 12.0 L140.0 12.1 L143.3 12.1 L146.7 12.1 L150.0 12.2 L153.3 12.2 L156.7 12.2 L160.0 12.0" data-astro-cid-kjjv3c3o></path>
+  </svg>
+  <div class="about" data-astro-cid-kjjv3c3o>
+    <h3 data-astro-cid-kjjv3c3o><code data-astro-cid-kjjv3c3o>sonar-motion-spatial-expressive</code></h3>
+    <p class="spec" data-astro-cid-kjjv3c3o>500 ms, bounce 0.3</p>
+    <p class="description" data-astro-cid-kjjv3c3o>Only when a dragged card is dropped and for success confirmations.</p>
+  </div>
+  <div class="track" data-astro-cid-kjjv3c3o>
+    <span class="piece" data-astro-cid-kjjv3c3o></span>
+  </div>
+  <button class="play" type="button" aria-label="Play sonar-motion-spatial-expressive" data-astro-cid-kjjv3c3o>Play</button>
+</article>
+
+
+      <article class="motion" style="--duration: 138ms; --easing: linear(0, 0.0138, 0.0493, 0.0991, 0.1576, 0.2207, 0.2855, 0.3496, 0.4117, 0.4707, 0.526, 0.5773, 0.6243, 0.6672, 0.7061, 0.7411, 0.7724, 0.8004, 0.8253, 0.8473, 0.8668, 0.884, 0.8991, 0.9123, 0.9239, 0.9341, 0.9429, 0.9507, 0.9574, 0.9632, 0.9683, 0.9726, 0.9764, 0.9797, 0.9826, 0.985, 0.9871, 0.9889, 0.9905, 0.9919, 0.993, 0.994, 0.9949, 0.9956, 0.9963, 0.9968, 0.9973, 0.9977, 1)" data-astro-cid-kjjv3c3o>
+  <svg viewBox="0 0 160 96" aria-hidden="true" data-astro-cid-kjjv3c3o>
+    <line class="guide" x1="0" x2="160" y1="12" y2="12" data-astro-cid-kjjv3c3o></line>
+    <line class="guide" x1="0" x2="160" y1="84" y2="84" data-astro-cid-kjjv3c3o></line>
+    <path d="M0.0 84.0 L3.3 83.0 L6.7 80.5 L10.0 76.9 L13.3 72.7 L16.7 68.1 L20.0 63.4 L23.3 58.8 L26.7 54.4 L30.0 50.1 L33.3 46.1 L36.7 42.4 L40.0 39.1 L43.3 36.0 L46.7 33.2 L50.0 30.6 L53.3 28.4 L56.7 26.4 L60.0 24.6 L63.3 23.0 L66.7 21.6 L70.0 20.4 L73.3 19.3 L76.7 18.3 L80.0 17.5 L83.3 16.7 L86.7 16.1 L90.0 15.5 L93.3 15.1 L96.7 14.6 L100.0 14.3 L103.3 14.0 L106.7 13.7 L110.0 13.5 L113.3 13.3 L116.7 13.1 L120.0 12.9 L123.3 12.8 L126.7 12.7 L130.0 12.6 L133.3 12.5 L136.7 12.4 L140.0 12.4 L143.3 12.3 L146.7 12.3 L150.0 12.2 L153.3 12.2 L156.7 12.2 L160.0 12.0" data-astro-cid-kjjv3c3o></path>
+  </svg>
+  <div class="about" data-astro-cid-kjjv3c3o>
+    <h3 data-astro-cid-kjjv3c3o><code data-astro-cid-kjjv3c3o>sonar-motion-effects-fast</code></h3>
+    <p class="spec" data-astro-cid-kjjv3c3o>138 ms, bounce 0</p>
+    
+  </div>
+  <div class="track" data-astro-cid-kjjv3c3o>
+    <span class="piece" data-astro-cid-kjjv3c3o></span>
+  </div>
+  <button class="play" type="button" aria-label="Play sonar-motion-effects-fast" data-astro-cid-kjjv3c3o>Play</button>
+</article>
+
+<article class="motion" style="--duration: 212ms; --easing: linear(0, 0.0138, 0.0493, 0.0991, 0.1576, 0.2207, 0.2855, 0.3496, 0.4117, 0.4707, 0.526, 0.5773, 0.6243, 0.6672, 0.7061, 0.7411, 0.7724, 0.8004, 0.8253, 0.8473, 0.8668, 0.884, 0.8991, 0.9123, 0.9239, 0.9341, 0.9429, 0.9507, 0.9574, 0.9632, 0.9683, 0.9726, 0.9764, 0.9797, 0.9826, 0.985, 0.9871, 0.9889, 0.9905, 0.9919, 0.993, 0.994, 0.9949, 0.9956, 0.9963, 0.9968, 0.9973, 0.9977, 1)" data-astro-cid-kjjv3c3o>
+  <svg viewBox="0 0 160 96" aria-hidden="true" data-astro-cid-kjjv3c3o>
+    <line class="guide" x1="0" x2="160" y1="12" y2="12" data-astro-cid-kjjv3c3o></line>
+    <line class="guide" x1="0" x2="160" y1="84" y2="84" data-astro-cid-kjjv3c3o></line>
+    <path d="M0.0 84.0 L3.3 83.0 L6.7 80.5 L10.0 76.9 L13.3 72.7 L16.7 68.1 L20.0 63.4 L23.3 58.8 L26.7 54.4 L30.0 50.1 L33.3 46.1 L36.7 42.4 L40.0 39.1 L43.3 36.0 L46.7 33.2 L50.0 30.6 L53.3 28.4 L56.7 26.4 L60.0 24.6 L63.3 23.0 L66.7 21.6 L70.0 20.4 L73.3 19.3 L76.7 18.3 L80.0 17.5 L83.3 16.7 L86.7 16.1 L90.0 15.5 L93.3 15.1 L96.7 14.6 L100.0 14.3 L103.3 14.0 L106.7 13.7 L110.0 13.5 L113.3 13.3 L116.7 13.1 L120.0 12.9 L123.3 12.8 L126.7 12.7 L130.0 12.6 L133.3 12.5 L136.7 12.4 L140.0 12.4 L143.3 12.3 L146.7 12.3 L150.0 12.2 L153.3 12.2 L156.7 12.2 L160.0 12.0" data-astro-cid-kjjv3c3o></path>
+  </svg>
+  <div class="about" data-astro-cid-kjjv3c3o>
+    <h3 data-astro-cid-kjjv3c3o><code data-astro-cid-kjjv3c3o>sonar-motion-effects-default</code></h3>
+    <p class="spec" data-astro-cid-kjjv3c3o>212 ms, bounce 0</p>
+    
+  </div>
+  <div class="track" data-astro-cid-kjjv3c3o>
+    <span class="piece" data-astro-cid-kjjv3c3o></span>
+  </div>
+  <button class="play" type="button" aria-label="Play sonar-motion-effects-default" data-astro-cid-kjjv3c3o>Play</button>
+</article>
+
+<article class="motion" style="--duration: 300ms; --easing: linear(0, 0.0138, 0.0493, 0.0991, 0.1576, 0.2207, 0.2855, 0.3496, 0.4117, 0.4707, 0.526, 0.5773, 0.6243, 0.6672, 0.7061, 0.7411, 0.7724, 0.8004, 0.8253, 0.8473, 0.8668, 0.884, 0.8991, 0.9123, 0.9239, 0.9341, 0.9429, 0.9507, 0.9574, 0.9632, 0.9683, 0.9726, 0.9764, 0.9797, 0.9826, 0.985, 0.9871, 0.9889, 0.9905, 0.9919, 0.993, 0.994, 0.9949, 0.9956, 0.9963, 0.9968, 0.9973, 0.9977, 1)" data-astro-cid-kjjv3c3o>
+  <svg viewBox="0 0 160 96" aria-hidden="true" data-astro-cid-kjjv3c3o>
+    <line class="guide" x1="0" x2="160" y1="12" y2="12" data-astro-cid-kjjv3c3o></line>
+    <line class="guide" x1="0" x2="160" y1="84" y2="84" data-astro-cid-kjjv3c3o></line>
+    <path d="M0.0 84.0 L3.3 83.0 L6.7 80.5 L10.0 76.9 L13.3 72.7 L16.7 68.1 L20.0 63.4 L23.3 58.8 L26.7 54.4 L30.0 50.1 L33.3 46.1 L36.7 42.4 L40.0 39.1 L43.3 36.0 L46.7 33.2 L50.0 30.6 L53.3 28.4 L56.7 26.4 L60.0 24.6 L63.3 23.0 L66.7 21.6 L70.0 20.4 L73.3 19.3 L76.7 18.3 L80.0 17.5 L83.3 16.7 L86.7 16.1 L90.0 15.5 L93.3 15.1 L96.7 14.6 L100.0 14.3 L103.3 14.0 L106.7 13.7 L110.0 13.5 L113.3 13.3 L116.7 13.1 L120.0 12.9 L123.3 12.8 L126.7 12.7 L130.0 12.6 L133.3 12.5 L136.7 12.4 L140.0 12.4 L143.3 12.3 L146.7 12.3 L150.0 12.2 L153.3 12.2 L156.7 12.2 L160.0 12.0" data-astro-cid-kjjv3c3o></path>
+  </svg>
+  <div class="about" data-astro-cid-kjjv3c3o>
+    <h3 data-astro-cid-kjjv3c3o><code data-astro-cid-kjjv3c3o>sonar-motion-effects-slow</code></h3>
+    <p class="spec" data-astro-cid-kjjv3c3o>300 ms, bounce 0</p>
+    
+  </div>
+  <div class="track" data-astro-cid-kjjv3c3o>
+    <span class="piece" data-astro-cid-kjjv3c3o></span>
+  </div>
+  <button class="play" type="button" aria-label="Play sonar-motion-effects-slow" data-astro-cid-kjjv3c3o>Play</button>
+</article>
+
+
+    </div>
+  
+</section>
+
+  <section class="section" aria-labelledby="easing" data-astro-cid-w6ymvdtg>
+  <h2 id="easing" data-astro-cid-w6ymvdtg><a href="#easing" data-astro-cid-w6ymvdtg>Easing curves</a></h2>
+  
+    <p class="prose" data-astro-cid-rgankpeh>Cubic curves for what is not a spring: leaving the screen, entering panels, the sidebar folding, the theme switch and cards changing columns.</p>
+    <div class="curves" data-astro-cid-rgankpeh>
+      <article class="motion" style="--duration: 400ms; --easing: cubic-bezier(0.3, 0, 0.8, 0.15)" data-astro-cid-kjjv3c3o>
+  <svg viewBox="0 0 160 96" aria-hidden="true" data-astro-cid-kjjv3c3o>
+    <line class="guide" x1="0" x2="160" y1="12" y2="12" data-astro-cid-kjjv3c3o></line>
+    <line class="guide" x1="0" x2="160" y1="84" y2="84" data-astro-cid-kjjv3c3o></line>
+    <path d="M0.0 84.0 L3.3 84.0 L6.7 83.9 L10.0 83.8 L13.3 83.7 L16.7 83.6 L20.0 83.4 L23.3 83.1 L26.7 82.9 L30.0 82.6 L33.3 82.2 L36.7 81.9 L40.0 81.5 L43.3 81.0 L46.7 80.5 L50.0 80.0 L53.3 79.4 L56.7 78.7 L60.0 78.1 L63.3 77.3 L66.7 76.6 L70.0 75.7 L73.3 74.9 L76.7 73.9 L80.0 72.9 L83.3 71.8 L86.7 70.7 L90.0 69.5 L93.3 68.2 L96.7 66.9 L100.0 65.5 L103.3 63.9 L106.7 62.3 L110.0 60.6 L113.3 58.8 L116.7 56.9 L120.0 54.8 L123.3 52.6 L126.7 50.2 L130.0 47.7 L133.3 45.0 L136.7 42.1 L140.0 38.9 L143.3 35.5 L146.7 31.8 L150.0 27.7 L153.3 23.1 L156.7 17.9 L160.0 12.0" data-astro-cid-kjjv3c3o></path>
+  </svg>
+  <div class="about" data-astro-cid-kjjv3c3o>
+    <h3 data-astro-cid-kjjv3c3o><code data-astro-cid-kjjv3c3o>sonar-motion-easing-exit</code></h3>
+    <p class="spec" data-astro-cid-kjjv3c3o>400 ms</p>
+    <p class="description" data-astro-cid-kjjv3c3o>Leaving the screen: starts at once and accelerates.</p>
+  </div>
+  <div class="track" data-astro-cid-kjjv3c3o>
+    <span class="piece" data-astro-cid-kjjv3c3o></span>
+  </div>
+  <button class="play" type="button" aria-label="Play sonar-motion-easing-exit" data-astro-cid-kjjv3c3o>Play</button>
+</article>
+
+<article class="motion" style="--duration: 400ms; --easing: cubic-bezier(0.23, 1, 0.32, 1)" data-astro-cid-kjjv3c3o>
+  <svg viewBox="0 0 160 96" aria-hidden="true" data-astro-cid-kjjv3c3o>
+    <line class="guide" x1="0" x2="160" y1="12" y2="12" data-astro-cid-kjjv3c3o></line>
+    <line class="guide" x1="0" x2="160" y1="84" y2="84" data-astro-cid-kjjv3c3o></line>
+    <path d="M0.0 84.0 L3.3 77.6 L6.7 71.3 L10.0 65.3 L13.3 59.6 L16.7 54.3 L20.0 49.3 L23.3 44.8 L26.7 40.6 L30.0 36.9 L33.3 33.6 L36.7 30.7 L40.0 28.2 L43.3 25.9 L46.7 24.0 L50.0 22.3 L53.3 20.9 L56.7 19.6 L60.0 18.5 L63.3 17.6 L66.7 16.7 L70.0 16.0 L73.3 15.4 L76.7 14.9 L80.0 14.4 L83.3 14.1 L86.7 13.7 L90.0 13.4 L93.3 13.2 L96.7 13.0 L100.0 12.8 L103.3 12.6 L106.7 12.5 L110.0 12.4 L113.3 12.3 L116.7 12.2 L120.0 12.2 L123.3 12.1 L126.7 12.1 L130.0 12.1 L133.3 12.0 L136.7 12.0 L140.0 12.0 L143.3 12.0 L146.7 12.0 L150.0 12.0 L153.3 12.0 L156.7 12.0 L160.0 12.0" data-astro-cid-kjjv3c3o></path>
+  </svg>
+  <div class="about" data-astro-cid-kjjv3c3o>
+    <h3 data-astro-cid-kjjv3c3o><code data-astro-cid-kjjv3c3o>sonar-motion-easing-decelerate</code></h3>
+    <p class="spec" data-astro-cid-kjjv3c3o>400 ms</p>
+    <p class="description" data-astro-cid-kjjv3c3o>Entering elements that are not springs, such as panels.</p>
+  </div>
+  <div class="track" data-astro-cid-kjjv3c3o>
+    <span class="piece" data-astro-cid-kjjv3c3o></span>
+  </div>
+  <button class="play" type="button" aria-label="Play sonar-motion-easing-decelerate" data-astro-cid-kjjv3c3o>Play</button>
+</article>
+
+<article class="motion" style="--duration: 400ms; --easing: cubic-bezier(0.25, 0.1, 0.25, 1)" data-astro-cid-kjjv3c3o>
+  <svg viewBox="0 0 160 96" aria-hidden="true" data-astro-cid-kjjv3c3o>
+    <line class="guide" x1="0" x2="160" y1="12" y2="12" data-astro-cid-kjjv3c3o></line>
+    <line class="guide" x1="0" x2="160" y1="84" y2="84" data-astro-cid-kjjv3c3o></line>
+    <path d="M0.0 84.0 L3.3 83.2 L6.7 82.2 L10.0 80.7 L13.3 78.9 L16.7 76.7 L20.0 74.1 L23.3 71.3 L26.7 68.1 L30.0 64.8 L33.3 61.4 L36.7 57.9 L40.0 54.6 L43.3 51.3 L46.7 48.2 L50.0 45.3 L53.3 42.5 L56.7 40.0 L60.0 37.5 L63.3 35.3 L66.7 33.2 L70.0 31.3 L73.3 29.4 L76.7 27.8 L80.0 26.2 L83.3 24.8 L86.7 23.5 L90.0 22.2 L93.3 21.1 L96.7 20.1 L100.0 19.1 L103.3 18.2 L106.7 17.4 L110.0 16.7 L113.3 16.0 L116.7 15.4 L120.0 14.8 L123.3 14.4 L126.7 13.9 L130.0 13.5 L133.3 13.2 L136.7 12.9 L140.0 12.7 L143.3 12.4 L146.7 12.3 L150.0 12.2 L153.3 12.1 L156.7 12.0 L160.0 12.0" data-astro-cid-kjjv3c3o></path>
+  </svg>
+  <div class="about" data-astro-cid-kjjv3c3o>
+    <h3 data-astro-cid-kjjv3c3o><code data-astro-cid-kjjv3c3o>sonar-motion-easing-standard</code></h3>
+    <p class="spec" data-astro-cid-kjjv3c3o>400 ms</p>
+    <p class="description" data-astro-cid-kjjv3c3o>Continuous transforms such as the sidebar folding.</p>
+  </div>
+  <div class="track" data-astro-cid-kjjv3c3o>
+    <span class="piece" data-astro-cid-kjjv3c3o></span>
+  </div>
+  <button class="play" type="button" aria-label="Play sonar-motion-easing-standard" data-astro-cid-kjjv3c3o>Play</button>
+</article>
+
+<article class="motion" style="--duration: 400ms; --easing: cubic-bezier(0.4, 0, 1, 1)" data-astro-cid-kjjv3c3o>
+  <svg viewBox="0 0 160 96" aria-hidden="true" data-astro-cid-kjjv3c3o>
+    <line class="guide" x1="0" x2="160" y1="12" y2="12" data-astro-cid-kjjv3c3o></line>
+    <line class="guide" x1="0" x2="160" y1="84" y2="84" data-astro-cid-kjjv3c3o></line>
+    <path d="M0.0 84.0 L3.3 83.9 L6.7 83.8 L10.0 83.5 L13.3 83.1 L16.7 82.6 L20.0 82.0 L23.3 81.3 L26.7 80.6 L30.0 79.8 L33.3 78.9 L36.7 77.9 L40.0 76.9 L43.3 75.8 L46.7 74.7 L50.0 73.5 L53.3 72.2 L56.7 71.0 L60.0 69.6 L63.3 68.2 L66.7 66.8 L70.0 65.3 L73.3 63.8 L76.7 62.2 L80.0 60.6 L83.3 59.0 L86.7 57.3 L90.0 55.6 L93.3 53.8 L96.7 52.0 L100.0 50.2 L103.3 48.4 L106.7 46.5 L110.0 44.6 L113.3 42.6 L116.7 40.6 L120.0 38.6 L123.3 36.6 L126.7 34.5 L130.0 32.4 L133.3 30.3 L136.7 28.1 L140.0 25.9 L143.3 23.7 L146.7 21.4 L150.0 19.1 L153.3 16.8 L156.7 14.4 L160.0 12.0" data-astro-cid-kjjv3c3o></path>
+  </svg>
+  <div class="about" data-astro-cid-kjjv3c3o>
+    <h3 data-astro-cid-kjjv3c3o><code data-astro-cid-kjjv3c3o>sonar-motion-easing-accelerate</code></h3>
+    <p class="spec" data-astro-cid-kjjv3c3o>400 ms</p>
+    <p class="description" data-astro-cid-kjjv3c3o>Panels and sheets leaving: starts slow and leaves at speed.</p>
+  </div>
+  <div class="track" data-astro-cid-kjjv3c3o>
+    <span class="piece" data-astro-cid-kjjv3c3o></span>
+  </div>
+  <button class="play" type="button" aria-label="Play sonar-motion-easing-accelerate" data-astro-cid-kjjv3c3o>Play</button>
+</article>
+
+<article class="motion" style="--duration: 400ms; --easing: cubic-bezier(0.2, 0, 0, 1)" data-astro-cid-kjjv3c3o>
+  <svg viewBox="0 0 160 96" aria-hidden="true" data-astro-cid-kjjv3c3o>
+    <line class="guide" x1="0" x2="160" y1="12" y2="12" data-astro-cid-kjjv3c3o></line>
+    <line class="guide" x1="0" x2="160" y1="84" y2="84" data-astro-cid-kjjv3c3o></line>
+    <path d="M0.0 84.0 L3.3 83.7 L6.7 82.7 L10.0 80.5 L13.3 76.8 L16.7 71.6 L20.0 65.6 L23.3 59.8 L26.7 54.7 L30.0 50.3 L33.3 46.5 L36.7 43.2 L40.0 40.3 L43.3 37.7 L46.7 35.3 L50.0 33.2 L53.3 31.3 L56.7 29.6 L60.0 28.0 L63.3 26.5 L66.7 25.2 L70.0 23.9 L73.3 22.8 L76.7 21.8 L80.0 20.8 L83.3 19.9 L86.7 19.1 L90.0 18.3 L93.3 17.6 L96.7 17.0 L100.0 16.4 L103.3 15.8 L106.7 15.3 L110.0 14.9 L113.3 14.5 L116.7 14.1 L120.0 13.8 L123.3 13.5 L126.7 13.2 L130.0 12.9 L133.3 12.7 L136.7 12.6 L140.0 12.4 L143.3 12.3 L146.7 12.2 L150.0 12.1 L153.3 12.0 L156.7 12.0 L160.0 12.0" data-astro-cid-kjjv3c3o></path>
+  </svg>
+  <div class="about" data-astro-cid-kjjv3c3o>
+    <h3 data-astro-cid-kjjv3c3o><code data-astro-cid-kjjv3c3o>sonar-motion-easing-emphasized</code></h3>
+    <p class="spec" data-astro-cid-kjjv3c3o>400 ms</p>
+    <p class="description" data-astro-cid-kjjv3c3o>The theme switch’s knob and cards moving between columns.</p>
+  </div>
+  <div class="track" data-astro-cid-kjjv3c3o>
+    <span class="piece" data-astro-cid-kjjv3c3o></span>
+  </div>
+  <button class="play" type="button" aria-label="Play sonar-motion-easing-emphasized" data-astro-cid-kjjv3c3o>Play</button>
+</article>
+
+<article class="motion" style="--duration: 400ms; --easing: cubic-bezier(0.4, 0, 0.2, 1)" data-astro-cid-kjjv3c3o>
+  <svg viewBox="0 0 160 96" aria-hidden="true" data-astro-cid-kjjv3c3o>
+    <line class="guide" x1="0" x2="160" y1="12" y2="12" data-astro-cid-kjjv3c3o></line>
+    <line class="guide" x1="0" x2="160" y1="84" y2="84" data-astro-cid-kjjv3c3o></line>
+    <path d="M0.0 84.0 L3.3 83.9 L6.7 83.7 L10.0 83.3 L13.3 82.8 L16.7 82.0 L20.0 80.9 L23.3 79.6 L26.7 77.9 L30.0 75.8 L33.3 73.3 L36.7 70.4 L40.0 67.0 L43.3 63.2 L46.7 59.2 L50.0 55.1 L53.3 51.1 L56.7 47.3 L60.0 43.7 L63.3 40.4 L66.7 37.5 L70.0 34.8 L73.3 32.3 L76.7 30.1 L80.0 28.2 L83.3 26.4 L86.7 24.7 L90.0 23.3 L93.3 21.9 L96.7 20.7 L100.0 19.6 L103.3 18.6 L106.7 17.7 L110.0 16.9 L113.3 16.2 L116.7 15.5 L120.0 14.9 L123.3 14.4 L126.7 13.9 L130.0 13.5 L133.3 13.2 L136.7 12.9 L140.0 12.6 L143.3 12.4 L146.7 12.3 L150.0 12.2 L153.3 12.1 L156.7 12.0 L160.0 12.0" data-astro-cid-kjjv3c3o></path>
+  </svg>
+  <div class="about" data-astro-cid-kjjv3c3o>
+    <h3 data-astro-cid-kjjv3c3o><code data-astro-cid-kjjv3c3o>sonar-motion-easing-crossfade</code></h3>
+    <p class="spec" data-astro-cid-kjjv3c3o>400 ms</p>
+    <p class="description" data-astro-cid-kjjv3c3o>The page cross-fading from one theme to the other.</p>
+  </div>
+  <div class="track" data-astro-cid-kjjv3c3o>
+    <span class="piece" data-astro-cid-kjjv3c3o></span>
+  </div>
+  <button class="play" type="button" aria-label="Play sonar-motion-easing-crossfade" data-astro-cid-kjjv3c3o>Play</button>
+</article>
+
+
+    </div>
+  
+</section>
+
+  <section class="section" aria-labelledby="durations" data-astro-cid-w6ymvdtg>
+  <h2 id="durations" data-astro-cid-w6ymvdtg><a href="#durations" data-astro-cid-w6ymvdtg>Durations</a></h2>
+  
+    <p class="prose" data-astro-cid-rgankpeh>
+      Fixed durations for the moments that are not a spring. Each is used with the easing named beside it in the
+      guidelines below.
+    </p>
+    <div class="table-wrap" data-scroll-region data-label="Motion durations" data-astro-cid-rgankpeh>
+      <table data-astro-cid-rgankpeh>
+        <thead data-astro-cid-rgankpeh>
+          <tr data-astro-cid-rgankpeh><th scope="col" data-astro-cid-rgankpeh>Token</th><th scope="col" data-astro-cid-rgankpeh>Value</th><th scope="col" data-astro-cid-rgankpeh>Use</th></tr>
+        </thead>
+        <tbody data-astro-cid-rgankpeh>
+          <tr data-astro-cid-rgankpeh>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>--sonar-motion-duration-state</code></td>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>160ms</code></td>
+                <td data-astro-cid-rgankpeh>Hover and pressed colors of rows, pills and buttons, with easing.decelerate.</td>
+              </tr><tr data-astro-cid-rgankpeh>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>--sonar-motion-duration-panel-enter</code></td>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>420ms</code></td>
+                <td data-astro-cid-rgankpeh>A side panel or a phone sheet arriving: its slide uses the spatial default spring stretched to this time.</td>
+              </tr><tr data-astro-cid-rgankpeh>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>--sonar-motion-duration-panel-exit</code></td>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>150ms</code></td>
+                <td data-astro-cid-rgankpeh>A side panel leaving: 28 px and out of sight, with easing.accelerate.</td>
+              </tr><tr data-astro-cid-rgankpeh>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>--sonar-motion-duration-sheet-fade</code></td>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>200ms</code></td>
+                <td data-astro-cid-rgankpeh>A phone sheet’s opacity while it rises.</td>
+              </tr><tr data-astro-cid-rgankpeh>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>--sonar-motion-duration-sheet-exit</code></td>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>220ms</code></td>
+                <td data-astro-cid-rgankpeh>A phone sheet going down, with easing.accelerate.</td>
+              </tr><tr data-astro-cid-rgankpeh>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>--sonar-motion-duration-menu-exit</code></td>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>110ms</code></td>
+                <td data-astro-cid-rgankpeh>A menu closing to 96 %, with easing.exit.</td>
+              </tr><tr data-astro-cid-rgankpeh>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>--sonar-motion-duration-dropdown</code></td>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>180ms</code></td>
+                <td data-astro-cid-rgankpeh>The search results opening, with easing.decelerate.</td>
+              </tr><tr data-astro-cid-rgankpeh>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>--sonar-motion-duration-tooltip-delay</code></td>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>300ms</code></td>
+                <td data-astro-cid-rgankpeh>The pointer rests this long before a tooltip opens.</td>
+              </tr><tr data-astro-cid-rgankpeh>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>--sonar-motion-duration-tooltip-enter</code></td>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>140ms</code></td>
+                <td data-astro-cid-rgankpeh>A tooltip opening from 96 %, with easing.decelerate.</td>
+              </tr><tr data-astro-cid-rgankpeh>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>--sonar-motion-duration-tooltip-exit</code></td>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>90ms</code></td>
+                <td data-astro-cid-rgankpeh>A tooltip fading out, with easing.exit.</td>
+              </tr><tr data-astro-cid-rgankpeh>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>--sonar-motion-duration-theme</code></td>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>700ms</code></td>
+                <td data-astro-cid-rgankpeh>The cross-fade of the whole page when the theme changes, with easing.crossfade.</td>
+              </tr><tr data-astro-cid-rgankpeh>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>--sonar-motion-duration-theme-fallback</code></td>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>250ms</code></td>
+                <td data-astro-cid-rgankpeh>Color transitions when a browser cannot cross-fade the page.</td>
+              </tr><tr data-astro-cid-rgankpeh>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>--sonar-motion-duration-reflow</code></td>
+                <td data-astro-cid-rgankpeh><code data-astro-cid-rgankpeh>620ms</code></td>
+                <td data-astro-cid-rgankpeh>Cards moving to new places when the number of columns changes, with easing.emphasized.</td>
+              </tr>
+        </tbody>
+      </table>
+    </div>
+  
+</section>
+
+  <section class="section" aria-labelledby="theme-switch" data-astro-cid-w6ymvdtg>
+  <h2 id="theme-switch" data-astro-cid-w6ymvdtg><a href="#theme-switch" data-astro-cid-w6ymvdtg>Theme switch</a></h2>
+  
+    <div class="prose" data-astro-cid-rgankpeh>
+      <p data-astro-cid-rgankpeh>
+        Changing the theme is two steps. The switch’s knob slides first, in 200 ms on
+        <code data-astro-cid-rgankpeh>--sonar-motion-easing-emphasized</code>. At 200 ms the whole page cross-fades into the new theme with a
+        View Transition: 700 ms on <code data-astro-cid-rgankpeh>--sonar-motion-easing-crossfade</code>. Nothing changes color out of step,
+        because the page fades as one picture.
+      </p>
+      <p data-astro-cid-rgankpeh>
+        Browsers without View Transitions ease every color over 250 ms instead. With reduced motion requested, the
+        theme changes at once.
+      </p>
+    </div>
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>css</span>
+    <button class="copy" type="button" data-code="::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--sonar-motion-duration-theme);          /* 700ms */
+  animation-timing-function: var(--sonar-motion-easing-crossfade); /* cubic-bezier(.4,0,.2,1) */
+}
+
+/* Without View Transitions: colors ease */
+.sonar-theming, .sonar-theming * {
+  transition: color var(--sonar-motion-duration-theme-fallback) ease,
+              background-color var(--sonar-motion-duration-theme-fallback) ease !important;
+}" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="css" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--sonar-motion-duration-theme);          /* 700ms */
+  animation-timing-function: var(--sonar-motion-easing-crossfade); /* cubic-bezier(.4,0,.2,1) */
+}
+
+/* Without View Transitions: colors ease */
+.sonar-theming, .sonar-theming * {
+  transition: color var(--sonar-motion-duration-theme-fallback) ease,
+              background-color var(--sonar-motion-duration-theme-fallback) ease !important;
+}</code></pre>
+</div>
+
+<script type="module">function e(e){let t=document.createElement(`textarea`);t.value=e,t.setAttribute(`readonly`,``),t.style.cssText=`position:fixed;inset:0 auto auto 0;width:1px;height:1px;opacity:0`,document.body.append(t),t.select();let n=document.execCommand(`copy`);return t.remove(),n}for(let t of document.querySelectorAll(`.code-block .copy`))t.addEventListener(`click`,async()=>{let n=t.dataset.code??``,r=!1;try{await navigator.clipboard.writeText(n),r=!0}catch{r=e(n)}t.textContent=r?`Copied`:`Copy failed`,setTimeout(()=>t.textContent=`Copy`,1600)});</script>
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>js</span>
+    <button class="copy" type="button" data-code="function switchTheme(next) {
+  const apply = () => (document.documentElement.dataset.theme = next)
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return apply()
+  if (document.startViewTransition) {
+    // the knob slides first (200 ms), then the page cross-fades
+    return setTimeout(() => document.startViewTransition(apply), 200)
+  }
+  document.documentElement.classList.add('sonar-theming')
+  apply()
+  setTimeout(() => document.documentElement.classList.remove('sonar-theming'), 300)
+}" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="js" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>function switchTheme(next) {
+  const apply = () =&gt; (document.documentElement.dataset.theme = next)
+  if (matchMedia(&#39;(prefers-reduced-motion: reduce)&#39;).matches) return apply()
+  if (document.startViewTransition) {
+    // the knob slides first (200 ms), then the page cross-fades
+    return setTimeout(() =&gt; document.startViewTransition(apply), 200)
+  }
+  document.documentElement.classList.add(&#39;sonar-theming&#39;)
+  apply()
+  setTimeout(() =&gt; document.documentElement.classList.remove(&#39;sonar-theming&#39;), 300)
+}</code></pre>
+</div>
+
+
+  
+</section>
+
+  <section class="section" aria-labelledby="code" data-astro-cid-w6ymvdtg>
+  <h2 id="code" data-astro-cid-w6ymvdtg><a href="#code" data-astro-cid-w6ymvdtg>In code</a></h2>
+  
+    <p class="prose" data-astro-cid-rgankpeh>Every spring is two custom properties, a duration and an easing, always used together.</p>
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>css</span>
+    <button class="copy" type="button" data-code=".accordion-panel {
+  transition: height var(--sonar-motion-spatial-default-duration)
+                     var(--sonar-motion-spatial-default-easing);
+}
+
+.menu {
+  transition: opacity var(--sonar-motion-effects-fast-duration)
+                      var(--sonar-motion-effects-fast-easing);
+}" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="css" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>.accordion-panel {
+  transition: height var(--sonar-motion-spatial-default-duration)
+                     var(--sonar-motion-spatial-default-easing);
+}
+
+.menu {
+  transition: opacity var(--sonar-motion-effects-fast-duration)
+                      var(--sonar-motion-effects-fast-easing);
+}</code></pre>
+</div>
+
+
+  
+</section>
+
+  <section class="section" aria-labelledby="guidelines" data-astro-cid-w6ymvdtg>
+  <h2 id="guidelines" data-astro-cid-w6ymvdtg><a href="#guidelines" data-astro-cid-w6ymvdtg>Guidelines</a></h2>
+  
+    <ul class="prose" data-astro-cid-rgankpeh>
+      <li data-astro-cid-rgankpeh>
+        Bounce only when a dragged card lands in its slot and when an action succeeds. Everywhere else, motion settles
+        without overshoot.
+      </li>
+      <li data-astro-cid-rgankpeh>
+        Side panels enter from 48 px in 420 ms with a fade, and leave by 28 px in 150 ms on the accelerate curve. On
+        tablets the panel slides all the way in from the right edge on the default spatial spring (320 ms) and back out
+        the same way, as <a href="/layout/navigation/#tablets" data-astro-cid-rgankpeh>Navigation by device</a> shows. On phones the sheet rises
+        in 420 ms (fade 200 ms) and drops in 220 ms.
+      </li>
+      <li data-astro-cid-rgankpeh>
+        Menus open from 0.9 in 200 ms with a 138 ms fade, and close to 0.96 in 110 ms on
+        <code data-astro-cid-rgankpeh>cubic-bezier(.3,0,.8,.15)</code>. The search list drops 4 px from 0.98 in 180 ms.
+      </li>
+      <li data-astro-cid-rgankpeh>
+        Tooltips wait 300 ms, then grow from 0.96 in 140 ms; they leave with a 90 ms fade. The chart bubble only fades,
+        in 200 ms.
+      </li>
+      <li data-astro-cid-rgankpeh>Hover and other state changes take 160 ms on <code data-astro-cid-rgankpeh>cubic-bezier(.23,1,.32,1)</code>.</li>
+      <li data-astro-cid-rgankpeh>
+        Editing the overview: a lifted card grows to 1.03 (200 ms) and rises to elevation 4; its height follows in
+        320 ms. Dropped, it settles in 500 ms on the expressive spring. Neighbors and resizes move in 320 ms. When the
+        column count changes, cards travel to their new places in 620 ms on <code data-astro-cid-rgankpeh>cubic-bezier(.2,0,0,1)</code>.
+      </li>
+      <li data-astro-cid-rgankpeh>Theme changes never move content: only the switch’s knob slides, then the page fades.</li>
+      <li data-astro-cid-rgankpeh>
+        With reduced motion requested, spatial movement is replaced by an immediate change; fades stay, shortened, to keep
+        the change perceptible.
+      </li>
+    </ul>
+  
+</section>
+
+        </div>
+        <div class="page-end" data-astro-cid-lpetmyok>
+          <nav class="pager" aria-label="Previous and next pages" data-astro-cid-lpetmyok>
+                <a href="/foundations/elevation/" rel="prev" class="previous" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Previous</span>
+                    Elevation
+                  </a>
+                <a href="/layout/" rel="next" class="next" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Next</span>
+                    Layout
+                  </a>
+              </nav>
+          <footer class="site-footer" data-astro-cid-nns7i3if>
+  <p data-astro-cid-nns7i3if>
+    Design system by <strong data-astro-cid-nns7i3if>988©STUDIO</strong>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    <a href="/resources/changelog/" data-astro-cid-nns7i3if>v1.1.4</a>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    © 2026
+  </p>
+</footer>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="/assets/Docs.astro_astro_type_script_index_0_lang.CIhC640A.js"></script>
+  </body>
+</html>

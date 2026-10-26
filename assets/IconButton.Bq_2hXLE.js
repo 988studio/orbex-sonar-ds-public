@@ -1,0 +1,1 @@
+import{n as e,t}from"./cx.COfsE77P.js";var n=e();function r({label:e,icon:r,variant:i=`standard`,size:a=`medium`,type:o=`button`,className:s,...c}){return(0,n.jsx)(`button`,{type:o,"aria-label":e,className:t(`sonar-icon-button`,s),"data-variant":i,"data-size":a,...c,children:(0,n.jsx)(`span`,{className:`sonar-icon-button-icon`,"aria-hidden":`true`,children:r})})}export{r as t};

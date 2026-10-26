@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en" data-astro-cid-lpetmyok>
+  <head>
+    <meta charset="utf-8">
+    <!-- The order of the cascade layers, before any stylesheet: bundling may load the files in any order -->
+    <style>
+      @layer reset, base, sonar;
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <!-- iOS would turn dates and figures into links, changing the elements React hydrates -->
+    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+    <title>Orbex Sonar-DB Design System</title>
+    <meta name="description" content="The design system behind Sonar-DB, the Orbex dashboard for orders, deliveries and stock: tokens, foundations and live components.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/assets/ibm-plex-sans-latin-400-normal.CDDApCn2.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-500-normal.6ng42L7E.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-600-normal.CuJfVYMP.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-normal.CRd5VyFf.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-italic.CDUi4ehg.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-400-normal.DMJ8VG8y.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-500-normal.DSY6xOcd.woff2" as="font" type="font/woff2" crossorigin>
+    <script>
+      try {
+        const theme = localStorage.getItem('sonar-ds-theme')
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {}
+
+      /* A page opened from a link starts at the top. Browsers do this already; some embedded viewers keep the previous
+         page’s scroll instead. Going back, reloading and links to a section are left to the browser, and the reset
+         stops as soon as the reader scrolls. */
+      try {
+        const navigation = performance.getEntriesByType('navigation')[0]
+        if (!location.hash && (!navigation || navigation.type === 'navigate')) {
+          const toTop = () => scrollTo(0, 0)
+          const stop = () => {
+            removeEventListener('DOMContentLoaded', toTop)
+            removeEventListener('load', toTop)
+          }
+          toTop()
+          addEventListener('DOMContentLoaded', toTop, { once: true })
+          addEventListener('load', toTop, { once: true })
+          for (const type of ['wheel', 'touchstart', 'keydown']) addEventListener(type, stop, { once: true, passive: true })
+        }
+      } catch {}
+    </script>
+  <style>.section[data-astro-cid-w6ymvdtg]{max-width:var(--site-content-width)}.section[data-astro-cid-w6ymvdtg]+.section{margin-top:72px}h2[data-astro-cid-w6ymvdtg]{margin-bottom:var(--sonar-space-16);font:var(--site-heading-2);letter-spacing:-.01em}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]{color:inherit;text-decoration:none}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]:hover{text-decoration:underline}.section[data-astro-cid-w6ymvdtg]>*+*{margin-top:var(--sonar-space-24)}.section[data-astro-cid-w6ymvdtg]>h2+*{margin-top:0}
+</style>
+<link rel="stylesheet" href="/assets/Docs.pfYhGa-X.css">
+<link rel="stylesheet" href="/assets/index.B4MtkO1w.css"></head>
+  <body data-astro-cid-lpetmyok>
+    <a class="skip-link" href="#content" data-astro-cid-lpetmyok>Skip to content</a>
+
+    <header class="masthead" data-astro-cid-lpetmyok>
+      <div class="brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  <span class="wordmark-system" data-astro-cid-qisgtjgl>Design system</span>
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a></div>
+      <button class="menu-button" type="button" popovertarget="sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation" data-astro-cid-lpetmyok>
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" data-astro-cid-lpetmyok><path d="M4 7h16M4 12h16M4 17h16" data-astro-cid-lpetmyok></path></svg>
+      </button>
+    </header>
+
+    <div class="shell" data-astro-cid-lpetmyok>
+      <nav class="sidebar" id="sidebar" popover aria-label="Documentation" data-astro-cid-lpetmyok>
+        
+        <div class="sidebar-brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a><span class="sidebar-version" data-astro-cid-lpetmyok><a class="version-chip" href="/resources/changelog/" data-astro-cid-2qsy24n7>v1.1.4<span class="visually-hidden" data-astro-cid-2qsy24n7>, changelog</span></a></span></div>
+        <div class="sidebar-scroll" data-astro-cid-lpetmyok>
+          <p class="outline-title" data-astro-cid-lpetmyok>Design system</p>
+          <div class="navigation" data-astro-cid-yxete6jp>
+  <section aria-labelledby="nav-Get started" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Get started" data-astro-cid-yxete6jp>
+            Get started
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/" aria-current="page" data-astro-cid-yxete6jp>
+                  Introduction
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/get-started/installation/" data-astro-cid-yxete6jp>
+                  Installation
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Foundations" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Foundations" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/foundations/" data-astro-cid-yxete6jp>
+                Foundations
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/foundations/principles/" data-astro-cid-yxete6jp>
+                  Principles
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/accessibility/" data-astro-cid-yxete6jp>
+                  Accessibility
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/color/" data-astro-cid-yxete6jp>
+                  Color
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/typography/" data-astro-cid-yxete6jp>
+                  Typography
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/icons/" data-astro-cid-yxete6jp>
+                  Icons
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/spacing/" data-astro-cid-yxete6jp>
+                  Spacing
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/shape/" data-astro-cid-yxete6jp>
+                  Shape
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/elevation/" data-astro-cid-yxete6jp>
+                  Elevation
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/motion/" data-astro-cid-yxete6jp>
+                  Motion
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Layout" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Layout" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/layout/" data-astro-cid-yxete6jp>
+                Layout
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/layout/grid/" data-astro-cid-yxete6jp>
+                  Breakpoints and grid
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/layout/navigation/" data-astro-cid-yxete6jp>
+                  Navigation by device
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Components" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Components" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/components/" data-astro-cid-yxete6jp>
+                Components
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/components/button/" data-astro-cid-yxete6jp>
+                  Button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/icon-button/" data-astro-cid-yxete6jp>
+                  Icon button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/badge/" data-astro-cid-yxete6jp>
+                  Badge
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/status/" data-astro-cid-yxete6jp>
+                  Status
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/switch/" data-astro-cid-yxete6jp>
+                  Switch
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/checkbox/" data-astro-cid-yxete6jp>
+                  Checkbox
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/segmented-control/" data-astro-cid-yxete6jp>
+                  Segmented control
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/field/" data-astro-cid-yxete6jp>
+                  Text field and select
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/notice/" data-astro-cid-yxete6jp>
+                  Notice
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/toast/" data-astro-cid-yxete6jp>
+                  Toast
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/menu/" data-astro-cid-yxete6jp>
+                  Menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tooltip/" data-astro-cid-yxete6jp>
+                  Tooltip
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/dialog/" data-astro-cid-yxete6jp>
+                  Dialog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/scroll-area/" data-astro-cid-yxete6jp>
+                  Scroll area
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card/" data-astro-cid-yxete6jp>
+                  Card
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-link/" data-astro-cid-yxete6jp>
+                  Card link
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-scroll/" data-astro-cid-yxete6jp>
+                  Card scroll
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/unit-menu/" data-astro-cid-yxete6jp>
+                  Unit menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tick-bar/" data-astro-cid-yxete6jp>
+                  Tick bar
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/ring-chart/" data-astro-cid-yxete6jp>
+                  Ring chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/trend-chart/" data-astro-cid-yxete6jp>
+                  Trend chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/chart-legend/" data-astro-cid-yxete6jp>
+                  Chart legend
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-field/" data-astro-cid-yxete6jp>
+                  Search field
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-result/" data-astro-cid-yxete6jp>
+                  Search result
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Patterns" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Patterns" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/patterns/" data-astro-cid-yxete6jp>
+                Patterns
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/patterns/overview/" data-astro-cid-yxete6jp>
+                  Overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/cards/" data-astro-cid-yxete6jp>
+                  Cards
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/charts/" data-astro-cid-yxete6jp>
+                  Charts
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/search/" data-astro-cid-yxete6jp>
+                  Search
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/editing/" data-astro-cid-yxete6jp>
+                  Editing the overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/panels/" data-astro-cid-yxete6jp>
+                  Panels
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/feedback/" data-astro-cid-yxete6jp>
+                  Feedback
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/app-shell/" data-astro-cid-yxete6jp>
+                  App shell
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/assistant/" data-astro-cid-yxete6jp>
+                  AI assistant
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/customize/" data-astro-cid-yxete6jp>
+                  Customize overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/unbuilt/" data-astro-cid-yxete6jp>
+                  Unbuilt modules
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Resources" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Resources" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/resources/" data-astro-cid-yxete6jp>
+                Resources
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/resources/changelog/" data-astro-cid-yxete6jp>
+                  Changelog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/downloads/" data-astro-cid-yxete6jp>
+                  Downloads
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/llms.txt" data-astro-cid-yxete6jp>
+                  llms.txt
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/contributing/" data-astro-cid-yxete6jp>
+                  Contributing
+                </a>
+            </li>
+        </ul>
+      </section>
+</div>
+        </div>
+        <div class="sidebar-footer" data-astro-cid-lpetmyok><fieldset class="theme-switch" data-astro-cid-hds7qqbe>
+  <legend class="visually-hidden" data-astro-cid-hds7qqbe>Theme</legend>
+  <label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="system" checked data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>System</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="light" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Light</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="dark" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Dark</span>
+      </label>
+</fieldset>
+
+<script type="module" src="/assets/ThemeSwitch.astro_astro_type_script_index_0_lang.BMJDsczV.js"></script></div>
+      </nav>
+
+      <main id="content" tabindex="-1" data-astro-cid-lpetmyok>
+        
+        <div class="page-body" data-astro-cid-lpetmyok>
+          
+          
+  <header class="hero" data-astro-cid-lcdefpme>
+    <p class="hero-version" data-astro-cid-lcdefpme><a class="version-chip" href="/resources/changelog/" data-astro-cid-2qsy24n7>v1.1.4<span class="visually-hidden" data-astro-cid-2qsy24n7>, changelog</span></a></p>
+    <h1 data-astro-cid-lcdefpme>Orbex Sonar‑DB Design System</h1>
+    <p class="lead" data-astro-cid-lcdefpme>
+      The design language of Sonar-DB, the Orbex dashboard where logistics teams follow orders, deliveries and stock on
+      desktop, tablet and phone. Built on Material 3 Expressive and measured for dense figures.
+    </p>
+  </header>
+
+  <figure class="feature" data-astro-cid-lcdefpme>
+    <figure class="sounding only-light" data-labels="end" data-astro-cid-wtbnm5ws>
+      <div class="plot" data-astro-cid-wtbnm5ws>
+        <span class="threshold" style="--y: 20.588235294117645%" data-astro-cid-wtbnm5ws>4.5:1 for text</span>
+        <span class="threshold faint" style="--y: 11.76470588235294%" data-astro-cid-wtbnm5ws>3:1 for marks</span>
+        <ol class="bars" aria-label="38 neutral tones and their contrast on the light card" data-astro-cid-wtbnm5ws>
+          <li class="bar" style="--x: 5%; --h: 102.37529634827678%; --swatch: var(--sonar-palette-neutral-5); --delay: 30ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 5</b> #0B130B, 18.4:1
+              </span>
+            </li><li class="bar" style="--x: 6%; --h: 100.45649317362886%; --swatch: var(--sonar-palette-neutral-6); --delay: 36ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 6</b> #0E150E, 18.1:1
+              </span>
+            </li><li class="bar" style="--x: 10%; --h: 92.4438329549906%; --swatch: var(--sonar-palette-neutral-10); --delay: 60ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 10</b> #171D17, 16.7:1
+              </span>
+            </li><li class="bar" style="--x: 12%; --h: 88.18642002358676%; --swatch: var(--sonar-palette-neutral-12); --delay: 72ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 12</b> #1B211B, 16.0:1
+              </span>
+            </li><li class="bar" style="--x: 14%; --h: 83.86280658766852%; --swatch: var(--sonar-palette-neutral-14); --delay: 84ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 14</b> #1F251E, 15.3:1
+              </span>
+            </li><li class="bar" style="--x: 16%; --h: 78.56820459258579%; --swatch: var(--sonar-palette-neutral-16); --delay: 96ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 16</b> #232A22, 14.4:1
+              </span>
+            </li><li class="bar" style="--x: 18%; --h: 74.11836305656477%; --swatch: var(--sonar-palette-neutral-18); --delay: 108ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 18</b> #272E26, 13.6:1
+              </span>
+            </li><li class="bar" style="--x: 21%; --h: 66.77402447974707%; --swatch: var(--sonar-palette-neutral-21); --delay: 126ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 21</b> #2D352C, 12.4:1
+              </span>
+            </li><li class="bar" style="--x: 22%; --h: 64.66237175730423%; --swatch: var(--sonar-palette-neutral-22); --delay: 132ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 22</b> #2F372E, 12.0:1
+              </span>
+            </li><li class="bar" style="--x: 24%; --h: 60.55164781891534%; --swatch: var(--sonar-palette-neutral-24); --delay: 144ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 24</b> #333B32, 11.3:1
+              </span>
+            </li><li class="bar" style="--x: 27%; --h: 53.77517453865611%; --swatch: var(--sonar-palette-neutral-27); --delay: 162ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 27</b> #3A4239, 10.1:1
+              </span>
+            </li><li class="bar" style="--x: 28%; --h: 51.94549506006795%; --swatch: var(--sonar-palette-neutral-28); --delay: 168ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 28</b> #3C443B, 9.8:1
+              </span>
+            </li><li class="bar" style="--x: 31%; --h: 46.089290177578256%; --swatch: var(--sonar-palette-neutral-31); --delay: 186ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 31</b> #424B42, 8.8:1
+              </span>
+            </li><li class="bar" style="--x: 33%; --h: 42.20625652092448%; --swatch: var(--sonar-palette-neutral-33); --delay: 198ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 33</b> #475046, 8.2:1
+              </span>
+            </li><li class="bar" style="--x: 34%; --h: 40.17633313245521%; --swatch: var(--sonar-palette-neutral-34); --delay: 204ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 34</b> #495348, 7.8:1
+              </span>
+            </li><li class="bar" style="--x: 43%; --h: 27.432853677588316%; --swatch: var(--sonar-palette-neutral-43); --delay: 258ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 43</b> #5E685D, 5.7:1
+              </span>
+            </li><li class="bar" style="--x: 46%; --h: 23.725677491970863%; --swatch: var(--sonar-palette-neutral-46); --delay: 276ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 46</b> #667064, 5.0:1
+              </span>
+            </li><li class="bar" style="--x: 47%; --h: 22.87185468292631%; --swatch: var(--sonar-palette-neutral-47); --delay: 282ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 47</b> #687266, 4.9:1
+              </span>
+            </li><li class="bar" style="--x: 48%; --h: 21.647296690289963%; --swatch: var(--sonar-palette-neutral-48); --delay: 288ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 48</b> #6B7569, 4.7:1
+              </span>
+            </li><li class="bar" style="--x: 57%; --h: 14.162284426180902%; --swatch: var(--sonar-palette-neutral-57); --delay: 342ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 57</b> #828C7F, 3.4:1
+              </span>
+            </li><li class="bar" style="--x: 59%; --h: 12.891298129999809%; --swatch: var(--sonar-palette-neutral-59); --delay: 354ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 59</b> #879184, 3.2:1
+              </span>
+            </li><li class="bar" style="--x: 60%; --h: 12.225103440841263%; --swatch: var(--sonar-palette-neutral-60); --delay: 360ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 60</b> #899487, 3.1:1
+              </span>
+            </li><li class="bar" style="--x: 65%; --h: 9.472662582879277%; --swatch: var(--sonar-palette-neutral-65); --delay: 390ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 65</b> #97A194, 2.6:1
+              </span>
+            </li><li class="bar" style="--x: 67%; --h: 8.575447931374427%; --swatch: var(--sonar-palette-neutral-67); --delay: 402ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 67</b> #9CA699, 2.5:1
+              </span>
+            </li><li class="bar" style="--x: 72%; --h: 6.511078560995517%; --swatch: var(--sonar-palette-neutral-72); --delay: 432ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 72</b> #AAB3A7, 2.1:1
+              </span>
+            </li><li class="bar" style="--x: 74%; --h: 5.741928023268961%; --swatch: var(--sonar-palette-neutral-74); --delay: 444ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 74</b> #AFB9AC, 2.0:1
+              </span>
+            </li><li class="bar" style="--x: 76%; --h: 5.0905151946055875%; --swatch: var(--sonar-palette-neutral-76); --delay: 456ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 76</b> #B5BEB2, 1.9:1
+              </span>
+            </li><li class="bar" style="--x: 78%; --h: 4.437303652236892%; --swatch: var(--sonar-palette-neutral-78); --delay: 468ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 78</b> #BAC4B7, 1.8:1
+              </span>
+            </li><li class="bar" style="--x: 80%; --h: 3.8822660843541317%; --swatch: var(--sonar-palette-neutral-80); --delay: 480ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 80</b> #C0C9BD, 1.7:1
+              </span>
+            </li><li class="bar" style="--x: 84%; --h: 2.848541078868511%; --swatch: var(--sonar-palette-neutral-84); --delay: 504ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 84</b> #CBD4C8, 1.5:1
+              </span>
+            </li><li class="bar" style="--x: 85%; --h: 2.5927790196740608%; --swatch: var(--sonar-palette-neutral-85); --delay: 510ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 85</b> #CED7CB, 1.4:1
+              </span>
+            </li><li class="bar" style="--x: 88%; --h: 1.9386235947023327%; --swatch: var(--sonar-palette-neutral-88); --delay: 528ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 88</b> #D7DFD4, 1.3:1
+              </span>
+            </li><li class="bar" style="--x: 90%; --h: 1.5116869741916994%; --swatch: var(--sonar-palette-neutral-90); --delay: 540ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 90</b> #DDE5D9, 1.3:1
+              </span>
+            </li><li class="bar" style="--x: 91%; --h: 1.3079285925260797%; --swatch: var(--sonar-palette-neutral-91); --delay: 546ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 91</b> #E0E8DC, 1.2:1
+              </span>
+            </li><li class="bar" style="--x: 92%; --h: 1.158544859750822%; --swatch: var(--sonar-palette-neutral-92); --delay: 552ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 92</b> #E3EADF, 1.2:1
+              </span>
+            </li><li class="bar" style="--x: 93%; --h: 0.9809013346681873%; --swatch: var(--sonar-palette-neutral-93); --delay: 558ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 93</b> #E5EDE2, 1.2:1
+              </span>
+            </li><li class="bar" style="--x: 95%; --h: 0.88235294117647%; --swatch: var(--sonar-palette-neutral-95); --delay: 570ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 95</b> #EBF3E8, 1.1:1
+              </span>
+            </li><li class="bar" style="--x: 96%; --h: 0.88235294117647%; --swatch: var(--sonar-palette-neutral-96); --delay: 576ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 96</b> #EEF6EB, 1.1:1
+              </span>
+            </li>
+        </ol>
+      </div>
+      <ul class="markers" aria-label="Text roles in the light theme" data-astro-cid-wtbnm5ws>
+        <li style="--x: 10%" data-row="1" data-astro-cid-wtbnm5ws>
+            <span data-astro-cid-wtbnm5ws>strong</span>
+          </li><li style="--x: 21%" data-row="2" data-astro-cid-wtbnm5ws>
+            <span data-astro-cid-wtbnm5ws>default</span>
+          </li><li style="--x: 43%" data-row="1" data-astro-cid-wtbnm5ws>
+            <span data-astro-cid-wtbnm5ws>tertiary</span>
+          </li>
+      </ul>
+      <figcaption class="axis" aria-hidden="true" data-astro-cid-wtbnm5ws>
+        <span data-astro-cid-wtbnm5ws>Black</span>
+        <span data-astro-cid-wtbnm5ws>Lightness</span>
+        <span data-astro-cid-wtbnm5ws>White</span>
+      </figcaption>
+    </figure><figure class="sounding only-dark" data-labels="start" data-astro-cid-wtbnm5ws>
+      <div class="plot" data-astro-cid-wtbnm5ws>
+        <span class="threshold" style="--y: 20.588235294117645%" data-astro-cid-wtbnm5ws>4.5:1 for text</span>
+        <span class="threshold faint" style="--y: 11.76470588235294%" data-astro-cid-wtbnm5ws>3:1 for marks</span>
+        <ol class="bars" aria-label="38 neutral tones and their contrast on the dark card" data-astro-cid-wtbnm5ws>
+          <li class="bar" style="--x: 5%; --h: 1.2188939699288837%; --swatch: var(--sonar-palette-neutral-5); --delay: 30ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 5</b> #0B130B, 1.2:1
+              </span>
+            </li><li class="bar" style="--x: 6%; --h: 1.0930285441929573%; --swatch: var(--sonar-palette-neutral-6); --delay: 36ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 6</b> #0E150E, 1.2:1
+              </span>
+            </li><li class="bar" style="--x: 10%; --h: 0.88235294117647%; --swatch: var(--sonar-palette-neutral-10); --delay: 60ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 10</b> #171D17, 1.1:1
+              </span>
+            </li><li class="bar" style="--x: 12%; --h: 0.88235294117647%; --swatch: var(--sonar-palette-neutral-12); --delay: 72ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 12</b> #1B211B, 1.0:1
+              </span>
+            </li><li class="bar" style="--x: 14%; --h: 0.88235294117647%; --swatch: var(--sonar-palette-neutral-14); --delay: 84ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 14</b> #1F251E, 1.0:1
+              </span>
+            </li><li class="bar" style="--x: 16%; --h: 0.88235294117647%; --swatch: var(--sonar-palette-neutral-16); --delay: 96ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 16</b> #232A22, 1.1:1
+              </span>
+            </li><li class="bar" style="--x: 18%; --h: 0.88235294117647%; --swatch: var(--sonar-palette-neutral-18); --delay: 108ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 18</b> #272E26, 1.1:1
+              </span>
+            </li><li class="bar" style="--x: 21%; --h: 1.3779107737802991%; --swatch: var(--sonar-palette-neutral-21); --delay: 126ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 21</b> #2D352C, 1.2:1
+              </span>
+            </li><li class="bar" style="--x: 22%; --h: 1.5952361046943981%; --swatch: var(--sonar-palette-neutral-22); --delay: 132ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 22</b> #2F372E, 1.3:1
+              </span>
+            </li><li class="bar" style="--x: 24%; --h: 2.0579254496173216%; --swatch: var(--sonar-palette-neutral-24); --delay: 144ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 24</b> #333B32, 1.3:1
+              </span>
+            </li><li class="bar" style="--x: 27%; --h: 2.9598583091583683%; --swatch: var(--sonar-palette-neutral-27); --delay: 162ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 27</b> #3A4239, 1.5:1
+              </span>
+            </li><li class="bar" style="--x: 28%; --h: 3.239626846796685%; --swatch: var(--sonar-palette-neutral-28); --delay: 168ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 28</b> #3C443B, 1.6:1
+              </span>
+            </li><li class="bar" style="--x: 31%; --h: 4.267498573889017%; --swatch: var(--sonar-palette-neutral-31); --delay: 186ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 31</b> #424B42, 1.7:1
+              </span>
+            </li><li class="bar" style="--x: 33%; --h: 5.087073427141919%; --swatch: var(--sonar-palette-neutral-33); --delay: 198ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 33</b> #475046, 1.9:1
+              </span>
+            </li><li class="bar" style="--x: 34%; --h: 5.570523934339275%; --swatch: var(--sonar-palette-neutral-34); --delay: 204ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 34</b> #495348, 1.9:1
+              </span>
+            </li><li class="bar" style="--x: 43%; --h: 9.951391291171129%; --swatch: var(--sonar-palette-neutral-43); --delay: 258ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 43</b> #5E685D, 2.7:1
+              </span>
+            </li><li class="bar" style="--x: 46%; --h: 11.933910178398476%; --swatch: var(--sonar-palette-neutral-46); --delay: 276ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 46</b> #667064, 3.0:1
+              </span>
+            </li><li class="bar" style="--x: 47%; --h: 12.462943425368605%; --swatch: var(--sonar-palette-neutral-47); --delay: 282ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 47</b> #687266, 3.1:1
+              </span>
+            </li><li class="bar" style="--x: 48%; --h: 13.278968314666791%; --swatch: var(--sonar-palette-neutral-48); --delay: 288ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 48</b> #6B7569, 3.3:1
+              </span>
+            </li><li class="bar" style="--x: 57%; --h: 20.434135153957385%; --swatch: var(--sonar-palette-neutral-57); --delay: 342ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 57</b> #828C7F, 4.5:1
+              </span>
+            </li><li class="bar" style="--x: 59%; --h: 22.21577558211477%; --swatch: var(--sonar-palette-neutral-59); --delay: 354ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 59</b> #879184, 4.8:1
+              </span>
+            </li><li class="bar" style="--x: 60%; --h: 23.249538889483574%; --swatch: var(--sonar-palette-neutral-60); --delay: 360ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 60</b> #899487, 5.0:1
+              </span>
+            </li><li class="bar" style="--x: 65%; --h: 28.47153356730195%; --swatch: var(--sonar-palette-neutral-65); --delay: 390ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 65</b> #97A194, 5.8:1
+              </span>
+            </li><li class="bar" style="--x: 67%; --h: 30.603449104336413%; --swatch: var(--sonar-palette-neutral-67); --delay: 402ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 67</b> #9CA699, 6.2:1
+              </span>
+            </li><li class="bar" style="--x: 72%; --h: 36.68087585924807%; --swatch: var(--sonar-palette-neutral-72); --delay: 432ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 72</b> #AAB3A7, 7.2:1
+              </span>
+            </li><li class="bar" style="--x: 74%; --h: 39.49718169522687%; --swatch: var(--sonar-palette-neutral-74); --delay: 444ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 74</b> #AFB9AC, 7.7:1
+              </span>
+            </li><li class="bar" style="--x: 76%; --h: 42.191172970354884%; --swatch: var(--sonar-palette-neutral-76); --delay: 456ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 76</b> #B5BEB2, 8.2:1
+              </span>
+            </li><li class="bar" style="--x: 78%; --h: 45.234121320769525%; --swatch: var(--sonar-palette-neutral-78); --delay: 468ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 78</b> #BAC4B7, 8.7:1
+              </span>
+            </li><li class="bar" style="--x: 80%; --h: 48.13966873423357%; --swatch: var(--sonar-palette-neutral-80); --delay: 480ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 80</b> #C0C9BD, 9.2:1
+              </span>
+            </li><li class="bar" style="--x: 84%; --h: 54.53579661352603%; --swatch: var(--sonar-palette-neutral-84); --delay: 504ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 84</b> #CBD4C8, 10.3:1
+              </span>
+            </li><li class="bar" style="--x: 85%; --h: 56.35909215797419%; --swatch: var(--sonar-palette-neutral-85); --delay: 510ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 85</b> #CED7CB, 10.6:1
+              </span>
+            </li><li class="bar" style="--x: 88%; --h: 61.5650378327766%; --swatch: var(--sonar-palette-neutral-88); --delay: 528ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 88</b> #D7DFD4, 11.5:1
+              </span>
+            </li><li class="bar" style="--x: 90%; --h: 65.45949355777762%; --swatch: var(--sonar-palette-neutral-90); --delay: 540ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 90</b> #DDE5D9, 12.1:1
+              </span>
+            </li><li class="bar" style="--x: 91%; --h: 67.48118062517935%; --swatch: var(--sonar-palette-neutral-91); --delay: 546ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 91</b> #E0E8DC, 12.5:1
+              </span>
+            </li><li class="bar" style="--x: 92%; --h: 69.03770350103785%; --swatch: var(--sonar-palette-neutral-92); --delay: 552ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 92</b> #E3EADF, 12.7:1
+              </span>
+            </li><li class="bar" style="--x: 93%; --h: 70.97688022258616%; --swatch: var(--sonar-palette-neutral-93); --delay: 558ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 93</b> #E5EDE2, 13.1:1
+              </span>
+            </li><li class="bar" style="--x: 95%; --h: 75.24594888187993%; --swatch: var(--sonar-palette-neutral-95); --delay: 570ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 95</b> #EBF3E8, 13.8:1
+              </span>
+            </li><li class="bar" style="--x: 96%; --h: 77.43410938975612%; --swatch: var(--sonar-palette-neutral-96); --delay: 576ms" data-astro-cid-wtbnm5ws>
+              <span class="detail" data-astro-cid-wtbnm5ws>
+                <b data-astro-cid-wtbnm5ws>Tone 96</b> #EEF6EB, 14.2:1
+              </span>
+            </li>
+        </ol>
+      </div>
+      <ul class="markers" aria-label="Text roles in the dark theme" data-astro-cid-wtbnm5ws>
+        <li style="--x: 65%" data-row="1" data-astro-cid-wtbnm5ws>
+            <span data-astro-cid-wtbnm5ws>tertiary</span>
+          </li><li style="--x: 90%" data-row="2" data-astro-cid-wtbnm5ws>
+            <span data-astro-cid-wtbnm5ws>default</span>
+          </li><li style="--x: 92%" data-row="1" data-astro-cid-wtbnm5ws>
+            <span data-astro-cid-wtbnm5ws>strong</span>
+          </li>
+      </ul>
+      <figcaption class="axis" aria-hidden="true" data-astro-cid-wtbnm5ws>
+        <span data-astro-cid-wtbnm5ws>Black</span>
+        <span data-astro-cid-wtbnm5ws>Lightness</span>
+        <span data-astro-cid-wtbnm5ws>White</span>
+      </figcaption>
+    </figure>
+    <figcaption class="prose" data-astro-cid-lcdefpme>
+      Every neutral comes from one formula: the brand green’s hue at a chroma that fades towards black and white. Each bar
+      is a tone, placed by its lightness and raised by its contrast on a card. Text roles sit on the tones that clear their
+      threshold, in either theme.
+    </figcaption>
+  </figure>
+
+  <section class="section" aria-labelledby="contents" data-astro-cid-w6ymvdtg>
+  <h2 id="contents" data-astro-cid-w6ymvdtg><a href="#contents" data-astro-cid-w6ymvdtg>What’s inside</a></h2>
+  
+    <ul class="contents" role="list" data-astro-cid-lcdefpme>
+      <li data-astro-cid-lcdefpme>
+            <h3 data-astro-cid-lcdefpme>
+              <a href="/get-started/installation/" data-astro-cid-lcdefpme>Installation</a>
+            </h3>
+            <p data-astro-cid-lcdefpme>Install the packages, set the cascade layers, import the tokens and use a component.</p>
+            
+          </li><li data-astro-cid-lcdefpme>
+            <h3 data-astro-cid-lcdefpme>
+              <a href="/foundations/" data-astro-cid-lcdefpme>Foundations</a>
+            </h3>
+            <p data-astro-cid-lcdefpme>The principles and the accessibility commitments, and the tokens every component is drawn with.</p>
+            <ul class="pages" role="list" aria-label="Pages in Foundations" data-astro-cid-lcdefpme>
+                <li data-astro-cid-lcdefpme>
+                    <a href="/foundations/principles/" data-astro-cid-lcdefpme>Principles</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/foundations/accessibility/" data-astro-cid-lcdefpme>Accessibility</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/foundations/color/" data-astro-cid-lcdefpme>Color</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/foundations/typography/" data-astro-cid-lcdefpme>Typography</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/foundations/icons/" data-astro-cid-lcdefpme>Icons</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/foundations/spacing/" data-astro-cid-lcdefpme>Spacing</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/foundations/shape/" data-astro-cid-lcdefpme>Shape</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/foundations/elevation/" data-astro-cid-lcdefpme>Elevation</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/foundations/motion/" data-astro-cid-lcdefpme>Motion</a>
+                  </li>
+              </ul>
+          </li><li data-astro-cid-lcdefpme>
+            <h3 data-astro-cid-lcdefpme>
+              <a href="/layout/" data-astro-cid-lcdefpme>Layout</a>
+            </h3>
+            <p data-astro-cid-lcdefpme>Window size classes, the grid of the overview, and how navigation changes from phone to desktop.</p>
+            <ul class="pages" role="list" aria-label="Pages in Layout" data-astro-cid-lcdefpme>
+                <li data-astro-cid-lcdefpme>
+                    <a href="/layout/grid/" data-astro-cid-lcdefpme>Breakpoints and grid</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/layout/navigation/" data-astro-cid-lcdefpme>Navigation by device</a>
+                  </li>
+              </ul>
+          </li><li data-astro-cid-lcdefpme>
+            <h3 data-astro-cid-lcdefpme>
+              <a href="/components/" data-astro-cid-lcdefpme>Components</a>
+            </h3>
+            <p data-astro-cid-lcdefpme>React components, native HTML first: how they are built and tested, and each one live with its API.</p>
+            <ul class="pages" role="list" aria-label="Pages in Components" data-astro-cid-lcdefpme>
+                <li data-astro-cid-lcdefpme>
+                    <a href="/components/button/" data-astro-cid-lcdefpme>Button</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/icon-button/" data-astro-cid-lcdefpme>Icon button</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/badge/" data-astro-cid-lcdefpme>Badge</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/status/" data-astro-cid-lcdefpme>Status</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/switch/" data-astro-cid-lcdefpme>Switch</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/checkbox/" data-astro-cid-lcdefpme>Checkbox</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/segmented-control/" data-astro-cid-lcdefpme>Segmented control</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/field/" data-astro-cid-lcdefpme>Text field and select</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/notice/" data-astro-cid-lcdefpme>Notice</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/toast/" data-astro-cid-lcdefpme>Toast</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/menu/" data-astro-cid-lcdefpme>Menu</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/tooltip/" data-astro-cid-lcdefpme>Tooltip</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/dialog/" data-astro-cid-lcdefpme>Dialog</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/scroll-area/" data-astro-cid-lcdefpme>Scroll area</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/card/" data-astro-cid-lcdefpme>Card</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/card-link/" data-astro-cid-lcdefpme>Card link</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/card-scroll/" data-astro-cid-lcdefpme>Card scroll</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/unit-menu/" data-astro-cid-lcdefpme>Unit menu</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/tick-bar/" data-astro-cid-lcdefpme>Tick bar</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/ring-chart/" data-astro-cid-lcdefpme>Ring chart</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/trend-chart/" data-astro-cid-lcdefpme>Trend chart</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/chart-legend/" data-astro-cid-lcdefpme>Chart legend</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/search-field/" data-astro-cid-lcdefpme>Search field</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/components/search-result/" data-astro-cid-lcdefpme>Search result</a>
+                  </li>
+              </ul>
+          </li><li data-astro-cid-lcdefpme>
+            <h3 data-astro-cid-lcdefpme>
+              <a href="/patterns/" data-astro-cid-lcdefpme>Patterns</a>
+            </h3>
+            <p data-astro-cid-lcdefpme>The overview of Sonar-DB and what it is made of: its cards, charts, search, editing and feedback, live.</p>
+            <ul class="pages" role="list" aria-label="Pages in Patterns" data-astro-cid-lcdefpme>
+                <li data-astro-cid-lcdefpme>
+                    <a href="/patterns/overview/" data-astro-cid-lcdefpme>Overview</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/patterns/cards/" data-astro-cid-lcdefpme>Cards</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/patterns/charts/" data-astro-cid-lcdefpme>Charts</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/patterns/search/" data-astro-cid-lcdefpme>Search</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/patterns/editing/" data-astro-cid-lcdefpme>Editing the overview</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/patterns/panels/" data-astro-cid-lcdefpme>Panels</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/patterns/feedback/" data-astro-cid-lcdefpme>Feedback</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/patterns/app-shell/" data-astro-cid-lcdefpme>App shell</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/patterns/assistant/" data-astro-cid-lcdefpme>AI assistant</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/patterns/customize/" data-astro-cid-lcdefpme>Customize overview</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/patterns/unbuilt/" data-astro-cid-lcdefpme>Unbuilt modules</a>
+                  </li>
+              </ul>
+          </li><li data-astro-cid-lcdefpme>
+            <h3 data-astro-cid-lcdefpme>
+              <a href="/resources/" data-astro-cid-lcdefpme>Resources</a>
+            </h3>
+            <p data-astro-cid-lcdefpme>What changed in each release, files to download, the system for coding agents, and how to contribute.</p>
+            <ul class="pages" role="list" aria-label="Pages in Resources" data-astro-cid-lcdefpme>
+                <li data-astro-cid-lcdefpme>
+                    <a href="/resources/changelog/" data-astro-cid-lcdefpme>Changelog</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/resources/downloads/" data-astro-cid-lcdefpme>Downloads</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/llms.txt" data-astro-cid-lcdefpme>llms.txt</a>
+                  </li><li data-astro-cid-lcdefpme>
+                    <a href="/resources/contributing/" data-astro-cid-lcdefpme>Contributing</a>
+                  </li>
+              </ul>
+          </li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="start" data-astro-cid-w6ymvdtg>
+  <h2 id="start" data-astro-cid-w6ymvdtg><a href="#start" data-astro-cid-w6ymvdtg>Start here</a></h2>
+  
+    <p class="prose" data-astro-cid-lcdefpme>
+      <a href="/get-started/installation/" data-astro-cid-lcdefpme>Installation</a> takes an app from nothing to a first component in five
+      steps: the packages, the cascade layers, the tokens, a component, and the data behind them.
+    </p>
+  
+</section>
+
+  <section class="section" aria-labelledby="release" data-astro-cid-w6ymvdtg>
+  <h2 id="release" data-astro-cid-w6ymvdtg><a href="#release" data-astro-cid-w6ymvdtg>This release</a></h2>
+  
+    <div class="prose" data-astro-cid-lcdefpme>
+      <p data-astro-cid-lcdefpme>
+        <strong data-astro-cid-lcdefpme>1.1.4</strong>, October 26, 2026. 272 tokens, 9 foundation pages, the layout,
+         24 components with their sizes, variants and states, and the patterns of the overview.
+         One fix after a 988©STUDIO iPhone recording of 1.1.3: the Deliveries alert triangle looked frozen and dim on iOS Safari. 1.1.3, 1.1.2, 1.1.1, 1.1.0 and 1.0.0 are unchanged; their zips stay as they were. Every change is in the <a href="/resources/changelog/" data-astro-cid-lcdefpme>changelog</a>.
+      </p>
+    </div>
+  
+</section>
+
+        </div>
+        <div class="page-end" data-astro-cid-lpetmyok>
+          <nav class="pager" aria-label="Previous and next pages" data-astro-cid-lpetmyok>
+                
+                <a href="/get-started/installation/" rel="next" class="next" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Next</span>
+                    Installation
+                  </a>
+              </nav>
+          <footer class="site-footer" data-astro-cid-nns7i3if>
+  <p data-astro-cid-nns7i3if>
+    Design system by <strong data-astro-cid-nns7i3if>988©STUDIO</strong>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    <a href="/resources/changelog/" data-astro-cid-nns7i3if>v1.1.4</a>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    © 2026
+  </p>
+</footer>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="/assets/Docs.astro_astro_type_script_index_0_lang.CIhC640A.js"></script>
+  </body>
+</html>

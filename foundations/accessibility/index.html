@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en" data-astro-cid-lpetmyok>
+  <head>
+    <meta charset="utf-8">
+    <!-- The order of the cascade layers, before any stylesheet: bundling may load the files in any order -->
+    <style>
+      @layer reset, base, sonar;
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <!-- iOS would turn dates and figures into links, changing the elements React hydrates -->
+    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+    <title>Accessibility · Orbex Sonar-DB Design System</title>
+    <meta name="description" content="How the Orbex Sonar-DB Design System meets WCAG 2.2 AA: contrast, focus, target sizes, motion, keyboard and screen readers, and how each is checked.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/assets/ibm-plex-sans-latin-400-normal.CDDApCn2.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-500-normal.6ng42L7E.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-600-normal.CuJfVYMP.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-normal.CRd5VyFf.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-italic.CDUi4ehg.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-400-normal.DMJ8VG8y.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-500-normal.DSY6xOcd.woff2" as="font" type="font/woff2" crossorigin>
+    <script>
+      try {
+        const theme = localStorage.getItem('sonar-ds-theme')
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {}
+
+      /* A page opened from a link starts at the top. Browsers do this already; some embedded viewers keep the previous
+         page’s scroll instead. Going back, reloading and links to a section are left to the browser, and the reset
+         stops as soon as the reader scrolls. */
+      try {
+        const navigation = performance.getEntriesByType('navigation')[0]
+        if (!location.hash && (!navigation || navigation.type === 'navigate')) {
+          const toTop = () => scrollTo(0, 0)
+          const stop = () => {
+            removeEventListener('DOMContentLoaded', toTop)
+            removeEventListener('load', toTop)
+          }
+          toTop()
+          addEventListener('DOMContentLoaded', toTop, { once: true })
+          addEventListener('load', toTop, { once: true })
+          for (const type of ['wheel', 'touchstart', 'keydown']) addEventListener(type, stop, { once: true, passive: true })
+        }
+      } catch {}
+    </script>
+  <style>.page-header[data-astro-cid-b2i3gsw2]{max-width:var(--site-content-width);margin-bottom:var(--sonar-space-48)}h1[data-astro-cid-b2i3gsw2]{font:var(--site-heading-1);letter-spacing:-.01em}.lead[data-astro-cid-b2i3gsw2]{max-width:var(--site-measure);margin-top:var(--sonar-space-16);color:var(--sonar-color-text-secondary);font:var(--site-lead)}
+.section[data-astro-cid-w6ymvdtg]{max-width:var(--site-content-width)}.section[data-astro-cid-w6ymvdtg]+.section{margin-top:72px}h2[data-astro-cid-w6ymvdtg]{margin-bottom:var(--sonar-space-16);font:var(--site-heading-2);letter-spacing:-.01em}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]{color:inherit;text-decoration:none}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]:hover{text-decoration:underline}.section[data-astro-cid-w6ymvdtg]>*+*{margin-top:var(--sonar-space-24)}.section[data-astro-cid-w6ymvdtg]>h2+*{margin-top:0}
+</style>
+<link rel="stylesheet" href="/assets/Docs.pfYhGa-X.css">
+<style>.table-wrap[data-astro-cid-gbjtcadx]{overscroll-behavior-x:contain;border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);max-width:880px;box-shadow:var(--sonar-elevation-1);overflow:auto hidden}.prose[data-astro-cid-gbjtcadx]+.table-wrap[data-astro-cid-gbjtcadx]{margin-top:var(--sonar-space-20)}.table-wrap[data-astro-cid-gbjtcadx]:focus-visible{outline:var(--sonar-focus-width) solid var(--sonar-color-focus);outline-offset:var(--sonar-focus-offset)}table[data-astro-cid-gbjtcadx]{border-collapse:collapse;width:100%;font:var(--sonar-type-body-md);letter-spacing:var(--sonar-type-body-md-tracking)}th[data-astro-cid-gbjtcadx],td[data-astro-cid-gbjtcadx]{padding:var(--sonar-space-10) var(--sonar-space-16);border-bottom:1px solid var(--sonar-color-divider);text-align:left;vertical-align:top}tbody[data-astro-cid-gbjtcadx] tr[data-astro-cid-gbjtcadx]:last-child>[data-astro-cid-gbjtcadx]{border-bottom:0}thead[data-astro-cid-gbjtcadx] th[data-astro-cid-gbjtcadx]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);white-space:nowrap}tbody[data-astro-cid-gbjtcadx] th[data-astro-cid-gbjtcadx]{color:var(--sonar-color-text-strong);font-weight:var(--sonar-font-weight-medium)}td[data-astro-cid-gbjtcadx]{color:var(--sonar-color-text-secondary)}table[data-astro-cid-gbjtcadx] code[data-astro-cid-gbjtcadx]{font:500 12px/1.4 var(--sonar-font-family-mono)}.contract[data-astro-cid-gbjtcadx]{min-width:600px}.contract[data-astro-cid-gbjtcadx] td[data-astro-cid-gbjtcadx]:nth-child(n+3){color:var(--sonar-color-text-default);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}.contract[data-astro-cid-gbjtcadx] thead[data-astro-cid-gbjtcadx] th[data-astro-cid-gbjtcadx]:nth-child(n+3){text-align:right}
+</style></head>
+  <body data-astro-cid-lpetmyok>
+    <a class="skip-link" href="#content" data-astro-cid-lpetmyok>Skip to content</a>
+
+    <header class="masthead" data-astro-cid-lpetmyok>
+      <div class="brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  <span class="wordmark-system" data-astro-cid-qisgtjgl>Design system</span>
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a></div>
+      <button class="menu-button" type="button" popovertarget="sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation" data-astro-cid-lpetmyok>
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" data-astro-cid-lpetmyok><path d="M4 7h16M4 12h16M4 17h16" data-astro-cid-lpetmyok></path></svg>
+      </button>
+    </header>
+
+    <div class="shell" data-astro-cid-lpetmyok>
+      <nav class="sidebar" id="sidebar" popover aria-label="Documentation" data-astro-cid-lpetmyok>
+        
+        <div class="sidebar-brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a><span class="sidebar-version" data-astro-cid-lpetmyok><a class="version-chip" href="/resources/changelog/" data-astro-cid-2qsy24n7>v1.1.4<span class="visually-hidden" data-astro-cid-2qsy24n7>, changelog</span></a></span></div>
+        <div class="sidebar-scroll" data-astro-cid-lpetmyok>
+          <p class="outline-title" data-astro-cid-lpetmyok>Design system</p>
+          <div class="navigation" data-astro-cid-yxete6jp>
+  <section aria-labelledby="nav-Get started" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Get started" data-astro-cid-yxete6jp>
+            Get started
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/" data-astro-cid-yxete6jp>
+                  Introduction
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/get-started/installation/" data-astro-cid-yxete6jp>
+                  Installation
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Foundations" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Foundations" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/foundations/" data-astro-cid-yxete6jp>
+                Foundations
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/foundations/principles/" data-astro-cid-yxete6jp>
+                  Principles
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/accessibility/" aria-current="page" data-astro-cid-yxete6jp>
+                  Accessibility
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/color/" data-astro-cid-yxete6jp>
+                  Color
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/typography/" data-astro-cid-yxete6jp>
+                  Typography
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/icons/" data-astro-cid-yxete6jp>
+                  Icons
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/spacing/" data-astro-cid-yxete6jp>
+                  Spacing
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/shape/" data-astro-cid-yxete6jp>
+                  Shape
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/elevation/" data-astro-cid-yxete6jp>
+                  Elevation
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/motion/" data-astro-cid-yxete6jp>
+                  Motion
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Layout" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Layout" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/layout/" data-astro-cid-yxete6jp>
+                Layout
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/layout/grid/" data-astro-cid-yxete6jp>
+                  Breakpoints and grid
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/layout/navigation/" data-astro-cid-yxete6jp>
+                  Navigation by device
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Components" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Components" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/components/" data-astro-cid-yxete6jp>
+                Components
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/components/button/" data-astro-cid-yxete6jp>
+                  Button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/icon-button/" data-astro-cid-yxete6jp>
+                  Icon button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/badge/" data-astro-cid-yxete6jp>
+                  Badge
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/status/" data-astro-cid-yxete6jp>
+                  Status
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/switch/" data-astro-cid-yxete6jp>
+                  Switch
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/checkbox/" data-astro-cid-yxete6jp>
+                  Checkbox
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/segmented-control/" data-astro-cid-yxete6jp>
+                  Segmented control
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/field/" data-astro-cid-yxete6jp>
+                  Text field and select
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/notice/" data-astro-cid-yxete6jp>
+                  Notice
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/toast/" data-astro-cid-yxete6jp>
+                  Toast
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/menu/" data-astro-cid-yxete6jp>
+                  Menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tooltip/" data-astro-cid-yxete6jp>
+                  Tooltip
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/dialog/" data-astro-cid-yxete6jp>
+                  Dialog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/scroll-area/" data-astro-cid-yxete6jp>
+                  Scroll area
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card/" data-astro-cid-yxete6jp>
+                  Card
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-link/" data-astro-cid-yxete6jp>
+                  Card link
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-scroll/" data-astro-cid-yxete6jp>
+                  Card scroll
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/unit-menu/" data-astro-cid-yxete6jp>
+                  Unit menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tick-bar/" data-astro-cid-yxete6jp>
+                  Tick bar
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/ring-chart/" data-astro-cid-yxete6jp>
+                  Ring chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/trend-chart/" data-astro-cid-yxete6jp>
+                  Trend chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/chart-legend/" data-astro-cid-yxete6jp>
+                  Chart legend
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-field/" data-astro-cid-yxete6jp>
+                  Search field
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-result/" data-astro-cid-yxete6jp>
+                  Search result
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Patterns" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Patterns" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/patterns/" data-astro-cid-yxete6jp>
+                Patterns
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/patterns/overview/" data-astro-cid-yxete6jp>
+                  Overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/cards/" data-astro-cid-yxete6jp>
+                  Cards
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/charts/" data-astro-cid-yxete6jp>
+                  Charts
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/search/" data-astro-cid-yxete6jp>
+                  Search
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/editing/" data-astro-cid-yxete6jp>
+                  Editing the overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/panels/" data-astro-cid-yxete6jp>
+                  Panels
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/feedback/" data-astro-cid-yxete6jp>
+                  Feedback
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/app-shell/" data-astro-cid-yxete6jp>
+                  App shell
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/assistant/" data-astro-cid-yxete6jp>
+                  AI assistant
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/customize/" data-astro-cid-yxete6jp>
+                  Customize overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/unbuilt/" data-astro-cid-yxete6jp>
+                  Unbuilt modules
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Resources" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Resources" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/resources/" data-astro-cid-yxete6jp>
+                Resources
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/resources/changelog/" data-astro-cid-yxete6jp>
+                  Changelog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/downloads/" data-astro-cid-yxete6jp>
+                  Downloads
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/llms.txt" data-astro-cid-yxete6jp>
+                  llms.txt
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/contributing/" data-astro-cid-yxete6jp>
+                  Contributing
+                </a>
+            </li>
+        </ul>
+      </section>
+</div>
+        </div>
+        <div class="sidebar-footer" data-astro-cid-lpetmyok><fieldset class="theme-switch" data-astro-cid-hds7qqbe>
+  <legend class="visually-hidden" data-astro-cid-hds7qqbe>Theme</legend>
+  <label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="system" checked data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>System</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="light" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Light</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="dark" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Dark</span>
+      </label>
+</fieldset>
+
+<script type="module" src="/assets/ThemeSwitch.astro_astro_type_script_index_0_lang.BMJDsczV.js"></script></div>
+      </nav>
+
+      <main id="content" tabindex="-1" data-astro-cid-lpetmyok>
+        
+        <div class="page-body" data-astro-cid-lpetmyok>
+          <nav class="breadcrumb" aria-label="Breadcrumb" data-astro-cid-lpetmyok>
+                <a href="/foundations/" data-astro-cid-lpetmyok>Foundations</a>
+                <span aria-hidden="true" data-astro-cid-lpetmyok>/</span>
+                <span aria-current="page" data-astro-cid-lpetmyok>Accessibility</span>
+              </nav>
+          
+  <header class="page-header" data-astro-cid-b2i3gsw2>
+  <h1 data-astro-cid-b2i3gsw2>Accessibility</h1>
+  <p class="lead" data-astro-cid-b2i3gsw2>The system aims at WCAG 2.2, level AA, for everything it ships: tokens, components and patterns. What it can guarantee is built in and tested on every build; what only an app can know is written down as rules.</p>
+  
+</header>
+
+  <section class="section" aria-labelledby="scope" data-astro-cid-w6ymvdtg>
+  <h2 id="scope" data-astro-cid-w6ymvdtg><a href="#scope" data-astro-cid-w6ymvdtg>Who does what</a></h2>
+  
+    <div class="table-wrap" data-scroll-region data-label="Who does what, table" data-astro-cid-gbjtcadx>
+      <table data-astro-cid-gbjtcadx>
+        <caption class="visually-hidden" data-astro-cid-gbjtcadx>What the system guarantees and what each app provides</caption>
+        <tbody data-astro-cid-gbjtcadx>
+          <tr data-astro-cid-gbjtcadx><th scope="row" data-astro-cid-gbjtcadx>The system</th><td data-astro-cid-gbjtcadx>Contrast of every color pair, focus rings, target sizes, keyboard behavior, roles and states of every component, reduced motion.</td></tr><tr data-astro-cid-gbjtcadx><th scope="row" data-astro-cid-gbjtcadx>The app</th><td data-astro-cid-gbjtcadx>Page titles and headings, the language of the page, the names it gives to components (labels, button text, chart labels), error messages that say how to fix the error, and the order of content.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  
+</section>
+
+  <section class="section" aria-labelledby="contrast" data-astro-cid-w6ymvdtg>
+  <h2 id="contrast" data-astro-cid-w6ymvdtg><a href="#contrast" data-astro-cid-w6ymvdtg>Contrast</a></h2>
+  
+    <div class="prose" data-astro-cid-gbjtcadx>
+      <p data-astro-cid-gbjtcadx>
+        Every text level meant to be read, placeholders included, reaches <strong data-astro-cid-gbjtcadx>4.5:1</strong> on every surface that
+        carries text, in both themes (WCAG 1.4.3). Control boundaries, the focus ring and marks such as checkboxes and
+        chart alerts reach <strong data-astro-cid-gbjtcadx>3:1</strong> (1.4.11). Disabled text is exempt from both; the system still keeps it at
+        3:1 so it can be read.
+      </p>
+      <p data-astro-cid-gbjtcadx>
+        The 125 pairs below are a contract in the tokens package, <code data-astro-cid-gbjtcadx>lib/accessibility.ts</code>. The token tests
+        measure each one in both themes on every build, and a change that breaks one fails the build. Each row shows the
+        lowest ratio across its backgrounds, measured now. Every text level on every surface is in the matrix of
+        <a href="/foundations/color/#contrast" data-astro-cid-gbjtcadx>Color</a>.
+      </p>
+    </div>
+    <div class="table-wrap" data-scroll-region data-label="Contrast contract" data-astro-cid-gbjtcadx>
+      <table class="contract" data-astro-cid-gbjtcadx>
+        <caption class="visually-hidden" data-astro-cid-gbjtcadx>Contrast pairs and their measured ratios</caption>
+        <thead data-astro-cid-gbjtcadx>
+          <tr data-astro-cid-gbjtcadx>
+            <th scope="col" data-astro-cid-gbjtcadx>Foreground</th>
+            <th scope="col" data-astro-cid-gbjtcadx>On</th>
+            <th scope="col" data-astro-cid-gbjtcadx>Minimum</th>
+            <th scope="col" data-astro-cid-gbjtcadx>Lowest, light</th>
+            <th scope="col" data-astro-cid-gbjtcadx>Lowest, dark</th>
+          </tr>
+        </thead>
+        <tbody data-astro-cid-gbjtcadx>
+          <tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.strong</code></th>
+                <td data-astro-cid-gbjtcadx>Every text surface</td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>13.6:1</td><td data-astro-cid-gbjtcadx>9.8:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.default</code></th>
+                <td data-astro-cid-gbjtcadx>Every text surface</td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>10.1:1</td><td data-astro-cid-gbjtcadx>9.3:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.secondary</code></th>
+                <td data-astro-cid-gbjtcadx>Every text surface</td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>7.9:1</td><td data-astro-cid-gbjtcadx>7.0:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.muted</code></th>
+                <td data-astro-cid-gbjtcadx>Every text surface</td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>7.3:1</td><td data-astro-cid-gbjtcadx>4.7:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.tertiary</code></th>
+                <td data-astro-cid-gbjtcadx>Every text surface</td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>4.6:1</td><td data-astro-cid-gbjtcadx>4.5:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.placeholder</code></th>
+                <td data-astro-cid-gbjtcadx>Every text surface</td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>4.6:1</td><td data-astro-cid-gbjtcadx>4.5:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.meta</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>surface.card, surface.page, surface.raised, surface.menu, surface.hover</code></td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>5.1:1</td><td data-astro-cid-gbjtcadx>4.5:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.accent</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>surface.card, surface.page, surface.raised, surface.menu, surface.hover, surface.selected</code></td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td><td data-astro-cid-gbjtcadx>5.1:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.danger</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>surface.card, surface.page, surface.raised, surface.menu, surface.hover, surface.selected</code></td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td><td data-astro-cid-gbjtcadx>4.6:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.warning</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>surface.card, surface.page, surface.raised, surface.menu, surface.hover, surface.selected</code></td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td><td data-astro-cid-gbjtcadx>6.1:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.strong</code></th>
+                <td data-astro-cid-gbjtcadx>Every notice: the neutral container, and each tint over card and page</td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>13.4:1</td><td data-astro-cid-gbjtcadx>9.0:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.default</code></th>
+                <td data-astro-cid-gbjtcadx>Every notice: the neutral container, and each tint over card and page</td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>9.9:1</td><td data-astro-cid-gbjtcadx>8.6:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.accent</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>success.container over surface.card, success.container over surface.page</code></td>
+                <td data-astro-cid-gbjtcadx>3:1</td>
+                <td data-astro-cid-gbjtcadx>4.2:1</td><td data-astro-cid-gbjtcadx>5.2:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.warning</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>warning.container over surface.card, warning.container over surface.page</code></td>
+                <td data-astro-cid-gbjtcadx>3:1</td>
+                <td data-astro-cid-gbjtcadx>4.3:1</td><td data-astro-cid-gbjtcadx>5.2:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.danger</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>danger.container over surface.card, danger.container over surface.page</code></td>
+                <td data-astro-cid-gbjtcadx>3:1</td>
+                <td data-astro-cid-gbjtcadx>4.0:1</td><td data-astro-cid-gbjtcadx>5.0:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>text.inverse</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>surface.inverse</code></td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>11.6:1</td><td data-astro-cid-gbjtcadx>11.9:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>accent.inverse</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>surface.inverse</code></td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>7.9:1</td><td data-astro-cid-gbjtcadx>4.7:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>on.accent</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>accent</code></td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td><td data-astro-cid-gbjtcadx>5.2:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>on.accent-tonal</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>accent.tonal</code></td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>12.9:1</td><td data-astro-cid-gbjtcadx>7.4:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>on.emphasis</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>danger.solid</code></td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td>
+                <td data-astro-cid-gbjtcadx>4.5:1</td><td data-astro-cid-gbjtcadx>4.5:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>border.control</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>surface.card</code></td>
+                <td data-astro-cid-gbjtcadx>3:1</td>
+                <td data-astro-cid-gbjtcadx>3.1:1</td><td data-astro-cid-gbjtcadx>3.3:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>focus</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>surface.card, surface.page, surface.menu, surface.container</code></td>
+                <td data-astro-cid-gbjtcadx>3:1</td>
+                <td data-astro-cid-gbjtcadx>3.6:1</td><td data-astro-cid-gbjtcadx>5.4:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>accent</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>surface.card, surface.page</code></td>
+                <td data-astro-cid-gbjtcadx>3:1</td>
+                <td data-astro-cid-gbjtcadx>4.2:1</td><td data-astro-cid-gbjtcadx>6.2:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>danger</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>surface.card, surface.page</code></td>
+                <td data-astro-cid-gbjtcadx>3:1</td>
+                <td data-astro-cid-gbjtcadx>4.1:1</td><td data-astro-cid-gbjtcadx>4.3:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>chart.primary</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>surface.card</code></td>
+                <td data-astro-cid-gbjtcadx>3:1</td>
+                <td data-astro-cid-gbjtcadx>4.4:1</td><td data-astro-cid-gbjtcadx>6.2:1</td>
+              </tr><tr data-astro-cid-gbjtcadx>
+                <th scope="row" data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>chart.secondary</code></th>
+                <td data-astro-cid-gbjtcadx><code data-astro-cid-gbjtcadx>surface.card</code></td>
+                <td data-astro-cid-gbjtcadx>3:1</td>
+                <td data-astro-cid-gbjtcadx>20.4:1</td><td data-astro-cid-gbjtcadx>12.1:1</td>
+              </tr>
+        </tbody>
+      </table>
+    </div>
+  
+</section>
+
+  <section class="section" aria-labelledby="focus" data-astro-cid-w6ymvdtg>
+  <h2 id="focus" data-astro-cid-w6ymvdtg><a href="#focus" data-astro-cid-w6ymvdtg>Focus</a></h2>
+  
+    <ul class="prose" data-astro-cid-gbjtcadx>
+      <li data-astro-cid-gbjtcadx>
+        Every control shows a ring when it is reached from the keyboard (2.4.7): <code data-astro-cid-gbjtcadx>focus.width</code> 2 px, at
+        <code data-astro-cid-gbjtcadx>focus.offset</code> 2 px, in <code data-astro-cid-gbjtcadx>color.focus</code>, which keeps 3:1 against every surface it can sit on.
+        A ring is never removed without another visible indicator in its place.
+      </li>
+      <li data-astro-cid-gbjtcadx>
+        Pointer clicks draw no ring; <code data-astro-cid-gbjtcadx>:focus-visible</code> decides, as the browser does for its own controls.
+      </li>
+      <li data-astro-cid-gbjtcadx>
+        Nothing covers what has focus (2.4.11). On phones and tablets the top bar is sticky, so the page keeps room for it
+        above anything scrolled into view; menus and tooltips open beside their trigger, never over it.
+      </li>
+      <li data-astro-cid-gbjtcadx>A modal dialog moves focus in and returns it to what opened it; nothing else moves focus on its own.</li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="target-size" data-astro-cid-w6ymvdtg>
+  <h2 id="target-size" data-astro-cid-w6ymvdtg><a href="#target-size" data-astro-cid-w6ymvdtg>Target size</a></h2>
+  
+    <ul class="prose" data-astro-cid-gbjtcadx>
+      <li data-astro-cid-gbjtcadx>
+        WCAG 2.2 asks for targets of at least 24 × 24 px (2.5.8). Controls are 28 or 36 px tall, and spaced so that
+        neighbors never overlap.
+      </li>
+      <li data-astro-cid-gbjtcadx>
+        On touch screens every control’s hit area grows to 48 × 48 px, <code data-astro-cid-gbjtcadx>layout.touch-target</code>, without changing
+        how it looks. Labels of checkboxes and switches are part of the target.
+      </li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="motion" data-astro-cid-w6ymvdtg>
+  <h2 id="motion" data-astro-cid-w6ymvdtg><a href="#motion" data-astro-cid-w6ymvdtg>Motion</a></h2>
+  
+    <ul class="prose" data-astro-cid-gbjtcadx>
+      <li data-astro-cid-gbjtcadx>
+        Under <code data-astro-cid-gbjtcadx>prefers-reduced-motion</code>, every component stops moving things across the screen: menus, dialogs,
+        sheets and toasts appear in place, and shapes change without traveling. Short fades and color changes remain,
+        so state changes are still visible.
+      </li>
+      <li data-astro-cid-gbjtcadx>Nothing animates on load, nothing flashes, and nothing moves on its own for more than a moment.</li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="keyboard" data-astro-cid-w6ymvdtg>
+  <h2 id="keyboard" data-astro-cid-w6ymvdtg><a href="#keyboard" data-astro-cid-w6ymvdtg>Keyboard</a></h2>
+  
+    <ul class="prose" data-astro-cid-gbjtcadx>
+      <li data-astro-cid-gbjtcadx>Everything that works with a pointer works with a keyboard (2.1.1), in the order the page is read.</li>
+      <li data-astro-cid-gbjtcadx>
+        Tab moves between controls; arrow keys move inside a group of options, a menu or a chart, as the platform does.
+        Each component page lists its keys under Accessibility.
+      </li>
+      <li data-astro-cid-gbjtcadx>Only a modal dialog keeps focus inside it, by design, and Escape always leaves it (2.1.2).</li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="screen-readers" data-astro-cid-w6ymvdtg>
+  <h2 id="screen-readers" data-astro-cid-w6ymvdtg><a href="#screen-readers" data-astro-cid-w6ymvdtg>Screen readers</a></h2>
+  
+    <ul class="prose" data-astro-cid-gbjtcadx>
+      <li data-astro-cid-gbjtcadx>
+        <strong data-astro-cid-gbjtcadx>Native first.</strong> Buttons, checkboxes, switches, radios, fields and dialogs are the browser’s own
+        elements, so their roles and states are right in every screen reader. Base UI supplies the rest (menus,
+        tooltips, toasts) following the WAI-ARIA patterns.
+      </li>
+      <li data-astro-cid-gbjtcadx><strong data-astro-cid-gbjtcadx>Every control has a name.</strong> Icon buttons require one; icons are hidden; repeated buttons say what they act on.</li>
+      <li data-astro-cid-gbjtcadx><strong data-astro-cid-gbjtcadx>Never color alone</strong> (1.4.1). States are written; legends name every color; charts list their values in words.</li>
+      <li data-astro-cid-gbjtcadx>
+        <strong data-astro-cid-gbjtcadx>Changes are announced.</strong> Toasts arrive in a polite live region, and a card announces what its
+        step buttons change: the day, the due date, the month.
+      </li>
+      <li data-astro-cid-gbjtcadx><strong data-astro-cid-gbjtcadx>Regions.</strong> Each card of the overview is a region named by its title, so the overview can be read card by card.</li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="reflow" data-astro-cid-w6ymvdtg>
+  <h2 id="reflow" data-astro-cid-w6ymvdtg><a href="#reflow" data-astro-cid-w6ymvdtg>Reflow and text</a></h2>
+  
+    <ul class="prose" data-astro-cid-gbjtcadx>
+      <li data-astro-cid-gbjtcadx>
+        Pages reflow down to 320 px without scrolling sideways (1.4.10). Long code and wide tables scroll inside their
+        own block, which can be focused and scrolled from the keyboard.
+      </li>
+      <li data-astro-cid-gbjtcadx>Text sizes are in the type roles and scale with the browser’s text size (1.4.4); nothing is set to stop zoom.</li>
+      <li data-astro-cid-gbjtcadx>
+        Cards in the overview grid have one of four heights. With very large text or extra text spacing (1.4.12)
+        nothing is cut: content that no longer fits scrolls inside the card, between its header and footer, and can be
+        scrolled from the keyboard.
+      </li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="checks" data-astro-cid-w6ymvdtg>
+  <h2 id="checks" data-astro-cid-w6ymvdtg><a href="#checks" data-astro-cid-w6ymvdtg>How it is checked</a></h2>
+  
+    <ul class="prose" data-astro-cid-gbjtcadx>
+      <li data-astro-cid-gbjtcadx><strong data-astro-cid-gbjtcadx>On every build, automatically:</strong> the 125 contrast pairs in both themes; every component rendered and checked with axe in its tests.</li>
+      <li data-astro-cid-gbjtcadx>
+        <strong data-astro-cid-gbjtcadx>Before every release, by hand and with scripts:</strong> every page of this site at 360, 390, 430, 834, 1024 and 1440 px, light and
+        dark, with every code block open, checked for anything that scrolls the page sideways; a keyboard pass through
+        every component; VoiceOver on iOS and macOS through every component; text at 200%.
+      </li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="limits" data-astro-cid-w6ymvdtg>
+  <h2 id="limits" data-astro-cid-w6ymvdtg><a href="#limits" data-astro-cid-w6ymvdtg>Known limits</a></h2>
+  
+    <ul class="prose" data-astro-cid-gbjtcadx>
+      <li data-astro-cid-gbjtcadx>
+        <strong data-astro-cid-gbjtcadx>The Sonar-DB dashboard</strong> is audited on its own, once it is built on these tokens and components;
+        this site covers the system, the patterns and their live examples.
+      </li>
+    </ul>
+  
+</section>
+
+        </div>
+        <div class="page-end" data-astro-cid-lpetmyok>
+          <nav class="pager" aria-label="Previous and next pages" data-astro-cid-lpetmyok>
+                <a href="/foundations/principles/" rel="prev" class="previous" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Previous</span>
+                    Principles
+                  </a>
+                <a href="/foundations/color/" rel="next" class="next" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Next</span>
+                    Color
+                  </a>
+              </nav>
+          <footer class="site-footer" data-astro-cid-nns7i3if>
+  <p data-astro-cid-nns7i3if>
+    Design system by <strong data-astro-cid-nns7i3if>988©STUDIO</strong>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    <a href="/resources/changelog/" data-astro-cid-nns7i3if>v1.1.4</a>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    © 2026
+  </p>
+</footer>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="/assets/Docs.astro_astro_type_script_index_0_lang.CIhC640A.js"></script>
+  </body>
+</html>

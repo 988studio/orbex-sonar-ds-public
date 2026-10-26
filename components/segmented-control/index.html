@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en" data-astro-cid-lpetmyok>
+  <head>
+    <meta charset="utf-8">
+    <!-- The order of the cascade layers, before any stylesheet: bundling may load the files in any order -->
+    <style>
+      @layer reset, base, sonar;
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <!-- iOS would turn dates and figures into links, changing the elements React hydrates -->
+    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+    <title>Segmented control · Orbex Sonar-DB Design System</title>
+    <meta name="description" content="Segmented control, a component of the Orbex Sonar-DB Design System: examples, guidance, accessibility and API.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/assets/ibm-plex-sans-latin-400-normal.CDDApCn2.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-500-normal.6ng42L7E.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-600-normal.CuJfVYMP.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-normal.CRd5VyFf.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-italic.CDUi4ehg.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-400-normal.DMJ8VG8y.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-500-normal.DSY6xOcd.woff2" as="font" type="font/woff2" crossorigin>
+    <script>
+      try {
+        const theme = localStorage.getItem('sonar-ds-theme')
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {}
+
+      /* A page opened from a link starts at the top. Browsers do this already; some embedded viewers keep the previous
+         page’s scroll instead. Going back, reloading and links to a section are left to the browser, and the reset
+         stops as soon as the reader scrolls. */
+      try {
+        const navigation = performance.getEntriesByType('navigation')[0]
+        if (!location.hash && (!navigation || navigation.type === 'navigate')) {
+          const toTop = () => scrollTo(0, 0)
+          const stop = () => {
+            removeEventListener('DOMContentLoaded', toTop)
+            removeEventListener('load', toTop)
+          }
+          toTop()
+          addEventListener('DOMContentLoaded', toTop, { once: true })
+          addEventListener('load', toTop, { once: true })
+          for (const type of ['wheel', 'touchstart', 'keydown']) addEventListener(type, stop, { once: true, passive: true })
+        }
+      } catch {}
+    </script>
+  <style>.code-block[data-astro-cid-c6nuo4je]{min-width:0;max-width:var(--site-measure);border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-container-low)}.bar[data-astro-cid-c6nuo4je]{padding:var(--sonar-space-6) var(--sonar-space-8) 0 var(--sonar-space-24);justify-content:space-between;align-items:center;display:flex}.language[data-astro-cid-c6nuo4je]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-sm);letter-spacing:var(--sonar-type-label-sm-tracking);text-transform:uppercase}pre[data-astro-cid-c6nuo4je]{overscroll-behavior-x:contain;padding:var(--sonar-space-8) var(--sonar-space-24) var(--sonar-space-20);color:var(--sonar-color-text-strong);font:400 13px/1.6 var(--sonar-font-family-mono);overflow:auto hidden}pre[data-astro-cid-c6nuo4je]:focus-visible{outline:var(--sonar-focus-width) solid var(--sonar-color-focus);outline-offset:calc(-1 * var(--sonar-focus-width));border-radius:0 0 var(--sonar-shape-corner-medium) var(--sonar-shape-corner-medium)}code[data-astro-cid-c6nuo4je]{font:inherit}.copy[data-astro-cid-c6nuo4je]{min-height:32px;padding:0 var(--sonar-space-12);border-radius:var(--sonar-shape-corner-full);color:var(--sonar-color-text-secondary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);cursor:pointer;transition:background-color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);background:0 0;border:0}.copy[data-astro-cid-c6nuo4je]:hover{background:var(--sonar-color-state-hover);color:var(--sonar-color-text-strong)}.copy[data-astro-cid-c6nuo4je]:focus-visible{outline:2px solid var(--sonar-color-accent);outline-offset:2px}
+</style>
+<link rel="stylesheet" href="/assets/DoDont.DV84UQhT.css">
+<link rel="stylesheet" href="/assets/Docs.pfYhGa-X.css">
+<style>.specimen-figure[data-astro-cid-h2dlglp7]{margin-inline:0;border-radius:var(--sonar-shape-corner-large);background:var(--sonar-color-surface-card);min-width:0;box-shadow:var(--sonar-elevation-1);grid-template-columns:minmax(0,1fr);margin-bottom:0;display:grid}figcaption[data-astro-cid-h2dlglp7]{padding:var(--sonar-space-16) var(--sonar-space-20) 0;color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}.body[data-astro-cid-h2dlglp7]{min-width:0;padding:var(--sonar-space-24) var(--sonar-space-24) var(--sonar-space-28)}.body[data-astro-cid-h2dlglp7] .specimen-frame:focus-visible{outline:var(--sonar-focus-width) solid var(--sonar-color-focus);outline-offset:var(--sonar-focus-offset);border-radius:var(--sonar-shape-corner-small)}@container page (width<608px){.body[data-astro-cid-h2dlglp7]{padding:var(--sonar-space-20) var(--sonar-space-16) var(--sonar-space-24)}}
+.specimen-frame{overscroll-behavior-x:contain;margin:-6px 0 -6px -6px;padding:6px 0 6px 6px;overflow:auto hidden}.specimen{gap:var(--sonar-space-16) var(--sonar-space-24);width:max-content;padding-bottom:var(--sonar-space-4);align-items:center;display:grid}.specimen-head,.specimen-name{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-sm);letter-spacing:var(--sonar-type-label-sm-tracking);white-space:nowrap}.specimen-name{padding-right:var(--sonar-space-8);color:var(--sonar-color-text-secondary)}.specimen-cell{justify-content:flex-start;align-items:center;min-height:32px;display:flex}
+.a11y[data-astro-cid-bxr4t4t4]{gap:var(--sonar-space-28);max-width:880px;display:grid}h3[data-astro-cid-bxr4t4t4]{margin-bottom:var(--sonar-space-8);font:var(--sonar-type-title-md);letter-spacing:var(--sonar-type-title-md-tracking)}table[data-astro-cid-bxr4t4t4]{border-collapse:collapse;border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);width:100%;box-shadow:var(--sonar-elevation-1);font:var(--sonar-type-body-md);letter-spacing:var(--sonar-type-body-md-tracking)}th[data-astro-cid-bxr4t4t4],td[data-astro-cid-bxr4t4t4]{padding:var(--sonar-space-10) var(--sonar-space-16);border-bottom:1px solid var(--sonar-color-divider);text-align:left;vertical-align:top}tbody[data-astro-cid-bxr4t4t4] tr[data-astro-cid-bxr4t4t4]:last-child>[data-astro-cid-bxr4t4t4]{border-bottom:0}thead[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{width:34%;color:var(--sonar-color-text-strong);font-weight:var(--sonar-font-weight-medium)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4] code[data-astro-cid-bxr4t4t4]{font:400 12px/1.5 var(--sonar-font-family-mono);overflow-wrap:anywhere}td[data-astro-cid-bxr4t4t4]{color:var(--sonar-color-text-secondary)}@container page (width<608px){th[data-astro-cid-bxr4t4t4],td[data-astro-cid-bxr4t4t4]{padding:var(--sonar-space-10) var(--sonar-space-12)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{width:40%}}
+.page-header[data-astro-cid-b2i3gsw2]{max-width:var(--site-content-width);margin-bottom:var(--sonar-space-48)}h1[data-astro-cid-b2i3gsw2]{font:var(--site-heading-1);letter-spacing:-.01em}.lead[data-astro-cid-b2i3gsw2]{max-width:var(--site-measure);margin-top:var(--sonar-space-16);color:var(--sonar-color-text-secondary);font:var(--site-lead)}
+.part[data-astro-cid-ogedjwls]+.part[data-astro-cid-ogedjwls]{margin-top:var(--sonar-space-32)}h3[data-astro-cid-ogedjwls]{margin-bottom:var(--sonar-space-4);font:var(--sonar-type-title-md)}h3[data-astro-cid-ogedjwls] code[data-astro-cid-ogedjwls]{font:600 14px/1.4 var(--sonar-font-family-mono)}.description[data-astro-cid-ogedjwls]{max-width:var(--site-measure);margin-bottom:var(--sonar-space-12);color:var(--sonar-color-text-secondary);font:var(--sonar-type-body-lg)}.table-wrap[data-astro-cid-ogedjwls]{overscroll-behavior-x:contain;border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);box-shadow:var(--sonar-elevation-1);overflow:auto hidden}table[data-astro-cid-ogedjwls]{border-collapse:collapse;width:100%;min-width:560px;font:var(--sonar-type-body-md);letter-spacing:var(--sonar-type-body-md-tracking)}th[data-astro-cid-ogedjwls],td[data-astro-cid-ogedjwls]{padding:var(--sonar-space-12) var(--sonar-space-16);border-bottom:1px solid var(--sonar-color-divider);text-align:left;vertical-align:top}tbody[data-astro-cid-ogedjwls] tr[data-astro-cid-ogedjwls]:last-child>[data-astro-cid-ogedjwls]{border-bottom:0}thead[data-astro-cid-ogedjwls] th[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}tbody[data-astro-cid-ogedjwls] th[data-astro-cid-ogedjwls]{width:50%;font-weight:inherit}tbody[data-astro-cid-ogedjwls] th[data-astro-cid-ogedjwls]>code[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-strong);font:500 12px/1.4 var(--sonar-font-family-mono)}tbody[data-astro-cid-ogedjwls] th[data-astro-cid-ogedjwls] p[data-astro-cid-ogedjwls]{margin-top:var(--sonar-space-4);color:var(--sonar-color-text-secondary)}.required[data-astro-cid-ogedjwls]{margin-left:var(--sonar-space-8);color:var(--sonar-color-text-danger);font:var(--sonar-type-label-sm)}td[data-astro-cid-ogedjwls] code[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-default);font:400 12px/1.5 var(--sonar-font-family-mono);overflow-wrap:anywhere}.none[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-tertiary)}.note[data-astro-cid-ogedjwls]{max-width:var(--site-measure);margin-top:var(--sonar-space-12);color:var(--sonar-color-text-secondary);font:var(--sonar-type-body-md)}.note[data-astro-cid-ogedjwls] a[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-accent)}.facts[data-astro-cid-cndiwttc]{gap:var(--sonar-space-8);margin-top:var(--sonar-space-20);flex-wrap:wrap;padding:0;display:flex}.facts[data-astro-cid-cndiwttc] code[data-astro-cid-cndiwttc]{font:500 11px/1 var(--sonar-font-family-mono)}.facts[data-astro-cid-cndiwttc] li[data-astro-cid-cndiwttc]{text-overflow:ellipsis;white-space:nowrap;box-sizing:border-box;max-width:100%;height:28px;padding:0 var(--sonar-space-12);border-radius:var(--sonar-shape-corner-full);background:var(--sonar-color-surface-container);color:var(--sonar-color-text-default);line-height:28px;font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);line-height:28px;display:inline-block;overflow:hidden}.notes[data-astro-cid-cndiwttc]{margin:var(--sonar-space-28) 0 var(--sonar-space-8);font:var(--sonar-type-title-md);letter-spacing:var(--sonar-type-title-md-tracking)}.demos[data-astro-cid-cndiwttc]{gap:var(--sonar-space-20);display:grid}
+</style>
+<link rel="stylesheet" href="/assets/styles.Dexbwagh.css">
+<style>.section[data-astro-cid-w6ymvdtg]{max-width:var(--site-content-width)}.section[data-astro-cid-w6ymvdtg]+.section{margin-top:72px}h2[data-astro-cid-w6ymvdtg]{margin-bottom:var(--sonar-space-16);font:var(--site-heading-2);letter-spacing:-.01em}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]{color:inherit;text-decoration:none}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]:hover{text-decoration:underline}.section[data-astro-cid-w6ymvdtg]>*+*{margin-top:var(--sonar-space-24)}.section[data-astro-cid-w6ymvdtg]>h2+*{margin-top:0}
+</style></head>
+  <body data-astro-cid-lpetmyok>
+    <a class="skip-link" href="#content" data-astro-cid-lpetmyok>Skip to content</a>
+
+    <header class="masthead" data-astro-cid-lpetmyok>
+      <div class="brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  <span class="wordmark-system" data-astro-cid-qisgtjgl>Design system</span>
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a></div>
+      <button class="menu-button" type="button" popovertarget="sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation" data-astro-cid-lpetmyok>
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" data-astro-cid-lpetmyok><path d="M4 7h16M4 12h16M4 17h16" data-astro-cid-lpetmyok></path></svg>
+      </button>
+    </header>
+
+    <div class="shell" data-astro-cid-lpetmyok>
+      <nav class="sidebar" id="sidebar" popover aria-label="Documentation" data-astro-cid-lpetmyok>
+        
+        <div class="sidebar-brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a><span class="sidebar-version" data-astro-cid-lpetmyok><a class="version-chip" href="/resources/changelog/" data-astro-cid-2qsy24n7>v1.1.4<span class="visually-hidden" data-astro-cid-2qsy24n7>, changelog</span></a></span></div>
+        <div class="sidebar-scroll" data-astro-cid-lpetmyok>
+          <p class="outline-title" data-astro-cid-lpetmyok>Design system</p>
+          <div class="navigation" data-astro-cid-yxete6jp>
+  <section aria-labelledby="nav-Get started" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Get started" data-astro-cid-yxete6jp>
+            Get started
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/" data-astro-cid-yxete6jp>
+                  Introduction
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/get-started/installation/" data-astro-cid-yxete6jp>
+                  Installation
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Foundations" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Foundations" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/foundations/" data-astro-cid-yxete6jp>
+                Foundations
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/foundations/principles/" data-astro-cid-yxete6jp>
+                  Principles
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/accessibility/" data-astro-cid-yxete6jp>
+                  Accessibility
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/color/" data-astro-cid-yxete6jp>
+                  Color
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/typography/" data-astro-cid-yxete6jp>
+                  Typography
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/icons/" data-astro-cid-yxete6jp>
+                  Icons
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/spacing/" data-astro-cid-yxete6jp>
+                  Spacing
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/shape/" data-astro-cid-yxete6jp>
+                  Shape
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/elevation/" data-astro-cid-yxete6jp>
+                  Elevation
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/motion/" data-astro-cid-yxete6jp>
+                  Motion
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Layout" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Layout" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/layout/" data-astro-cid-yxete6jp>
+                Layout
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/layout/grid/" data-astro-cid-yxete6jp>
+                  Breakpoints and grid
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/layout/navigation/" data-astro-cid-yxete6jp>
+                  Navigation by device
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Components" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Components" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/components/" data-astro-cid-yxete6jp>
+                Components
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/components/button/" data-astro-cid-yxete6jp>
+                  Button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/icon-button/" data-astro-cid-yxete6jp>
+                  Icon button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/badge/" data-astro-cid-yxete6jp>
+                  Badge
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/status/" data-astro-cid-yxete6jp>
+                  Status
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/switch/" data-astro-cid-yxete6jp>
+                  Switch
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/checkbox/" data-astro-cid-yxete6jp>
+                  Checkbox
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/segmented-control/" aria-current="page" data-astro-cid-yxete6jp>
+                  Segmented control
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/field/" data-astro-cid-yxete6jp>
+                  Text field and select
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/notice/" data-astro-cid-yxete6jp>
+                  Notice
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/toast/" data-astro-cid-yxete6jp>
+                  Toast
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/menu/" data-astro-cid-yxete6jp>
+                  Menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tooltip/" data-astro-cid-yxete6jp>
+                  Tooltip
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/dialog/" data-astro-cid-yxete6jp>
+                  Dialog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/scroll-area/" data-astro-cid-yxete6jp>
+                  Scroll area
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card/" data-astro-cid-yxete6jp>
+                  Card
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-link/" data-astro-cid-yxete6jp>
+                  Card link
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-scroll/" data-astro-cid-yxete6jp>
+                  Card scroll
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/unit-menu/" data-astro-cid-yxete6jp>
+                  Unit menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tick-bar/" data-astro-cid-yxete6jp>
+                  Tick bar
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/ring-chart/" data-astro-cid-yxete6jp>
+                  Ring chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/trend-chart/" data-astro-cid-yxete6jp>
+                  Trend chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/chart-legend/" data-astro-cid-yxete6jp>
+                  Chart legend
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-field/" data-astro-cid-yxete6jp>
+                  Search field
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-result/" data-astro-cid-yxete6jp>
+                  Search result
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Patterns" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Patterns" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/patterns/" data-astro-cid-yxete6jp>
+                Patterns
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/patterns/overview/" data-astro-cid-yxete6jp>
+                  Overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/cards/" data-astro-cid-yxete6jp>
+                  Cards
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/charts/" data-astro-cid-yxete6jp>
+                  Charts
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/search/" data-astro-cid-yxete6jp>
+                  Search
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/editing/" data-astro-cid-yxete6jp>
+                  Editing the overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/panels/" data-astro-cid-yxete6jp>
+                  Panels
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/feedback/" data-astro-cid-yxete6jp>
+                  Feedback
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/app-shell/" data-astro-cid-yxete6jp>
+                  App shell
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/assistant/" data-astro-cid-yxete6jp>
+                  AI assistant
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/customize/" data-astro-cid-yxete6jp>
+                  Customize overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/unbuilt/" data-astro-cid-yxete6jp>
+                  Unbuilt modules
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Resources" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Resources" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/resources/" data-astro-cid-yxete6jp>
+                Resources
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/resources/changelog/" data-astro-cid-yxete6jp>
+                  Changelog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/downloads/" data-astro-cid-yxete6jp>
+                  Downloads
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/llms.txt" data-astro-cid-yxete6jp>
+                  llms.txt
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/contributing/" data-astro-cid-yxete6jp>
+                  Contributing
+                </a>
+            </li>
+        </ul>
+      </section>
+</div>
+        </div>
+        <div class="sidebar-footer" data-astro-cid-lpetmyok><fieldset class="theme-switch" data-astro-cid-hds7qqbe>
+  <legend class="visually-hidden" data-astro-cid-hds7qqbe>Theme</legend>
+  <label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="system" checked data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>System</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="light" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Light</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="dark" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Dark</span>
+      </label>
+</fieldset>
+
+<script type="module" src="/assets/ThemeSwitch.astro_astro_type_script_index_0_lang.BMJDsczV.js"></script></div>
+      </nav>
+
+      <main id="content" tabindex="-1" data-astro-cid-lpetmyok>
+        
+        <div class="page-body" data-astro-cid-lpetmyok>
+          <nav class="breadcrumb" aria-label="Breadcrumb" data-astro-cid-lpetmyok>
+                <a href="/components/" data-astro-cid-lpetmyok>Components</a>
+                <span aria-hidden="true" data-astro-cid-lpetmyok>/</span>
+                <span aria-current="page" data-astro-cid-lpetmyok>Segmented control</span>
+              </nav>
+          
+  <header class="page-header" data-astro-cid-b2i3gsw2>
+  <h1 data-astro-cid-b2i3gsw2>Segmented control</h1>
+  <p class="lead" data-astro-cid-b2i3gsw2>One choice among two to five, drawn as pills on a well: the unit figures are shown in, the view of a list. Native radios underneath.</p>
+  
+    <ul class="facts" role="list" data-astro-cid-cndiwttc>
+      <li data-astro-cid-cndiwttc>Native HTML</li>
+      <li data-astro-cid-cndiwttc>1.9 KB gzipped · script and styles</li>
+      
+      <li data-astro-cid-cndiwttc><code data-astro-cid-cndiwttc>@orbex/sonar-components/segmented-control</code></li>
+    </ul>
+  
+</header>
+
+  <section class="section" aria-labelledby="examples" data-astro-cid-w6ymvdtg>
+  <h2 id="examples" data-astro-cid-w6ymvdtg><a href="#examples" data-astro-cid-w6ymvdtg>Examples</a></h2>
+  
+    <div class="demos" data-astro-cid-cndiwttc>
+  <figure class="demo" data-astro-cid-trxcs2lc>
+  <figcaption data-astro-cid-trxcs2lc>With a legend</figcaption>
+  <div class="preview row" data-astro-cid-trxcs2lc>
+    <fieldset class="sonar-segmented" data-size="medium"><legend class="sonar-segmented-legend">Unit</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r4R_0_" checked="" value="plt"/><span class="sonar-segmented-label">Pallets</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r4R_0_" value="kg"/><span class="sonar-segmented-label">Kilograms</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r4R_0_" value="items"/><span class="sonar-segmented-label">Items</span></label></div></fieldset>
+  </div>
+  <details class="code" data-astro-cid-trxcs2lc>
+    <summary data-astro-cid-trxcs2lc>Code</summary>
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>tsx</span>
+    <button class="copy" type="button" data-code="import { SegmentedControl } from '@orbex/sonar-components/segmented-control'
+
+export default function Units() {
+  return (
+    <SegmentedControl
+      legend=&quot;Unit&quot;
+      defaultValue=&quot;plt&quot;
+      options={[
+        { value: 'plt', label: 'Pallets' },
+        { value: 'kg', label: 'Kilograms' },
+        { value: 'items', label: 'Items' },
+      ]}
+    />
+  )
+}" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="tsx" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>import { SegmentedControl } from &#39;@orbex/sonar-components/segmented-control&#39;
+
+export default function Units() {
+  return (
+    &lt;SegmentedControl
+      legend=&quot;Unit&quot;
+      defaultValue=&quot;plt&quot;
+      options={[
+        { value: &#39;plt&#39;, label: &#39;Pallets&#39; },
+        { value: &#39;kg&#39;, label: &#39;Kilograms&#39; },
+        { value: &#39;items&#39;, label: &#39;Items&#39; },
+      ]}
+    /&gt;
+  )
+}</code></pre>
+</div>
+
+<script type="module">function e(e){let t=document.createElement(`textarea`);t.value=e,t.setAttribute(`readonly`,``),t.style.cssText=`position:fixed;inset:0 auto auto 0;width:1px;height:1px;opacity:0`,document.body.append(t),t.select();let n=document.execCommand(`copy`);return t.remove(),n}for(let t of document.querySelectorAll(`.code-block .copy`))t.addEventListener(`click`,async()=>{let n=t.dataset.code??``,r=!1;try{await navigator.clipboard.writeText(n),r=!0}catch{r=e(n)}t.textContent=r?`Copied`:`Copy failed`,setTimeout(()=>t.textContent=`Copy`,1600)});</script>
+  </details>
+</figure>
+  <figure class="demo" data-astro-cid-trxcs2lc>
+  <figcaption data-astro-cid-trxcs2lc>Icons only, small</figcaption>
+  <div class="preview row" data-astro-cid-trxcs2lc>
+    <fieldset class="sonar-segmented" data-size="small" data-icon-only="true"><legend class="sonar-segmented-legend" data-hidden="true">View</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r5R_0_" checked="" value="list"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M350-220h470v-137H350v137ZM140-603h150v-137H140v137Zm0 187h150v-127H140v127Zm0 196h150v-137H140v137Zm210-196h470v-127H350v127Zm0-187h470v-137H350v137ZM140-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Z"></path></svg></span><span class="sonar-segmented-label">List</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r5R_0_" value="grid"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-510q-24.75 0-42.37-17.63Q120-545.25 120-570v-210q0-24.75 17.63-42.38Q155.25-840 180-840h210q24.75 0 42.38 17.62Q450-804.75 450-780v210q0 24.75-17.62 42.37Q414.75-510 390-510H180Zm0 390q-24.75 0-42.37-17.63Q120-155.25 120-180v-210q0-24.75 17.63-42.38Q155.25-450 180-450h210q24.75 0 42.38 17.62Q450-414.75 450-390v210q0 24.75-17.62 42.37Q414.75-120 390-120H180Zm390-390q-24.75 0-42.37-17.63Q510-545.25 510-570v-210q0-24.75 17.63-42.38Q545.25-840 570-840h210q24.75 0 42.38 17.62Q840-804.75 840-780v210q0 24.75-17.62 42.37Q804.75-510 780-510H570Zm0 390q-24.75 0-42.37-17.63Q510-155.25 510-180v-210q0-24.75 17.63-42.38Q545.25-450 570-450h210q24.75 0 42.38 17.62Q840-414.75 840-390v210q0 24.75-17.62 42.37Q804.75-120 780-120H570ZM180-570h210v-210H180v210Zm390 0h210v-210H570v210Zm0 390h210v-210H570v210Zm-390 0h210v-210H180v210Zm390-390Zm0 180Zm-180 0Zm0-180Z"></path></svg></span><span class="sonar-segmented-label">Grid</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r5R_0_" value="calendar"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q310-861.6 310-848v28h340v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q715-861.6 715-848v28h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Zm300 230q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-188.5-11.5Q280-423 280-440t11.5-28.5Q303-480 320-480t28.5 11.5Q360-457 360-440t-11.5 28.5Q337-400 320-400t-28.5-11.5ZM640-400q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-188.5-11.5Q280-263 280-280t11.5-28.5Q303-320 320-320t28.5 11.5Q360-297 360-280t-11.5 28.5Q337-240 320-240t-28.5-11.5ZM640-240q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"></path></svg></span><span class="sonar-segmented-label">Calendar</span></label></div></fieldset>
+  </div>
+  <details class="code" data-astro-cid-trxcs2lc>
+    <summary data-astro-cid-trxcs2lc>Code</summary>
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>tsx</span>
+    <button class="copy" type="button" data-code="import { SegmentedControl } from '@orbex/sonar-components/segmented-control'
+import type { ComponentProps } from 'react'
+import calendarSymbol from '@material-symbols/svg-400/rounded/calendar_month.svg?raw'
+import gridSymbol from '@material-symbols/svg-400/rounded/grid_view.svg?raw'
+import listSymbol from '@material-symbols/svg-400/rounded/view_list.svg?raw'
+
+/* Material Symbols Rounded, weight 400, as icon components (Foundations › Icons) */
+const symbol = (svg: string) => {
+  const path = svg.match(/ d=&quot;([^&quot;]+)&quot;/)?.[1]
+  return (props: ComponentProps<'svg'>) => (
+    <svg viewBox=&quot;0 -960 960 960&quot; fill=&quot;currentColor&quot; aria-hidden=&quot;true&quot; focusable=&quot;false&quot; {...props}>
+      <path d={path} />
+    </svg>
+  )
+}
+
+const CalendarIcon = symbol(calendarSymbol)
+const GridIcon = symbol(gridSymbol)
+const ListIcon = symbol(listSymbol)
+
+export default function Views() {
+  return (
+    <SegmentedControl
+      legend=&quot;View&quot;
+      hideLegend
+      iconOnly
+      size=&quot;small&quot;
+      defaultValue=&quot;list&quot;
+      options={[
+        { value: 'list', label: 'List', icon: <ListIcon /> },
+        { value: 'grid', label: 'Grid', icon: <GridIcon /> },
+        { value: 'calendar', label: 'Calendar', icon: <CalendarIcon /> },
+      ]}
+    />
+  )
+}" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="tsx" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>import { SegmentedControl } from &#39;@orbex/sonar-components/segmented-control&#39;
+import type { ComponentProps } from &#39;react&#39;
+import calendarSymbol from &#39;@material-symbols/svg-400/rounded/calendar_month.svg?raw&#39;
+import gridSymbol from &#39;@material-symbols/svg-400/rounded/grid_view.svg?raw&#39;
+import listSymbol from &#39;@material-symbols/svg-400/rounded/view_list.svg?raw&#39;
+
+/* Material Symbols Rounded, weight 400, as icon components (Foundations › Icons) */
+const symbol = (svg: string) =&gt; {
+  const path = svg.match(/ d=&quot;([^&quot;]+)&quot;/)?.[1]
+  return (props: ComponentProps&lt;&#39;svg&#39;&gt;) =&gt; (
+    &lt;svg viewBox=&quot;0 -960 960 960&quot; fill=&quot;currentColor&quot; aria-hidden=&quot;true&quot; focusable=&quot;false&quot; {...props}&gt;
+      &lt;path d={path} /&gt;
+    &lt;/svg&gt;
+  )
+}
+
+const CalendarIcon = symbol(calendarSymbol)
+const GridIcon = symbol(gridSymbol)
+const ListIcon = symbol(listSymbol)
+
+export default function Views() {
+  return (
+    &lt;SegmentedControl
+      legend=&quot;View&quot;
+      hideLegend
+      iconOnly
+      size=&quot;small&quot;
+      defaultValue=&quot;list&quot;
+      options={[
+        { value: &#39;list&#39;, label: &#39;List&#39;, icon: &lt;ListIcon /&gt; },
+        { value: &#39;grid&#39;, label: &#39;Grid&#39;, icon: &lt;GridIcon /&gt; },
+        { value: &#39;calendar&#39;, label: &#39;Calendar&#39;, icon: &lt;CalendarIcon /&gt; },
+      ]}
+    /&gt;
+  )
+}</code></pre>
+</div>
+
+
+  </details>
+</figure>
+  
+
+  
+
+  
+</div>
+  
+</section>
+
+  <section class="section" aria-labelledby="variants" data-astro-cid-w6ymvdtg>
+  <h2 id="variants" data-astro-cid-w6ymvdtg><a href="#variants" data-astro-cid-w6ymvdtg>Sizes, variants and states</a></h2>
+  
+        <div class="demos" data-astro-cid-cndiwttc>
+          <figure class="specimen-figure" data-astro-cid-h2dlglp7>
+  <figcaption data-astro-cid-h2dlglp7>Sizes, content and states</figcaption>
+  <div class="body" data-astro-cid-h2dlglp7><div class="specimen-frame" data-scroll-region="true" role="img" aria-label="Segmented controls with text and with icons only, medium and small, at rest, with the options not chosen hovered, and disabled"><div class="specimen" inert="" aria-hidden="true" style="grid-template-columns:auto repeat(3, max-content)"><span></span><span class="specimen-head">Rest</span><span class="specimen-head">Hover</span><span class="specimen-head">Disabled</span><span class="specimen-name">Text · medium</span><div class="specimen-cell"><fieldset class="sonar-segmented" data-size="medium"><legend class="sonar-segmented-legend" data-hidden="true">Text · medium</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_27_" checked="" value="plt"/><span class="sonar-segmented-label">Pallets</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_27_" value="kg"/><span class="sonar-segmented-label">Kilograms</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_27_" value="items"/><span class="sonar-segmented-label">Items</span></label></div></fieldset></div><div class="specimen-cell" data-preview="hover"><fieldset class="sonar-segmented" data-size="medium"><legend class="sonar-segmented-legend" data-hidden="true">Text · medium</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_37_" checked="" value="plt"/><span class="sonar-segmented-label">Pallets</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_37_" value="kg"/><span class="sonar-segmented-label">Kilograms</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_37_" value="items"/><span class="sonar-segmented-label">Items</span></label></div></fieldset></div><div class="specimen-cell"><fieldset class="sonar-segmented" data-size="medium" disabled=""><legend class="sonar-segmented-legend" data-hidden="true">Text · medium</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_47_" checked="" value="plt"/><span class="sonar-segmented-label">Pallets</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_47_" value="kg"/><span class="sonar-segmented-label">Kilograms</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_47_" value="items"/><span class="sonar-segmented-label">Items</span></label></div></fieldset></div><span class="specimen-name">Text · small</span><div class="specimen-cell"><fieldset class="sonar-segmented" data-size="small"><legend class="sonar-segmented-legend" data-hidden="true">Text · small</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_2b_" checked="" value="plt"/><span class="sonar-segmented-label">Pallets</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_2b_" value="kg"/><span class="sonar-segmented-label">Kilograms</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_2b_" value="items"/><span class="sonar-segmented-label">Items</span></label></div></fieldset></div><div class="specimen-cell" data-preview="hover"><fieldset class="sonar-segmented" data-size="small"><legend class="sonar-segmented-legend" data-hidden="true">Text · small</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_3b_" checked="" value="plt"/><span class="sonar-segmented-label">Pallets</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_3b_" value="kg"/><span class="sonar-segmented-label">Kilograms</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_3b_" value="items"/><span class="sonar-segmented-label">Items</span></label></div></fieldset></div><div class="specimen-cell"><fieldset class="sonar-segmented" data-size="small" disabled=""><legend class="sonar-segmented-legend" data-hidden="true">Text · small</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_4b_" checked="" value="plt"/><span class="sonar-segmented-label">Pallets</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_4b_" value="kg"/><span class="sonar-segmented-label">Kilograms</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_4b_" value="items"/><span class="sonar-segmented-label">Items</span></label></div></fieldset></div><span class="specimen-name">Icons · medium</span><div class="specimen-cell"><fieldset class="sonar-segmented" data-size="medium" data-icon-only="true"><legend class="sonar-segmented-legend" data-hidden="true">Icons · medium</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_2f_" checked="" value="list"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M350-220h470v-137H350v137ZM140-603h150v-137H140v137Zm0 187h150v-127H140v127Zm0 196h150v-137H140v137Zm210-196h470v-127H350v127Zm0-187h470v-137H350v137ZM140-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Z"></path></svg></span><span class="sonar-segmented-label">List</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_2f_" value="grid"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-510q-24.75 0-42.37-17.63Q120-545.25 120-570v-210q0-24.75 17.63-42.38Q155.25-840 180-840h210q24.75 0 42.38 17.62Q450-804.75 450-780v210q0 24.75-17.62 42.37Q414.75-510 390-510H180Zm0 390q-24.75 0-42.37-17.63Q120-155.25 120-180v-210q0-24.75 17.63-42.38Q155.25-450 180-450h210q24.75 0 42.38 17.62Q450-414.75 450-390v210q0 24.75-17.62 42.37Q414.75-120 390-120H180Zm390-390q-24.75 0-42.37-17.63Q510-545.25 510-570v-210q0-24.75 17.63-42.38Q545.25-840 570-840h210q24.75 0 42.38 17.62Q840-804.75 840-780v210q0 24.75-17.62 42.37Q804.75-510 780-510H570Zm0 390q-24.75 0-42.37-17.63Q510-155.25 510-180v-210q0-24.75 17.63-42.38Q545.25-450 570-450h210q24.75 0 42.38 17.62Q840-414.75 840-390v210q0 24.75-17.62 42.37Q804.75-120 780-120H570ZM180-570h210v-210H180v210Zm390 0h210v-210H570v210Zm0 390h210v-210H570v210Zm-390 0h210v-210H180v210Zm390-390Zm0 180Zm-180 0Zm0-180Z"></path></svg></span><span class="sonar-segmented-label">Grid</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_2f_" value="calendar"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q310-861.6 310-848v28h340v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q715-861.6 715-848v28h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Zm300 230q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-188.5-11.5Q280-423 280-440t11.5-28.5Q303-480 320-480t28.5 11.5Q360-457 360-440t-11.5 28.5Q337-400 320-400t-28.5-11.5ZM640-400q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-188.5-11.5Q280-263 280-280t11.5-28.5Q303-320 320-320t28.5 11.5Q360-297 360-280t-11.5 28.5Q337-240 320-240t-28.5-11.5ZM640-240q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"></path></svg></span><span class="sonar-segmented-label">Calendar</span></label></div></fieldset></div><div class="specimen-cell" data-preview="hover"><fieldset class="sonar-segmented" data-size="medium" data-icon-only="true"><legend class="sonar-segmented-legend" data-hidden="true">Icons · medium</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_3f_" checked="" value="list"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M350-220h470v-137H350v137ZM140-603h150v-137H140v137Zm0 187h150v-127H140v127Zm0 196h150v-137H140v137Zm210-196h470v-127H350v127Zm0-187h470v-137H350v137ZM140-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Z"></path></svg></span><span class="sonar-segmented-label">List</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_3f_" value="grid"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-510q-24.75 0-42.37-17.63Q120-545.25 120-570v-210q0-24.75 17.63-42.38Q155.25-840 180-840h210q24.75 0 42.38 17.62Q450-804.75 450-780v210q0 24.75-17.62 42.37Q414.75-510 390-510H180Zm0 390q-24.75 0-42.37-17.63Q120-155.25 120-180v-210q0-24.75 17.63-42.38Q155.25-450 180-450h210q24.75 0 42.38 17.62Q450-414.75 450-390v210q0 24.75-17.62 42.37Q414.75-120 390-120H180Zm390-390q-24.75 0-42.37-17.63Q510-545.25 510-570v-210q0-24.75 17.63-42.38Q545.25-840 570-840h210q24.75 0 42.38 17.62Q840-804.75 840-780v210q0 24.75-17.62 42.37Q804.75-510 780-510H570Zm0 390q-24.75 0-42.37-17.63Q510-155.25 510-180v-210q0-24.75 17.63-42.38Q545.25-450 570-450h210q24.75 0 42.38 17.62Q840-414.75 840-390v210q0 24.75-17.62 42.37Q804.75-120 780-120H570ZM180-570h210v-210H180v210Zm390 0h210v-210H570v210Zm0 390h210v-210H570v210Zm-390 0h210v-210H180v210Zm390-390Zm0 180Zm-180 0Zm0-180Z"></path></svg></span><span class="sonar-segmented-label">Grid</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_3f_" value="calendar"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q310-861.6 310-848v28h340v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q715-861.6 715-848v28h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Zm300 230q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-188.5-11.5Q280-423 280-440t11.5-28.5Q303-480 320-480t28.5 11.5Q360-457 360-440t-11.5 28.5Q337-400 320-400t-28.5-11.5ZM640-400q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-188.5-11.5Q280-263 280-280t11.5-28.5Q303-320 320-320t28.5 11.5Q360-297 360-280t-11.5 28.5Q337-240 320-240t-28.5-11.5ZM640-240q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"></path></svg></span><span class="sonar-segmented-label">Calendar</span></label></div></fieldset></div><div class="specimen-cell"><fieldset class="sonar-segmented" data-size="medium" data-icon-only="true" disabled=""><legend class="sonar-segmented-legend" data-hidden="true">Icons · medium</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_4f_" checked="" value="list"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M350-220h470v-137H350v137ZM140-603h150v-137H140v137Zm0 187h150v-127H140v127Zm0 196h150v-137H140v137Zm210-196h470v-127H350v127Zm0-187h470v-137H350v137ZM140-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Z"></path></svg></span><span class="sonar-segmented-label">List</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_4f_" value="grid"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-510q-24.75 0-42.37-17.63Q120-545.25 120-570v-210q0-24.75 17.63-42.38Q155.25-840 180-840h210q24.75 0 42.38 17.62Q450-804.75 450-780v210q0 24.75-17.62 42.37Q414.75-510 390-510H180Zm0 390q-24.75 0-42.37-17.63Q120-155.25 120-180v-210q0-24.75 17.63-42.38Q155.25-450 180-450h210q24.75 0 42.38 17.62Q450-414.75 450-390v210q0 24.75-17.62 42.37Q414.75-120 390-120H180Zm390-390q-24.75 0-42.37-17.63Q510-545.25 510-570v-210q0-24.75 17.63-42.38Q545.25-840 570-840h210q24.75 0 42.38 17.62Q840-804.75 840-780v210q0 24.75-17.62 42.37Q804.75-510 780-510H570Zm0 390q-24.75 0-42.37-17.63Q510-155.25 510-180v-210q0-24.75 17.63-42.38Q545.25-450 570-450h210q24.75 0 42.38 17.62Q840-414.75 840-390v210q0 24.75-17.62 42.37Q804.75-120 780-120H570ZM180-570h210v-210H180v210Zm390 0h210v-210H570v210Zm0 390h210v-210H570v210Zm-390 0h210v-210H180v210Zm390-390Zm0 180Zm-180 0Zm0-180Z"></path></svg></span><span class="sonar-segmented-label">Grid</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_4f_" value="calendar"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q310-861.6 310-848v28h340v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q715-861.6 715-848v28h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Zm300 230q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-188.5-11.5Q280-423 280-440t11.5-28.5Q303-480 320-480t28.5 11.5Q360-457 360-440t-11.5 28.5Q337-400 320-400t-28.5-11.5ZM640-400q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-188.5-11.5Q280-263 280-280t11.5-28.5Q303-320 320-320t28.5 11.5Q360-297 360-280t-11.5 28.5Q337-240 320-240t-28.5-11.5ZM640-240q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"></path></svg></span><span class="sonar-segmented-label">Calendar</span></label></div></fieldset></div><span class="specimen-name">Icons · small</span><div class="specimen-cell"><fieldset class="sonar-segmented" data-size="small" data-icon-only="true"><legend class="sonar-segmented-legend" data-hidden="true">Icons · small</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_2j_" checked="" value="list"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M350-220h470v-137H350v137ZM140-603h150v-137H140v137Zm0 187h150v-127H140v127Zm0 196h150v-137H140v137Zm210-196h470v-127H350v127Zm0-187h470v-137H350v137ZM140-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Z"></path></svg></span><span class="sonar-segmented-label">List</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_2j_" value="grid"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-510q-24.75 0-42.37-17.63Q120-545.25 120-570v-210q0-24.75 17.63-42.38Q155.25-840 180-840h210q24.75 0 42.38 17.62Q450-804.75 450-780v210q0 24.75-17.62 42.37Q414.75-510 390-510H180Zm0 390q-24.75 0-42.37-17.63Q120-155.25 120-180v-210q0-24.75 17.63-42.38Q155.25-450 180-450h210q24.75 0 42.38 17.62Q450-414.75 450-390v210q0 24.75-17.62 42.37Q414.75-120 390-120H180Zm390-390q-24.75 0-42.37-17.63Q510-545.25 510-570v-210q0-24.75 17.63-42.38Q545.25-840 570-840h210q24.75 0 42.38 17.62Q840-804.75 840-780v210q0 24.75-17.62 42.37Q804.75-510 780-510H570Zm0 390q-24.75 0-42.37-17.63Q510-155.25 510-180v-210q0-24.75 17.63-42.38Q545.25-450 570-450h210q24.75 0 42.38 17.62Q840-414.75 840-390v210q0 24.75-17.62 42.37Q804.75-120 780-120H570ZM180-570h210v-210H180v210Zm390 0h210v-210H570v210Zm0 390h210v-210H570v210Zm-390 0h210v-210H180v210Zm390-390Zm0 180Zm-180 0Zm0-180Z"></path></svg></span><span class="sonar-segmented-label">Grid</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_2j_" value="calendar"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q310-861.6 310-848v28h340v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q715-861.6 715-848v28h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Zm300 230q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-188.5-11.5Q280-423 280-440t11.5-28.5Q303-480 320-480t28.5 11.5Q360-457 360-440t-11.5 28.5Q337-400 320-400t-28.5-11.5ZM640-400q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-188.5-11.5Q280-263 280-280t11.5-28.5Q303-320 320-320t28.5 11.5Q360-297 360-280t-11.5 28.5Q337-240 320-240t-28.5-11.5ZM640-240q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"></path></svg></span><span class="sonar-segmented-label">Calendar</span></label></div></fieldset></div><div class="specimen-cell" data-preview="hover"><fieldset class="sonar-segmented" data-size="small" data-icon-only="true"><legend class="sonar-segmented-legend" data-hidden="true">Icons · small</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_3j_" checked="" value="list"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M350-220h470v-137H350v137ZM140-603h150v-137H140v137Zm0 187h150v-127H140v127Zm0 196h150v-137H140v137Zm210-196h470v-127H350v127Zm0-187h470v-137H350v137ZM140-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Z"></path></svg></span><span class="sonar-segmented-label">List</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_3j_" value="grid"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-510q-24.75 0-42.37-17.63Q120-545.25 120-570v-210q0-24.75 17.63-42.38Q155.25-840 180-840h210q24.75 0 42.38 17.62Q450-804.75 450-780v210q0 24.75-17.62 42.37Q414.75-510 390-510H180Zm0 390q-24.75 0-42.37-17.63Q120-155.25 120-180v-210q0-24.75 17.63-42.38Q155.25-450 180-450h210q24.75 0 42.38 17.62Q450-414.75 450-390v210q0 24.75-17.62 42.37Q414.75-120 390-120H180Zm390-390q-24.75 0-42.37-17.63Q510-545.25 510-570v-210q0-24.75 17.63-42.38Q545.25-840 570-840h210q24.75 0 42.38 17.62Q840-804.75 840-780v210q0 24.75-17.62 42.37Q804.75-510 780-510H570Zm0 390q-24.75 0-42.37-17.63Q510-155.25 510-180v-210q0-24.75 17.63-42.38Q545.25-450 570-450h210q24.75 0 42.38 17.62Q840-414.75 840-390v210q0 24.75-17.62 42.37Q804.75-120 780-120H570ZM180-570h210v-210H180v210Zm390 0h210v-210H570v210Zm0 390h210v-210H570v210Zm-390 0h210v-210H180v210Zm390-390Zm0 180Zm-180 0Zm0-180Z"></path></svg></span><span class="sonar-segmented-label">Grid</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_3j_" value="calendar"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q310-861.6 310-848v28h340v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q715-861.6 715-848v28h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Zm300 230q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-188.5-11.5Q280-423 280-440t11.5-28.5Q303-480 320-480t28.5 11.5Q360-457 360-440t-11.5 28.5Q337-400 320-400t-28.5-11.5ZM640-400q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-188.5-11.5Q280-263 280-280t11.5-28.5Q303-320 320-320t28.5 11.5Q360-297 360-280t-11.5 28.5Q337-240 320-240t-28.5-11.5ZM640-240q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"></path></svg></span><span class="sonar-segmented-label">Calendar</span></label></div></fieldset></div><div class="specimen-cell"><fieldset class="sonar-segmented" data-size="small" data-icon-only="true" disabled=""><legend class="sonar-segmented-legend" data-hidden="true">Icons · small</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_4j_" checked="" value="list"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M350-220h470v-137H350v137ZM140-603h150v-137H140v137Zm0 187h150v-127H140v127Zm0 196h150v-137H140v137Zm210-196h470v-127H350v127Zm0-187h470v-137H350v137ZM140-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Z"></path></svg></span><span class="sonar-segmented-label">List</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_4j_" value="grid"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-510q-24.75 0-42.37-17.63Q120-545.25 120-570v-210q0-24.75 17.63-42.38Q155.25-840 180-840h210q24.75 0 42.38 17.62Q450-804.75 450-780v210q0 24.75-17.62 42.37Q414.75-510 390-510H180Zm0 390q-24.75 0-42.37-17.63Q120-155.25 120-180v-210q0-24.75 17.63-42.38Q155.25-450 180-450h210q24.75 0 42.38 17.62Q450-414.75 450-390v210q0 24.75-17.62 42.37Q414.75-120 390-120H180Zm390-390q-24.75 0-42.37-17.63Q510-545.25 510-570v-210q0-24.75 17.63-42.38Q545.25-840 570-840h210q24.75 0 42.38 17.62Q840-804.75 840-780v210q0 24.75-17.62 42.37Q804.75-510 780-510H570Zm0 390q-24.75 0-42.37-17.63Q510-155.25 510-180v-210q0-24.75 17.63-42.38Q545.25-450 570-450h210q24.75 0 42.38 17.62Q840-414.75 840-390v210q0 24.75-17.62 42.37Q804.75-120 780-120H570ZM180-570h210v-210H180v210Zm390 0h210v-210H570v210Zm0 390h210v-210H570v210Zm-390 0h210v-210H180v210Zm390-390Zm0 180Zm-180 0Zm0-180Z"></path></svg></span><span class="sonar-segmented-label">Grid</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r6R_4j_" value="calendar"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q310-861.6 310-848v28h340v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q715-861.6 715-848v28h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Zm300 230q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-188.5-11.5Q280-423 280-440t11.5-28.5Q303-480 320-480t28.5 11.5Q360-457 360-440t-11.5 28.5Q337-400 320-400t-28.5-11.5ZM640-400q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-188.5-11.5Q280-263 280-280t11.5-28.5Q303-320 320-320t28.5 11.5Q360-297 360-280t-11.5 28.5Q337-240 320-240t-28.5-11.5ZM640-240q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"></path></svg></span><span class="sonar-segmented-label">Calendar</span></label></div></fieldset></div></div></div></div>
+</figure>
+        </div>
+      
+</section><section class="section" aria-labelledby="usage" data-astro-cid-w6ymvdtg>
+  <h2 id="usage" data-astro-cid-w6ymvdtg><a href="#usage" data-astro-cid-w6ymvdtg>Usage</a></h2>
+  
+    <ul class="prose">
+      <li>The choice applies at once. More than five options is a select.</li>
+      <li>Icons only when each icon is unmistakable in its context; every option keeps a label for assistive technology.</li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="do-dont" data-astro-cid-w6ymvdtg>
+  <h2 id="do-dont" data-astro-cid-w6ymvdtg><a href="#do-dont" data-astro-cid-w6ymvdtg>Do and don’t</a></h2>
+  
+      <div class="guidance"><div class="guidance-pair"><figure class="guidance-example" data-verdict="do"><div class="guidance-stage" inert="" aria-hidden="true"><fieldset class="sonar-segmented" data-size="small"><legend class="sonar-segmented-legend" data-hidden="true">View</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_l_" checked="" value="week"/><span class="sonar-segmented-label">Week</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_l_" value="month"/><span class="sonar-segmented-label">Month</span></label></div></fieldset></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</span><span class="guidance-text">Two to five short options that change the view of the same content.</span></figcaption></figure><figure class="guidance-example" data-verdict="dont"><div class="guidance-stage" inert="" aria-hidden="true"><fieldset class="sonar-segmented" data-size="small"><legend class="sonar-segmented-legend" data-hidden="true">Day</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_p_" value="mon"/><span class="sonar-segmented-label">Mon</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_p_" checked="" value="tue"/><span class="sonar-segmented-label">Tue</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_p_" value="wed"/><span class="sonar-segmented-label">Wed</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_p_" value="thu"/><span class="sonar-segmented-label">Thu</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_p_" value="fri"/><span class="sonar-segmented-label">Fri</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_p_" value="sat"/><span class="sonar-segmented-label">Sat</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_p_" value="sun"/><span class="sonar-segmented-label">Sun</span></label></div></fieldset></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don’t</span><span class="guidance-text">Seven options, or long ones: use a select.</span></figcaption></figure></div><div class="guidance-pair"><figure class="guidance-example" data-verdict="do"><div class="guidance-stage" inert="" aria-hidden="true"><fieldset class="sonar-segmented" data-size="small" data-icon-only="true"><legend class="sonar-segmented-legend" data-hidden="true">View</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_m_" checked="" value="list"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M350-220h470v-137H350v137ZM140-603h150v-137H140v137Zm0 187h150v-127H140v127Zm0 196h150v-137H140v137Zm210-196h470v-127H350v127Zm0-187h470v-137H350v137ZM140-160q-24 0-42-18t-18-42v-520q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H140Z"></path></svg></span><span class="sonar-segmented-label">List</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_m_" value="grid"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-510q-24.75 0-42.37-17.63Q120-545.25 120-570v-210q0-24.75 17.63-42.38Q155.25-840 180-840h210q24.75 0 42.38 17.62Q450-804.75 450-780v210q0 24.75-17.62 42.37Q414.75-510 390-510H180Zm0 390q-24.75 0-42.37-17.63Q120-155.25 120-180v-210q0-24.75 17.63-42.38Q155.25-450 180-450h210q24.75 0 42.38 17.62Q450-414.75 450-390v210q0 24.75-17.62 42.37Q414.75-120 390-120H180Zm390-390q-24.75 0-42.37-17.63Q510-545.25 510-570v-210q0-24.75 17.63-42.38Q545.25-840 570-840h210q24.75 0 42.38 17.62Q840-804.75 840-780v210q0 24.75-17.62 42.37Q804.75-510 780-510H570Zm0 390q-24.75 0-42.37-17.63Q510-155.25 510-180v-210q0-24.75 17.63-42.38Q545.25-450 570-450h210q24.75 0 42.38 17.62Q840-414.75 840-390v210q0 24.75-17.62 42.37Q804.75-120 780-120H570ZM180-570h210v-210H180v210Zm390 0h210v-210H570v210Zm0 390h210v-210H570v210Zm-390 0h210v-210H180v210Zm390-390Zm0 180Zm-180 0Zm0-180Z"></path></svg></span><span class="sonar-segmented-label">Grid</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_m_" value="calendar"/><span class="sonar-segmented-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q310-861.6 310-848v28h340v-28q0-13.6 9-22.8 9-9.2 23.02-9.2t23.5 9.2Q715-861.6 715-848v28h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Zm300 230q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-188.5-11.5Q280-423 280-440t11.5-28.5Q303-480 320-480t28.5 11.5Q360-457 360-440t-11.5 28.5Q337-400 320-400t-28.5-11.5ZM640-400q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-188.5-11.5Q280-263 280-280t11.5-28.5Q303-320 320-320t28.5 11.5Q360-297 360-280t-11.5 28.5Q337-240 320-240t-28.5-11.5ZM640-240q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"></path></svg></span><span class="sonar-segmented-label">Calendar</span></label></div></fieldset></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</span><span class="guidance-text">Icons alone only when each one is familiar; the labels stay for screen readers.</span></figcaption></figure><figure class="guidance-example" data-verdict="dont"><div class="guidance-stage" inert="" aria-hidden="true"><fieldset class="sonar-segmented" data-size="small"><legend class="sonar-segmented-legend" data-hidden="true">Actions</legend><div class="sonar-segmented-track"><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_q_" checked="" value="save"/><span class="sonar-segmented-label">Save</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_q_" value="print"/><span class="sonar-segmented-label">Print</span></label><label class="sonar-segmented-option"><input type="radio" class="sonar-segmented-input" name="_r7R_q_" value="delete"/><span class="sonar-segmented-label">Delete</span></label></div></fieldset></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don’t</span><span class="guidance-text">Actions in a segmented control. It chooses a state; buttons act.</span></figcaption></figure></div></div>
+    
+</section>
+
+  <section class="section" aria-labelledby="accessibility" data-astro-cid-w6ymvdtg>
+  <h2 id="accessibility" data-astro-cid-w6ymvdtg><a href="#accessibility" data-astro-cid-w6ymvdtg>Accessibility</a></h2>
+  
+    <div class="a11y" data-astro-cid-bxr4t4t4>
+  <div class="block" data-astro-cid-bxr4t4t4>
+        <h3 data-astro-cid-bxr4t4t4>Keyboard</h3>
+        <table data-astro-cid-bxr4t4t4>
+          <thead data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+              <th scope="col" data-astro-cid-bxr4t4t4>Key</th>
+              <th scope="col" data-astro-cid-bxr4t4t4>What it does</th>
+            </tr>
+          </thead>
+          <tbody data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Tab</th>
+                <td data-astro-cid-bxr4t4t4>Moves focus to the chosen option.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Arrow keys</th>
+                <td data-astro-cid-bxr4t4t4>Move to the next or previous option and choose it.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Space</th>
+                <td data-astro-cid-bxr4t4t4>Chooses the focused option.</td>
+              </tr>
+          </tbody>
+        </table>
+      </div><div class="block" data-astro-cid-bxr4t4t4>
+        <h3 data-astro-cid-bxr4t4t4>Roles and attributes</h3>
+        <table data-astro-cid-bxr4t4t4>
+          <thead data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+              <th scope="col" data-astro-cid-bxr4t4t4>Element or attribute</th>
+              <th scope="col" data-astro-cid-bxr4t4t4>What it gives</th>
+            </tr>
+          </thead>
+          <tbody data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>&lt;fieldset&gt; and &lt;legend&gt;</code></th>
+                <td data-astro-cid-bxr4t4t4>Group the options under one name, read when focus enters. A hidden legend is still read.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>&lt;input type=&quot;radio&quot;&gt;</code></th>
+                <td data-astro-cid-bxr4t4t4>One per option: announced as “2 of 3”, with the chosen one checked.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Icons only</th>
+                <td data-astro-cid-bxr4t4t4>Each option keeps its label as text for assistive technology.</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+</div>
+    <h3 class="notes" data-astro-cid-cndiwttc>Notes</h3>
+    <ul class="prose">
+    <li>A <code>&lt;fieldset&gt;</code> named by its legend, with one native radio per option: arrow keys move the choice, Tab leaves the group.</li>
+    <li>The legend can be hidden visually and still names the group.</li>
+    <li>It submits with a form without any script, under its <code>name</code>.</li>
+  </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="use" data-astro-cid-w6ymvdtg>
+  <h2 id="use" data-astro-cid-w6ymvdtg><a href="#use" data-astro-cid-w6ymvdtg>Use it</a></h2>
+  
+    <p class="prose" data-astro-cid-cndiwttc>
+      Each component is its own entry point with its own stylesheet, so an app loads only what it uses.
+       The tokens and the cascade layers are set once for the app: see <a href="/get-started/installation/" data-astro-cid-cndiwttc>Installation</a>.
+    </p>
+    
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>tsx</span>
+    <button class="copy" type="button" data-code="import { SegmentedControl } from '@orbex/sonar-components/segmented-control'
+import '@orbex/sonar-components/segmented-control.css'" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="tsx" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>import { SegmentedControl } from &#39;@orbex/sonar-components/segmented-control&#39;
+import &#39;@orbex/sonar-components/segmented-control.css&#39;</code></pre>
+</div>
+
+
+  
+</section>
+
+  <section class="section" aria-labelledby="api" data-astro-cid-w6ymvdtg>
+  <h2 id="api" data-astro-cid-w6ymvdtg><a href="#api" data-astro-cid-w6ymvdtg>API</a></h2>
+  <div class="part" data-astro-cid-ogedjwls>
+  
+  
+  <div class="table-wrap" data-scroll-region data-label="Props of SegmentedControl" data-astro-cid-ogedjwls>
+        <table data-astro-cid-ogedjwls>
+          <caption class="visually-hidden" data-astro-cid-ogedjwls>Props of SegmentedControl</caption>
+          <thead data-astro-cid-ogedjwls>
+            <tr data-astro-cid-ogedjwls>
+              <th scope="col" data-astro-cid-ogedjwls>Prop</th>
+              <th scope="col" data-astro-cid-ogedjwls>Type</th>
+              <th scope="col" data-astro-cid-ogedjwls>Default</th>
+            </tr>
+          </thead>
+          <tbody data-astro-cid-ogedjwls>
+            <tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>legend</code>
+                  <span class="required" data-astro-cid-ogedjwls>Required</span>
+                  <p data-astro-cid-ogedjwls>What is being chosen, such as “Unit”. Always present for assistive technology; drawn unless <code>hideLegend</code>.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>string</code>
+                </td>
+                <td data-astro-cid-ogedjwls><span class="none" data-astro-cid-ogedjwls>—</span></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>hideLegend</code>
+                  
+                  <p data-astro-cid-ogedjwls>Hides the legend from view while keeping it for assistive technology, when the options explain themselves.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>boolean</code>
+                </td>
+                <td data-astro-cid-ogedjwls><code data-astro-cid-ogedjwls>false</code></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>options</code>
+                  <span class="required" data-astro-cid-ogedjwls>Required</span>
+                  <p data-astro-cid-ogedjwls>Two to five options. More than that is a select.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>SegmentedOption[]</code>
+                </td>
+                <td data-astro-cid-ogedjwls><span class="none" data-astro-cid-ogedjwls>—</span></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>name</code>
+                  
+                  <p data-astro-cid-ogedjwls>Shared by the radios, so the choice is submitted with a form. A unique name is made when it is left out.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>string</code>
+                </td>
+                <td data-astro-cid-ogedjwls><span class="none" data-astro-cid-ogedjwls>—</span></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>value</code>
+                  
+                  <p data-astro-cid-ogedjwls>The chosen value, for a controlled control.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>string</code>
+                </td>
+                <td data-astro-cid-ogedjwls><span class="none" data-astro-cid-ogedjwls>—</span></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>defaultValue</code>
+                  
+                  <p data-astro-cid-ogedjwls>The value chosen at first, for an uncontrolled control.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>string</code>
+                </td>
+                <td data-astro-cid-ogedjwls><span class="none" data-astro-cid-ogedjwls>—</span></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>onValueChange</code>
+                  
+                  <p data-astro-cid-ogedjwls>Called with the new value when the choice changes.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>(value: string) =&gt; void</code>
+                </td>
+                <td data-astro-cid-ogedjwls><span class="none" data-astro-cid-ogedjwls>—</span></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>iconOnly</code>
+                  
+                  <p data-astro-cid-ogedjwls>Show icons only. Every option still needs a label.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>boolean</code>
+                </td>
+                <td data-astro-cid-ogedjwls><code data-astro-cid-ogedjwls>false</code></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>size</code>
+                  
+                  <p data-astro-cid-ogedjwls>Medium for toolbars and forms; small inside a card header, beside its title.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>&#39;small&#39; | &#39;medium&#39;</code>
+                </td>
+                <td data-astro-cid-ogedjwls><code data-astro-cid-ogedjwls>&#39;medium&#39;</code></td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+  <p class="note" data-astro-cid-ogedjwls>
+        Also takes every attribute of the native <code data-astro-cid-ogedjwls>&lt;fieldset&gt;</code>
+        <span data-astro-cid-ogedjwls>, except onChange | defaultValue</span>, and a <code data-astro-cid-ogedjwls>ref</code> to it.
+      </p>
+  
+</div>
+  
+</section>
+
+        </div>
+        <div class="page-end" data-astro-cid-lpetmyok>
+          <nav class="pager" aria-label="Previous and next pages" data-astro-cid-lpetmyok>
+                <a href="/components/checkbox/" rel="prev" class="previous" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Previous</span>
+                    Checkbox
+                  </a>
+                <a href="/components/field/" rel="next" class="next" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Next</span>
+                    Text field and select
+                  </a>
+              </nav>
+          <footer class="site-footer" data-astro-cid-nns7i3if>
+  <p data-astro-cid-nns7i3if>
+    Design system by <strong data-astro-cid-nns7i3if>988©STUDIO</strong>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    <a href="/resources/changelog/" data-astro-cid-nns7i3if>v1.1.4</a>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    © 2026
+  </p>
+</footer>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="/assets/Docs.astro_astro_type_script_index_0_lang.CIhC640A.js"></script>
+  </body>
+</html>

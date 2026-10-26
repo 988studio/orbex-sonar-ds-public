@@ -1,0 +1,1 @@
+var e=e=>e.toLocaleString(`en-US`),t=(e,t)=>e.map(({label:e,value:n})=>`${e} ${t(n)}`).join(`, `);export{e as n,t};

@@ -1,0 +1,1 @@
+import{r as e,t}from"./react.BJumA7Ee.js";var n=e(t(),1),r=()=>()=>{},i=()=>(0,n.useSyncExternalStore)(r,()=>!0,()=>!1);export{i as t};

@@ -1,0 +1,333 @@
+# Orbex Sonar-DB Design System
+
+> Design tokens and React components for Sonar-DB, a logistics dashboard. Material 3 Expressive, dense, AA contrast on every surface. Native HTML first, Base UI for complex behavior, plain CSS on tokens in the `sonar` cascade layer.
+
+Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design Tokens JSON) and `@orbex/sonar-components` (one entry point and one stylesheet per component; full API data in `@orbex/sonar-components/api.json`, also published at /api.json). Set the layer order once: `@layer reset, sonar, app;`, then import `@orbex/sonar-tokens/tokens.css`. Style with role tokens (`--sonar-color-text-default`, `--sonar-color-surface-card`), never palette tokens.
+
+## Documentation
+
+- [Introduction](/): What Orbex Sonar-DB is, what it is built on and what this release contains.
+- [Installation](/get-started/installation/): Install the packages, set the cascade layers, import the tokens and use a component.
+- [Foundations](/foundations/): The principles and the accessibility commitments, and the tokens every component is drawn with.
+- [Principles](/foundations/principles/): What the system optimizes for, and how tokens are named, versioned and tested.
+- [Accessibility](/foundations/accessibility/): WCAG 2.2 AA: contrast, focus, target sizes, motion, keyboard and screen readers.
+- [Color](/foundations/color/): The palette, the roles for text, surfaces and states in both themes, and the contrast of every pair.
+- [Typography](/foundations/typography/): Three families and the type roles of the product, from figures in a chart to page titles.
+- [Icons](/foundations/icons/): The marks the components draw, the Material Symbols the product uses, their sizes, weight and how to import them.
+- [Spacing](/foundations/spacing/): The spacing scale, and how cards and their content line up.
+- [Shape](/foundations/shape/): Corner radii, from the tightest to fully round, and what each is for.
+- [Elevation](/foundations/elevation/): Shadows for cards, menus, panels and dragged cards, in both themes.
+- [Motion](/foundations/motion/): Springs and fades: durations, easing, and what changes with reduced motion.
+- [Layout](/layout/): Window size classes, the grid of the overview, and how navigation changes from phone to desktop.
+- [Breakpoints and grid](/layout/grid/): Five size classes, their columns, gaps and margins, with a simulator for any width.
+- [Navigation by device](/layout/navigation/): A bottom bar on phones, a rail on tablets and a sidebar that collapses on desktops.
+- [Components](/components/): React components, native HTML first: how they are built and tested, and each one live with its API.
+- [Patterns](/patterns/): The overview of Sonar-DB and what it is made of: its cards, charts, search, editing and feedback, live.
+- [Overview](/patterns/overview/): The six cards of the default overview on the grid, live.
+- [Cards](/patterns/cards/): Anatomy, the six cards in every size, their states while the overview is edited, and their rules.
+- [Charts](/patterns/charts/): Tick bars, rings and the trend chart in the cards, with the legend they share.
+- [Search](/patterns/search/): Searching orders, deliveries and invoices in plain words, with results as people type.
+- [Editing the overview](/patterns/editing/): Showing, ordering and sizing cards, on phones and on desktops.
+- [Panels](/patterns/panels/): The six panels the overview opens, side by side and live: what opens each, its parts, and how it opens on each device.
+- [Feedback](/patterns/feedback/): Toasts, confirmations, notices and loading states, and when to use each.
+- [App shell](/patterns/app-shell/): The sidebar and its rail, the top bar, the phone bars and how the 1440 canvas fits a window, live.
+- [AI assistant](/patterns/assistant/): The chat with the Orbex assistant: a floating window on desktops, a bottom sheet on phones.
+- [Customize overview](/patterns/customize/): The sheet that shows or hides modules, with the basic set and layouts for a role.
+- [Unbuilt modules](/patterns/unbuilt/): The page for a section with no screen yet: what works and the way back.
+- [Resources](/resources/): What changed in each release, files to download, the system for coding agents, and how to contribute.
+- [Changelog](/resources/changelog/): Every release, newest first: what was added, changed, fixed and deprecated.
+- [Downloads](/resources/downloads/): The tokens as CSS and JSON, and the API and sizes of every component as data.
+- [llms.txt](/llms.txt): The whole system in one text file, for language models and coding agents.
+- [Contributing](/resources/contributing/): How tokens and components are proposed, built, tested and released.
+
+## Components
+
+### Button
+
+[Documentation](/components/button/) · native HTML · `import { Button } from '@orbex/sonar-components/button'` and `import '@orbex/sonar-components/button.css'`
+
+- `Button`: A native button. For navigation, use a link with the same class and data attributes instead: `<a class="sonar-button" data-variant="tonal" data-size="medium" href="…">`. Extends `ComponentProps<'button'>`.
+  - `variant?: 'filled' | 'tonal' | 'outlined' | 'text'` (default 'filled') Visual weight. Filled for the one main action of a view, tonal for secondary actions, outlined and text for the rest.
+  - `size?: 'small' | 'medium'` (default 'medium') Medium in forms, panels and dialogs; small in cards and toolbars.
+  - `icon?: ReactNode` Icon before the label. It is decorative: the label names the action.
+  - `iconEnd?: ReactNode` Icon after the label, such as a chevron on a button that opens a menu.
+
+### Icon button
+
+[Documentation](/components/icon-button/) · native HTML · `import { IconButton } from '@orbex/sonar-components/icon-button'` and `import '@orbex/sonar-components/icon-button.css'`
+
+- `IconButton`: A round button that shows only an icon. Extends `Omit<ComponentProps<'button'>, 'children'>`.
+  - `label: string` What the button does, read by assistive technology. Pair the button with a Tooltip to show it on hover.
+  - `icon: ReactNode` The icon. Decorative: the label names the action.
+  - `variant?: 'standard' | 'filled' | 'tonal' | 'outlined'` (default 'standard') Standard sits on any surface with no fill; the others follow the weights of Button.
+  - `size?: 'small' | 'medium'` (default 'medium') Medium is a 40 px button; small is 32 px, for card headers and dense rows. Both keep a 48 px touch target.
+
+### Badge
+
+[Documentation](/components/badge/) · native HTML · `import { Badge } from '@orbex/sonar-components/badge'` and `import '@orbex/sonar-components/badge.css'`
+
+- `Badge`: A small count or dot on a navigation item, an icon button or a tab. Extends `Omit<ComponentProps<'span'>, 'children'>`.
+  - `count?: number` The number to show. Without it, the badge is a dot that only signals something new.
+  - `max?: number` (default 99) Counts above this show as `99+`.
+  - `label?: string` What the badge means, read by assistive technology instead of the bare number, such as “3 unpaid invoices”. Leave it out only when the element the badge sits on already says it.
+  - `tone?: 'danger' | 'accent'` (default 'danger') Danger for things that need attention; accent for news.
+
+### Status
+
+[Documentation](/components/status/) · native HTML · `import { Status } from '@orbex/sonar-components/status'` and `import '@orbex/sonar-components/status.css'`
+
+- `Status`: The state of an order, a delivery or an invoice. Extends `ComponentProps<'span'>`.
+  - `tone?: 'neutral' | 'positive' | 'warning' | 'danger'` (default 'neutral') What the state means. Color never carries it alone: the text always names it.
+  - `appearance?: 'dot' | 'chip'` (default 'dot') A dot beside the text, for rows and lists; or a chip, for headers and for containers, where colored text would not reach 4.5:1.
+  - `hideLabel?: boolean` (default false) Only the dot shows; the state stays in the text for assistive technology. For dense rows where a tooltip or the row’s details name the state, as in the overview’s calendars.
+  - `children: ReactNode` The state in words: Delivered, Delayed, Due today.
+
+### Switch
+
+[Documentation](/components/switch/) · native HTML · `import { Switch } from '@orbex/sonar-components/switch'` and `import '@orbex/sonar-components/switch.css'`
+
+- `Switch`: A native checkbox with the switch role: it works without JavaScript, in forms and with every assistive technology. Use it for settings that apply at once; for a choice that is submitted later, use Checkbox. Extends `Omit<ComponentProps<'input'>, 'type' | 'role'>`.
+  - `label: ReactNode` What the switch turns on.
+  - `description?: ReactNode` One line on the effect, read after the label.
+
+### Checkbox
+
+[Documentation](/components/checkbox/) · native HTML · `import { Checkbox } from '@orbex/sonar-components/checkbox'` and `import '@orbex/sonar-components/checkbox.css'`
+
+- `Checkbox`: A native checkbox, for choices that are submitted with a form or confirmed later. Extends `Omit<ComponentProps<'input'>, 'type'>`.
+  - `label: ReactNode` What is being chosen.
+  - `description?: ReactNode` One line of help, read after the label.
+  - `indeterminate?: boolean` (default false) Shown as a dash: some, not all, of the items it governs are checked. Clicking it checks it.
+
+### Segmented control
+
+[Documentation](/components/segmented-control/) · native HTML · `import { SegmentedControl } from '@orbex/sonar-components/segmented-control'` and `import '@orbex/sonar-components/segmented-control.css'`
+
+- `SegmentedControl`: A choice of one among a few, drawn as a row of segments. Native radios underneath: arrow keys move the choice, and the control works in forms without JavaScript. Extends `Omit<ComponentProps<'fieldset'>, 'onChange' | 'defaultValue'>`.
+  - `legend: string` What is being chosen, such as “Unit”. Always present for assistive technology; drawn unless `hideLegend`.
+  - `hideLegend?: boolean` (default false) Hides the legend from view while keeping it for assistive technology, when the options explain themselves.
+  - `options: SegmentedOption[]` Two to five options. More than that is a select.
+  - `name?: string` Shared by the radios, so the choice is submitted with a form. A unique name is made when it is left out.
+  - `value?: string` The chosen value, for a controlled control.
+  - `defaultValue?: string` The value chosen at first, for an uncontrolled control.
+  - `onValueChange?: (value: string) => void` Called with the new value when the choice changes.
+  - `iconOnly?: boolean` (default false) Show icons only. Every option still needs a label.
+  - `size?: 'small' | 'medium'` (default 'medium') Medium for toolbars and forms; small inside a card header, beside its title.
+
+### Text field and select
+
+[Documentation](/components/field/) · native HTML · `import { TextField, SelectField } from '@orbex/sonar-components/field'` and `import '@orbex/sonar-components/field.css'`
+
+- `TextField`: A native text input with its label, help and error. Any input type that takes text: text, search, email, number… Extends `Omit<ComponentProps<'input'>, 'size'>`.
+  - `label: ReactNode` The field’s name, always visible above it. Placeholders are examples, never labels.
+  - `description?: ReactNode` Help shown under the field and read after the label.
+  - `error?: ReactNode` What is wrong and how to fix it. When present, the field is marked invalid.
+  - `size?: 'small' | 'medium'` (default 'medium') Height of the field: medium (48 px) in forms, small (36 px) inside rows and panels, such as a quantity in a list.
+  - `icon?: ReactNode` Icon at the start of the control, such as a search glass.
+  - `suffix?: ReactNode` A unit after the value, inside the field, such as plt; it is read after the value.
+- `SelectField`: A native select with its label, help and error. The list is the platform’s own: the best picker on phones and full keyboard and screen reader support everywhere. Extends `Omit<ComponentProps<'select'>, 'size'>`.
+  - `label: ReactNode` The field’s name, always visible above it. Placeholders are examples, never labels.
+  - `description?: ReactNode` Help shown under the field and read after the label.
+  - `error?: ReactNode` What is wrong and how to fix it. When present, the field is marked invalid.
+  - `size?: 'small' | 'medium'` (default 'medium') Height of the field: medium (48 px) in forms, small (36 px) inside rows and panels, such as a quantity in a list.
+  - `icon?: ReactNode` Icon at the start of the control, such as a search glass.
+  - `children: ReactNode` The `<option>` and `<optgroup>` elements.
+
+### Notice
+
+[Documentation](/components/notice/) · native HTML · `import { Notice } from '@orbex/sonar-components/notice'` and `import '@orbex/sonar-components/notice.css'`
+
+- `Notice`: A message inside the page, next to what it is about. It stays until the situation changes; for feedback on an action that just happened, use a toast. Add `role="status"` or `role="alert"` when the notice appears while the person is working, so it is announced. Extends `Omit<ComponentProps<'div'>, 'title'>`.
+  - `tone?: 'info' | 'success' | 'warning' | 'danger'` (default 'info') Info for news and tips, success for a finished task, warning for something to check, danger for a problem.
+  - `title?: ReactNode` A few words in bold before the message.
+  - `children: ReactNode` The message, one or two sentences.
+  - `action?: ReactNode` One action at the end, such as a Button with `variant="text"`.
+
+### Toast
+
+[Documentation](/components/toast/) · behavior from Base UI · `import { ToastProvider } from '@orbex/sonar-components/toast'` and `import '@orbex/sonar-components/toast.css'`
+
+- `ToastProvider`: Feedback on something that just happened, on the inverse surface at the bottom of the window, with at most one action. One toast at a time: a new one replaces the last. Base UI announces it, pauses it while hovered or focused, and lets it be swiped away.
+  - `children: ReactNode` The part of the app that can show toasts, usually all of it. useToast works anywhere inside.
+  - `timeout?: number` (default 5000) Time a toast stays, in milliseconds. One with an action stays twice as long, so there is time to use it.
+  - `closeLabel?: string` (default 'Dismiss') Name of the close button.
+  - `label?: string` (default 'Notifications') Name of the region the toasts appear in. Give each provider its own when a page has more than one.
+  - `inset?: { left?: string; right?: string; bottom?: string }` (default { left: 0, right: 0, bottom: 24px }) Where the toasts sit, as CSS lengths: `left` and `right` bound the area they centre in (such as the main area, right of a sidebar), `bottom` lifts them above a footer or a bottom app bar. The window’s safe area is added to `bottom`.
+  - `closeButton?: boolean` (default true) Whether toasts carry a close button. One with an action can still be swiped away or wait for its timeout.
+
+### Menu
+
+[Documentation](/components/menu/) · behavior from Base UI · `import { Menu } from '@orbex/sonar-components/menu'` and `import '@orbex/sonar-components/menu.css'`
+
+- `Menu.Root`: Holds the menu’s open state. Extends `BaseMenu.Root.Props`.
+- `Menu.Trigger`: The element that opens the menu. Pass a Button or an IconButton with `render`, so the trigger keeps its look. Extends `BaseMenu.Trigger.Props`.
+- `Menu.Content`: The popup, positioned against the trigger and rendered at the end of the document. Extends `Omit<BaseMenu.Popup.Props, 'className'>`.
+  - `className?: ClassName` Classes added to the menu’s popup, after sonar-menu: a string, or a function of the menu’s state.
+  - `side?: BaseMenu.Positioner.Props['side']` (default 'bottom') Side of the trigger the menu opens on. It flips when there is no room.
+  - `align?: BaseMenu.Positioner.Props['align']` (default 'start') How the menu lines up with its trigger along that side: start, center or end. A menu in a card header aligns to the end, so it opens inward.
+  - `sideOffset?: number` (default 6) Distance from the trigger, in pixels.
+- `Menu.Item`: An action. Extends `Omit<BaseMenu.Item.Props, 'className'>`.
+  - `className?: ClassName` Classes added to the item, after its own: a string, or a function of its state.
+  - `icon?: ReactNode` Icon before the label.
+  - `trailing?: ReactNode` Text at the end of the row, such as a shortcut or a count.
+  - `tone?: 'default' | 'danger'` (default 'default') Danger for destructive actions: the label turns red, and the action should still be confirmed or undoable.
+- `Menu.Separator`: A rule between groups of items. Extends `Omit<BaseMenu.Separator.Props, 'className'>`.
+  - `className?: ClassName` Classes added to the separator, after its own: a string, or a function of its state.
+- `Menu.Group`: Items that belong together, named by a GroupLabel. Extends `BaseMenu.Group.Props`.
+- `Menu.GroupLabel`: The name of a group, read when focus enters it. Extends `Omit<BaseMenu.GroupLabel.Props, 'className'>`.
+  - `className?: ClassName` Classes added to the group label, after its own: a string, or a function of its state.
+- `Menu.RadioGroup`: A set of items where exactly one is chosen, such as the unit figures are shown in. Extends `BaseMenu.RadioGroup.Props`.
+- `Menu.RadioItem`: One choice in a RadioGroup, with a check when chosen. Extends `Omit<BaseMenu.RadioItem.Props, 'className'>`.
+  - `className?: ClassName` Classes added to the radio item, after its own: a string, or a function of its state.
+
+### Tooltip
+
+[Documentation](/components/tooltip/) · behavior from Base UI · `import { Tooltip, TooltipProvider } from '@orbex/sonar-components/tooltip'` and `import '@orbex/sonar-components/tooltip.css'`
+
+- `Tooltip`: A short label on the inverse surface, shown on hover and focus. Wrap groups of triggers in TooltipProvider so that, once one tooltip is open, moving to the next shows it without the delay.
+  - `content: ReactNode` The text shown. Short: a name or a hint, never something the person must read to continue.
+  - `children: ReactElement` The element it describes, usually an IconButton. It must be focusable, so keyboard users get the tooltip too.
+  - `side?: BaseTooltip.Positioner.Props['side']` (default 'top') Side of the element the tooltip opens on. It flips when there is no room.
+  - `delay?: number` (default 300) Time the pointer rests on the trigger before the tooltip opens, in milliseconds. Keyboard focus opens it at once.
+- `TooltipProvider`: Shares the open delay between tooltips, so moving along a toolbar does not wait at every button. Extends `BaseTooltip.Provider.Props`.
+
+### Dialog
+
+[Documentation](/components/dialog/) · native HTML · `import { DialogHost, Dialog } from '@orbex/sonar-components/dialog'` and `import '@orbex/sonar-components/dialog.css'`
+
+- `DialogHost`: Holds the side panels and sheets written inside it, as a drawn app frame does, instead of placing them against the window. Extends `{ children: ReactNode }`.
+- `Dialog` Extends `Omit<ComponentProps<'dialog'>, 'open' | 'title' | 'onClose' | 'onCancel'>`.
+  - `open: boolean` Whether the dialog is shown. The dialog is always controlled.
+  - `onOpenChange: (open: boolean) => void` Called with `false` when the person closes it: the close button, Escape, a click outside, or a swipe down.
+  - `title: ReactNode` The heading, which also names the dialog for assistive technology.
+  - `description?: ReactNode` One paragraph under the title, read when the dialog opens.
+  - `placement?: 'center' | 'end' | 'bottom'` (default 'center') Center for a decision; end for a side panel, such as the details of a delivery; bottom for a sheet on phones. On phones (under 600 px) a side panel becomes a sheet from the bottom, with a handle to swipe it down; tablets and desktops keep it at the side.
+  - `modal?: boolean` (default true) Whether the rest of the page waits behind a scrim. A side panel that sits beside the overview, such as the details of a delivery or a new order, is not modal: no scrim, the page stays in view and the row it came from stays marked. It starts under the top bar (--sonar-dialog-top) and closes on Escape or a click outside.
+  - `actions?: ReactNode` Buttons at the foot of the dialog, the main action last.
+  - `closeLabel?: string` (default 'Close') Name of the close button.
+  - `dismissible?: boolean` (default true) Whether a click on the scrim, or outside a panel that is not modal, closes it. Turn it off when closing would lose what the person typed.
+
+### Scroll area
+
+[Documentation](/components/scroll-area/) · native HTML · `import { ScrollArea } from '@orbex/sonar-components/scroll-area'` and `import '@orbex/sonar-components/scroll-area.css'`
+
+- `ScrollArea`: Content that scrolls inside a fixed height, as the product’s lists do: no scrollbar of the system, a fade at each edge that has more, and a thin indicator that shows while it scrolls and fades out a second after. The indicator never covers the content or its buttons. While it scrolls the area is a named group that takes focus, so the keyboard scrolls it; when everything fits it is plain content and adds no tab stop. Extends `ComponentProps<'div'>`.
+  - `label: string` What the content is, read when the area takes focus to scroll: “Invoices”, “System notifications”.
+  - `indicator?: 'outside' | 'inside'` (default 'outside') Where the indicator runs. Outside: in the padding beside the area, 4 to 6 px past its end, as in the product’s cards and panels, where there is padding to hold it. Inside: in a lane of its own at the end of the area, which the content never reaches, for an area with no padding beside it.
+
+### Card
+
+[Documentation](/components/card/) · native HTML · `import { Card } from '@orbex/sonar-components/card'` and `import '@orbex/sonar-components/card.css'`
+
+- `Card`: A card of the overview: a titled region with an optional summary figure, content and a way to the full page. The card is a section named by its title, so the overview reads as a list of landmarks. Extends `Omit<ComponentProps<'section'>, 'title'>`.
+  - `title: ReactNode` The card’s name, which also names the region for assistive technology.
+  - `titleAs?: 'h2' | 'h3'` (default 'h2') Heading level of the title, to fit the page’s outline.
+  - `actions?: ReactNode` Controls at the end of the header, such as a UnitMenu.
+  - `summary?: { label: ReactNode; value: ReactNode; tone?: 'accent' | 'default' }` The figure that sums the card up, under the title: a label and a value, such as Open total and 6,720 plt.
+  - `footer?: ReactNode` The way out of the card, usually a CardLink to the full page.
+  - `size?: 's' | 'm' | 'l' | 'xl'` Height in the overview grid: S, M, L or XL from the layout tokens. The header and footer stay put; content that does not fit scrolls between them. Without a size the card takes the height of its content.
+  - `label?: string` The region’s accessible name, when the title alone would repeat on the page: the same card shown twice, as in “Orders, size S” and “Orders, size M”. By default the title names the region.
+
+### Card link
+
+[Documentation](/components/card-link/) · native HTML · `import { CardLink } from '@orbex/sonar-components/card'` and `import '@orbex/sonar-components/card.css'`
+
+- `CardLink`: The link at the foot of a card to the page it summarizes, with the arrow in a filled circle. Extends `ComponentProps<'a'>`.
+  - `children: ReactNode` Where it goes, as a verb phrase: Go to Orders.
+
+### Card scroll
+
+[Documentation](/components/card-scroll/) · native HTML · `import { CardScroll } from '@orbex/sonar-components/card'` and `import '@orbex/sonar-components/card.css'`
+
+- `CardScroll`: The part of a card’s content that gives way first when the card’s size leaves no room, such as a list of deliveries: it keeps its full height while it fits, and scrolls when it does not. The rest of the content stays in place. Extends `ComponentProps<'div'>`.
+  - `label: string` What the list is, read when it takes focus to scroll: “Deliveries of May 12”.
+
+### Unit menu
+
+[Documentation](/components/unit-menu/) · native HTML · `import { UnitMenu } from '@orbex/sonar-components/card'` and `import '@orbex/sonar-components/card.css'`
+
+- `UnitMenu`: The unit a card’s figures are shown in, as a small pill that opens a menu. Changing it converts every figure in the card; it is the card’s only setting.
+  - `label: string` What the unit measures, read with the current value: “Unit: plt, Pallets”.
+  - `value: string` The value of the unit shown, one of the options' values. The menu is always controlled.
+  - `options: { value: string; short: string; name: string }[]` The units to choose from: a short code, shown in caps on the pill and in the menu, and the full name, read with it.
+  - `onValueChange: (value: string) => void` Called with the value of the unit chosen. The card converts its figures; the menu closes on its own.
+
+### Tick bar
+
+[Documentation](/components/tick-bar/) · native HTML · `import { TickBar } from '@orbex/sonar-components/tick-bar'` and `import '@orbex/sonar-components/tick-bar.css'`
+
+- `TickBar`: A proportion as a row of fine ticks. Extends `Omit<ComponentProps<'div'>, 'children'>`.
+  - `segments: ChartSegment[]` The parts of a whole, in order. Each takes its share of the width.
+  - `label: string` What the bar measures, read before its parts: “May orders”.
+  - `format?: (value: number) => string` Formats values for the accessible description.
+
+### Ring chart
+
+[Documentation](/components/ring-chart/) · native HTML · `import { RingChart } from '@orbex/sonar-components/ring-chart'` and `import '@orbex/sonar-components/ring-chart.css'`
+
+- `RingChart`: Parts of a whole as a ring of ticks: the donut of the Inventory card. Extends `Omit<ComponentProps<'figure'>, 'children'>`.
+  - `segments: ChartSegment[]` The parts of the whole, in order around the ring: each with a label, a value and a chart tone.
+  - `label: string` What the ring measures, read before its parts: “Inventory”.
+  - `ticks?: number` (default 96) Ticks around the ring. Fewer read as coarser; the dashboard uses 96.
+  - `format?: (value: number) => string` Writes a value for the chart’s accessible name: “On hold 1,420 plt”. Plain numbers when left out.
+  - `direction?: 'clockwise' | 'counterclockwise'` (default 'clockwise') Which way the parts run from twelve o’clock. Counterclockwise puts the first part on the left, beside a label set on that side, as in the Inventory card.
+  - `children?: ReactNode` Content in the hole of the ring, such as the total.
+
+### Trend chart
+
+[Documentation](/components/trend-chart/) · native HTML · `import { TrendChart } from '@orbex/sonar-components/trend-chart'` and `import '@orbex/sonar-components/trend-chart.css'`
+
+- `TrendChart`: A daily series as a line, with its running total dotted against a second axis. The legend turns each series off and on; the pointer, a finger or the arrow keys show the values of a day.
+  - `label: string` One sentence that sums the chart up, read first: “Daily shipments in May, 11,940 pallets in total”.
+  - `categories: string[]` The label of each point along the x axis, such as the days of the month.
+  - `series: { name: string; values: (number | null)[] }` The series drawn as a solid line. Missing points (null) leave a gap: days still to come.
+  - `cumulative?: { name: string }` A second series drawn dotted against its own axis on the right: the running total of the first.
+  - `unit: string` Unit of the values, after each figure in the tooltip.
+  - `axisLabels?: number[]` (default first, middle and last) Indices of the categories labeled on the x axis.
+  - `height?: number` (default 200) Height of the chart in pixels, axes included. The width follows its container.
+  - `className?: string` Classes added to the chart’s root element, after sonar-trend-chart.
+
+### Chart legend
+
+[Documentation](/components/chart-legend/) · native HTML · `import { ChartLegend } from '@orbex/sonar-components/chart-legend'` and `import '@orbex/sonar-components/chart-legend.css'`
+
+- `ChartLegend`: The key to a chart’s colors: a dot in each part’s tone, then its name. Extends `Omit<ComponentProps<'ul'>, 'children'>`.
+  - `items: ChartLegendItem[]` One entry per color, in the order of the chart’s parts.
+
+### Search field
+
+[Documentation](/components/search-field/) · behavior from Base UI · `import { SearchField } from '@orbex/sonar-components/search'` and `import '@orbex/sonar-components/search.css'`
+
+- `SearchField`: A search field with its results in a list under it.
+  - `label: string` What is searched, read by assistive technology: “Search orders, deliveries and invoices”.
+  - `showLabel?: boolean` (default false) Whether the label is drawn above the field. In a top bar the icon and the placeholder say what it is.
+  - `placeholder?: string` An example of what to type, never a label.
+  - `value: string` The text in the field. The field is always controlled.
+  - `onValueChange: (value: string) => void` Called with the new text as people type or clear the field; not when a result is chosen.
+  - `items: Item[]` The results for the current text, or suggestions while the field is empty.
+  - `itemToString: (item: Item) => string` The text of an item: its key, and what is announced when it is highlighted.
+  - `renderItem: (item: Item) => ReactNode` Draws one result, usually as a SearchResult.
+  - `onItemChoose: (item: Item) => boolean | void` Called when a result is chosen, by click or with Enter. Return true to keep the list open with the field focused, as when a suggestion fills the field with its text.
+  - `status?: ReactNode` A line at the top of the list, announced politely: how the text was read, or that the search is running.
+  - `busy?: boolean` (default false) While the results are on their way: the field says so and the list keeps the previous results out of reach.
+  - `empty?: ReactNode` Shown when the text has no results.
+  - `busyIcon?: ReactNode` Icon shown while busy, instead of the magnifier.
+  - `size?: 'small' | 'medium'` (default 'medium') Medium in a top bar; small inside a card or a panel.
+  - `className?: string` Classes added to the field’s wrapper, after sonar-search.
+  - `variant?: 'field' | 'top-bar'` (default 'field') `field`: the outlined box. `top-bar`: the product’s top-bar search (v38): no box of its own, it fills the app bar’s search pill (39 px), with a 22 px icon, 12 px text and an 18 px clear mark. On touch screens its text is 16 px drawn at three quarters, so it looks the same and iOS does not zoom in.
+  - `icon?: ReactNode` Replaces the magnifier, such as the app’s own icon font glyph.
+  - `clearIcon?: ReactNode` Replaces the clear mark.
+  - `statusIcon?: ReactNode` Drawn before the status line as the 28 px accent circle: what reads the text (an AI sparkle).
+  - `popupClassName?: string` Classes added to the results popup, to place or size it from the app.
+  - `align?: 'start' | 'center' | 'end'` (default 'start') Where the results line up with the field.
+  - `popupWidth?: 'auto' | 'anchor' | string` (default 'auto') Width of the results: `anchor` is the field’s width, `auto` the field’s width but at least 320 px, or any CSS length (`calc(100vw - 24px)`).
+
+### Search result
+
+[Documentation](/components/search-result/) · behavior from Base UI · `import { SearchResult } from '@orbex/sonar-components/search'` and `import '@orbex/sonar-components/search.css'`
+
+- `SearchResult`: One row of results: an icon, a title, a line under it and something at the end.
+  - `icon?: ReactNode` What kind of thing it is, as an icon: a truck for a delivery, a receipt for an invoice.
+  - `title: ReactNode` The result itself, on one line: a code and its key figure, such as “04-127C 12 items · 6 plt”.
+  - `description?: ReactNode` A second line: the kind of result and when it is.
+  - `trailing?: ReactNode` At the end of the row, such as a Status dot.

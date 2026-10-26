@@ -1,0 +1,1 @@
+import{n as e,t}from"./theme.BampGJ5K.js";for(let n of document.querySelectorAll(`.theme-switch input`))n.checked=n.value===t(),n.addEventListener(`change`,()=>e(n.value));

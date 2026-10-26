@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en" data-astro-cid-lpetmyok>
+  <head>
+    <meta charset="utf-8">
+    <!-- The order of the cascade layers, before any stylesheet: bundling may load the files in any order -->
+    <style>
+      @layer reset, base, sonar;
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <!-- iOS would turn dates and figures into links, changing the elements React hydrates -->
+    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+    <title>Charts · Orbex Sonar-DB Design System</title>
+    <meta name="description" content="The three chart shapes of the Sonar-DB overview: tick bars, ring charts and the trend chart, with the legend they share and their rules.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/assets/ibm-plex-sans-latin-400-normal.CDDApCn2.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-500-normal.6ng42L7E.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-600-normal.CuJfVYMP.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-normal.CRd5VyFf.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-italic.CDUi4ehg.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-400-normal.DMJ8VG8y.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-500-normal.DSY6xOcd.woff2" as="font" type="font/woff2" crossorigin>
+    <script>
+      try {
+        const theme = localStorage.getItem('sonar-ds-theme')
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {}
+
+      /* A page opened from a link starts at the top. Browsers do this already; some embedded viewers keep the previous
+         page’s scroll instead. Going back, reloading and links to a section are left to the browser, and the reset
+         stops as soon as the reader scrolls. */
+      try {
+        const navigation = performance.getEntriesByType('navigation')[0]
+        if (!location.hash && (!navigation || navigation.type === 'navigate')) {
+          const toTop = () => scrollTo(0, 0)
+          const stop = () => {
+            removeEventListener('DOMContentLoaded', toTop)
+            removeEventListener('load', toTop)
+          }
+          toTop()
+          addEventListener('DOMContentLoaded', toTop, { once: true })
+          addEventListener('load', toTop, { once: true })
+          for (const type of ['wheel', 'touchstart', 'keydown']) addEventListener(type, stop, { once: true, passive: true })
+        }
+      } catch {}
+    </script>
+  <style>.chart-demo{gap:var(--sonar-space-32) var(--sonar-space-40);flex-wrap:wrap;width:100%;display:flex}.chart-demo figure{gap:var(--sonar-space-10);margin:0;display:grid}.chart-demo[data-shape=bars]{gap:var(--sonar-space-28);max-width:360px;display:grid}.chart-demo[data-shape=rings] figure{justify-items:center}.chart-demo figcaption{color:var(--sonar-color-text-strong);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}.chart-demo .ring-total{justify-items:center;display:grid}.chart-demo .ring-total strong{color:var(--sonar-color-text-strong);font:var(--sonar-type-title-md);font-variant-numeric:tabular-nums}.chart-demo .ring-total span{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-sm)}
+</style>
+<link rel="stylesheet" href="/assets/styles.Dexbwagh.css">
+<style>.code-block[data-astro-cid-c6nuo4je]{min-width:0;max-width:var(--site-measure);border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-container-low)}.bar[data-astro-cid-c6nuo4je]{padding:var(--sonar-space-6) var(--sonar-space-8) 0 var(--sonar-space-24);justify-content:space-between;align-items:center;display:flex}.language[data-astro-cid-c6nuo4je]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-sm);letter-spacing:var(--sonar-type-label-sm-tracking);text-transform:uppercase}pre[data-astro-cid-c6nuo4je]{overscroll-behavior-x:contain;padding:var(--sonar-space-8) var(--sonar-space-24) var(--sonar-space-20);color:var(--sonar-color-text-strong);font:400 13px/1.6 var(--sonar-font-family-mono);overflow:auto hidden}pre[data-astro-cid-c6nuo4je]:focus-visible{outline:var(--sonar-focus-width) solid var(--sonar-color-focus);outline-offset:calc(-1 * var(--sonar-focus-width));border-radius:0 0 var(--sonar-shape-corner-medium) var(--sonar-shape-corner-medium)}code[data-astro-cid-c6nuo4je]{font:inherit}.copy[data-astro-cid-c6nuo4je]{min-height:32px;padding:0 var(--sonar-space-12);border-radius:var(--sonar-shape-corner-full);color:var(--sonar-color-text-secondary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);cursor:pointer;transition:background-color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);background:0 0;border:0}.copy[data-astro-cid-c6nuo4je]:hover{background:var(--sonar-color-state-hover);color:var(--sonar-color-text-strong)}.copy[data-astro-cid-c6nuo4je]:focus-visible{outline:2px solid var(--sonar-color-accent);outline-offset:2px}
+</style>
+<link rel="stylesheet" href="/assets/DoDont.DV84UQhT.css">
+<style>.page-header[data-astro-cid-b2i3gsw2]{max-width:var(--site-content-width);margin-bottom:var(--sonar-space-48)}h1[data-astro-cid-b2i3gsw2]{font:var(--site-heading-1);letter-spacing:-.01em}.lead[data-astro-cid-b2i3gsw2]{max-width:var(--site-measure);margin-top:var(--sonar-space-16);color:var(--sonar-color-text-secondary);font:var(--site-lead)}
+.section[data-astro-cid-w6ymvdtg]{max-width:var(--site-content-width)}.section[data-astro-cid-w6ymvdtg]+.section{margin-top:72px}h2[data-astro-cid-w6ymvdtg]{margin-bottom:var(--sonar-space-16);font:var(--site-heading-2);letter-spacing:-.01em}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]{color:inherit;text-decoration:none}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]:hover{text-decoration:underline}.section[data-astro-cid-w6ymvdtg]>*+*{margin-top:var(--sonar-space-24)}.section[data-astro-cid-w6ymvdtg]>h2+*{margin-top:0}
+code[data-astro-cid-gkql7nzv].layers{white-space:pre}.deprecated[data-astro-cid-gkql7nzv]{margin-top:var(--sonar-space-4);padding:var(--sonar-space-2) var(--sonar-space-8);border-radius:var(--sonar-shape-corner-full);background:var(--sonar-color-warning-container);color:var(--sonar-color-text-strong);font:var(--sonar-type-label-sm);letter-spacing:var(--sonar-type-label-sm-tracking);display:inline-block}.table-wrap[data-astro-cid-gkql7nzv]{overscroll-behavior-x:contain;border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);box-shadow:var(--sonar-elevation-1);overflow:auto hidden}table[data-astro-cid-gkql7nzv]{border-collapse:collapse;width:100%;min-width:640px;font:var(--sonar-type-body-md);letter-spacing:var(--sonar-type-body-md-tracking)}table[data-astro-cid-gkql7nzv].compact{min-width:0}th[data-astro-cid-gkql7nzv],td[data-astro-cid-gkql7nzv]{padding:var(--sonar-space-12) var(--sonar-space-16);border-bottom:1px solid var(--sonar-color-divider);text-align:left;vertical-align:top}tbody[data-astro-cid-gkql7nzv] tr[data-astro-cid-gkql7nzv]:last-child>[data-astro-cid-gkql7nzv]{border-bottom:0}thead[data-astro-cid-gkql7nzv] th[data-astro-cid-gkql7nzv]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);white-space:nowrap}tbody[data-astro-cid-gkql7nzv] th[data-astro-cid-gkql7nzv]{width:46%;font-weight:inherit}tbody[data-astro-cid-gkql7nzv] th[data-astro-cid-gkql7nzv] code[data-astro-cid-gkql7nzv]{font:500 12px/1.4 var(--sonar-font-family-mono);overflow-wrap:anywhere}tbody[data-astro-cid-gkql7nzv] th[data-astro-cid-gkql7nzv] p[data-astro-cid-gkql7nzv]{margin-top:var(--sonar-space-4);color:var(--sonar-color-text-secondary)}.previews[data-astro-cid-gkql7nzv]{white-space:nowrap}.preview[data-astro-cid-gkql7nzv]{border-radius:var(--sonar-shape-corner-small);vertical-align:top;place-items:center;width:36px;height:36px;display:inline-grid}.preview[data-astro-cid-gkql7nzv]+.preview[data-astro-cid-gkql7nzv]{margin-left:var(--sonar-space-6)}.preview[data-astro-cid-gkql7nzv].fill{background:linear-gradient(var(--token), var(--token)), var(--sonar-color-surface-card);box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--sonar-color-text-strong) 10%, transparent)}.preview[data-astro-cid-gkql7nzv].text{background:var(--sonar-color-surface-card);box-shadow:inset 0 0 0 1px var(--sonar-color-divider);color:var(--token);font:var(--sonar-type-title-md)}.preview[data-astro-cid-gkql7nzv].text.inverse{background:var(--sonar-color-surface-inverse);box-shadow:none}.preview[data-astro-cid-gkql7nzv].border{background:var(--sonar-color-surface-card);box-shadow:inset 0 0 0 2px var(--token)}.preview[data-astro-cid-gkql7nzv].shadow{background:var(--sonar-color-surface-card);box-shadow:var(--token)}.value[data-astro-cid-gkql7nzv]{gap:var(--sonar-space-2);align-content:start;min-width:132px;display:grid}.value[data-astro-cid-gkql7nzv] code[data-astro-cid-gkql7nzv]{color:var(--sonar-color-text-secondary);font:400 12px/1.4 var(--sonar-font-family-mono)}.reference[data-astro-cid-gkql7nzv]{color:var(--sonar-color-text-default);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}.ratio[data-astro-cid-gkql7nzv]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}.ratio[data-astro-cid-gkql7nzv].low{color:var(--sonar-color-text-warning)}.preview[data-astro-cid-gkql7nzv].text[data-exempt-contrast]:before{content:"Aa"}
+.specimen-frame{overscroll-behavior-x:contain;margin:-6px 0 -6px -6px;padding:6px 0 6px 6px;overflow:auto hidden}.specimen{gap:var(--sonar-space-16) var(--sonar-space-24);width:max-content;padding-bottom:var(--sonar-space-4);align-items:center;display:grid}.specimen-head,.specimen-name{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-sm);letter-spacing:var(--sonar-type-label-sm-tracking);white-space:nowrap}.specimen-name{padding-right:var(--sonar-space-8);color:var(--sonar-color-text-secondary)}.specimen-cell{justify-content:flex-start;align-items:center;min-height:32px;display:flex}
+@layer sonar.components{.sonar-trend-chart{gap:var(--sonar-space-8);grid-template-columns:minmax(0,1fr);min-width:0;margin:0;display:grid;position:relative}.sonar-trend-legend{gap:var(--sonar-space-4) var(--sonar-space-16);flex-wrap:wrap;justify-content:space-between;display:flex}.sonar-trend-legend button{gap:var(--sonar-space-6);padding:var(--sonar-space-2) var(--sonar-space-4);border-radius:var(--sonar-shape-corner-small);color:var(--sonar-color-text-strong);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);cursor:pointer;background:0 0;border:0;align-items:center;display:inline-flex;position:relative}.sonar-trend-legend button[data-series=primary]{color:var(--sonar-color-text-accent)}.sonar-trend-legend button[aria-pressed=false]{color:var(--sonar-color-text-tertiary)}.sonar-trend-marker{background:repeating-linear-gradient(to right, var(--sonar-color-chart-primary) 0 2px, transparent 2px 4.2px);width:14px;height:2px}[data-series=cumulative]>.sonar-trend-marker{border-top:2px dotted var(--sonar-color-chart-secondary);background:0 0;height:0}[aria-pressed=false]>.sonar-trend-marker{background:0 0;border:1.5px solid;border-radius:50%;width:8px;height:8px}@media (hover:hover){.sonar-trend-legend button:hover{background:var(--sonar-color-state-hover)}}[data-preview~=hover] .sonar-trend-legend button,.sonar-trend-legend button[data-preview~=hover]{background:var(--sonar-color-state-hover)}.sonar-trend-legend button:focus-visible,.sonar-trend-frame:focus-visible,[data-preview~=focus] .sonar-trend-legend button,.sonar-trend-legend button[data-preview~=focus],[data-preview~=focus] .sonar-trend-frame,.sonar-trend-frame[data-preview~=focus]{outline:var(--sonar-focus-width) solid var(--sonar-color-focus);outline-offset:var(--sonar-focus-offset)}.sonar-trend-frame{border-radius:var(--sonar-shape-corner-small);touch-action:pan-y;min-width:0;position:relative}.sonar-trend-frame svg{display:block;overflow:visible}.sonar-trend-grid{stroke:var(--sonar-color-chart-grid);stroke-dasharray:1 3}.sonar-trend-axis{fill:var(--sonar-color-text-tertiary);font:var(--sonar-type-data);letter-spacing:var(--sonar-type-data-tracking);font-variant-numeric:tabular-nums}.sonar-trend-line{fill:none;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round}.sonar-trend-line[data-series=primary]{stroke:var(--sonar-color-chart-primary);stroke-dasharray:.5 3.7}.sonar-trend-line[data-series=cumulative]{stroke:var(--sonar-color-chart-secondary);stroke-dasharray:1.5 3}.sonar-trend-focus line{stroke:var(--sonar-color-border-emphasis);stroke-dasharray:2 2}.sonar-trend-focus circle{stroke:var(--sonar-color-surface-card);stroke-width:2px}.sonar-trend-focus circle[data-series=primary]{fill:var(--sonar-color-chart-primary)}.sonar-trend-focus circle[data-series=cumulative]{fill:var(--sonar-color-chart-secondary)}.sonar-trend-hit{fill:#0000;cursor:crosshair}.sonar-trend-tip{gap:var(--sonar-space-2);padding:var(--sonar-space-8) var(--sonar-space-10);border-radius:var(--sonar-shape-corner-small);background:var(--sonar-color-surface-inverse);color:var(--sonar-color-text-inverse);font:var(--sonar-type-label-sm);letter-spacing:var(--sonar-type-label-sm-tracking);white-space:nowrap;pointer-events:none;display:grid;position:absolute;top:0;translate:-50% -100%}.sonar-trend-tip strong{font:var(--sonar-type-title-sm)}.sonar-trend-readout{clip-path:inset(50%);white-space:nowrap;width:1px;height:1px;position:absolute;overflow:hidden}@media (pointer:coarse){.sonar-trend-legend button:after{content:"";width:100%;height:max(100%, var(--sonar-layout-touch-target));position:absolute;top:50%;left:0;translate:0 -50%}}}
+.specimen-figure[data-astro-cid-h2dlglp7]{margin-inline:0;border-radius:var(--sonar-shape-corner-large);background:var(--sonar-color-surface-card);min-width:0;box-shadow:var(--sonar-elevation-1);grid-template-columns:minmax(0,1fr);margin-bottom:0;display:grid}figcaption[data-astro-cid-h2dlglp7]{padding:var(--sonar-space-16) var(--sonar-space-20) 0;color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}.body[data-astro-cid-h2dlglp7]{min-width:0;padding:var(--sonar-space-24) var(--sonar-space-24) var(--sonar-space-28)}.body[data-astro-cid-h2dlglp7] .specimen-frame:focus-visible{outline:var(--sonar-focus-width) solid var(--sonar-color-focus);outline-offset:var(--sonar-focus-offset);border-radius:var(--sonar-shape-corner-small)}@container page (width<608px){.body[data-astro-cid-h2dlglp7]{padding:var(--sonar-space-20) var(--sonar-space-16) var(--sonar-space-24)}}
+</style>
+<link rel="stylesheet" href="/assets/Docs.pfYhGa-X.css">
+<style>.a11y[data-astro-cid-bxr4t4t4]{gap:var(--sonar-space-28);max-width:880px;display:grid}h3[data-astro-cid-bxr4t4t4]{margin-bottom:var(--sonar-space-8);font:var(--sonar-type-title-md);letter-spacing:var(--sonar-type-title-md-tracking)}table[data-astro-cid-bxr4t4t4]{border-collapse:collapse;border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);width:100%;box-shadow:var(--sonar-elevation-1);font:var(--sonar-type-body-md);letter-spacing:var(--sonar-type-body-md-tracking)}th[data-astro-cid-bxr4t4t4],td[data-astro-cid-bxr4t4t4]{padding:var(--sonar-space-10) var(--sonar-space-16);border-bottom:1px solid var(--sonar-color-divider);text-align:left;vertical-align:top}tbody[data-astro-cid-bxr4t4t4] tr[data-astro-cid-bxr4t4t4]:last-child>[data-astro-cid-bxr4t4t4]{border-bottom:0}thead[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{width:34%;color:var(--sonar-color-text-strong);font-weight:var(--sonar-font-weight-medium)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4] code[data-astro-cid-bxr4t4t4]{font:400 12px/1.5 var(--sonar-font-family-mono);overflow-wrap:anywhere}td[data-astro-cid-bxr4t4t4]{color:var(--sonar-color-text-secondary)}@container page (width<608px){th[data-astro-cid-bxr4t4t4],td[data-astro-cid-bxr4t4t4]{padding:var(--sonar-space-10) var(--sonar-space-12)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{width:40%}}
+.notes[data-astro-cid-ifzipuwz]{margin:var(--sonar-space-28) 0 var(--sonar-space-8);font:var(--sonar-type-title-md);letter-spacing:var(--sonar-type-title-md-tracking)}
+</style></head>
+  <body data-astro-cid-lpetmyok>
+    <a class="skip-link" href="#content" data-astro-cid-lpetmyok>Skip to content</a>
+
+    <header class="masthead" data-astro-cid-lpetmyok>
+      <div class="brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  <span class="wordmark-system" data-astro-cid-qisgtjgl>Design system</span>
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a></div>
+      <button class="menu-button" type="button" popovertarget="sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation" data-astro-cid-lpetmyok>
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" data-astro-cid-lpetmyok><path d="M4 7h16M4 12h16M4 17h16" data-astro-cid-lpetmyok></path></svg>
+      </button>
+    </header>
+
+    <div class="shell" data-astro-cid-lpetmyok>
+      <nav class="sidebar" id="sidebar" popover aria-label="Documentation" data-astro-cid-lpetmyok>
+        
+        <div class="sidebar-brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a><span class="sidebar-version" data-astro-cid-lpetmyok><a class="version-chip" href="/resources/changelog/" data-astro-cid-2qsy24n7>v1.1.4<span class="visually-hidden" data-astro-cid-2qsy24n7>, changelog</span></a></span></div>
+        <div class="sidebar-scroll" data-astro-cid-lpetmyok>
+          <p class="outline-title" data-astro-cid-lpetmyok>Design system</p>
+          <div class="navigation" data-astro-cid-yxete6jp>
+  <section aria-labelledby="nav-Get started" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Get started" data-astro-cid-yxete6jp>
+            Get started
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/" data-astro-cid-yxete6jp>
+                  Introduction
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/get-started/installation/" data-astro-cid-yxete6jp>
+                  Installation
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Foundations" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Foundations" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/foundations/" data-astro-cid-yxete6jp>
+                Foundations
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/foundations/principles/" data-astro-cid-yxete6jp>
+                  Principles
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/accessibility/" data-astro-cid-yxete6jp>
+                  Accessibility
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/color/" data-astro-cid-yxete6jp>
+                  Color
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/typography/" data-astro-cid-yxete6jp>
+                  Typography
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/icons/" data-astro-cid-yxete6jp>
+                  Icons
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/spacing/" data-astro-cid-yxete6jp>
+                  Spacing
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/shape/" data-astro-cid-yxete6jp>
+                  Shape
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/elevation/" data-astro-cid-yxete6jp>
+                  Elevation
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/motion/" data-astro-cid-yxete6jp>
+                  Motion
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Layout" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Layout" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/layout/" data-astro-cid-yxete6jp>
+                Layout
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/layout/grid/" data-astro-cid-yxete6jp>
+                  Breakpoints and grid
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/layout/navigation/" data-astro-cid-yxete6jp>
+                  Navigation by device
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Components" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Components" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/components/" data-astro-cid-yxete6jp>
+                Components
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/components/button/" data-astro-cid-yxete6jp>
+                  Button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/icon-button/" data-astro-cid-yxete6jp>
+                  Icon button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/badge/" data-astro-cid-yxete6jp>
+                  Badge
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/status/" data-astro-cid-yxete6jp>
+                  Status
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/switch/" data-astro-cid-yxete6jp>
+                  Switch
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/checkbox/" data-astro-cid-yxete6jp>
+                  Checkbox
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/segmented-control/" data-astro-cid-yxete6jp>
+                  Segmented control
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/field/" data-astro-cid-yxete6jp>
+                  Text field and select
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/notice/" data-astro-cid-yxete6jp>
+                  Notice
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/toast/" data-astro-cid-yxete6jp>
+                  Toast
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/menu/" data-astro-cid-yxete6jp>
+                  Menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tooltip/" data-astro-cid-yxete6jp>
+                  Tooltip
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/dialog/" data-astro-cid-yxete6jp>
+                  Dialog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/scroll-area/" data-astro-cid-yxete6jp>
+                  Scroll area
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card/" data-astro-cid-yxete6jp>
+                  Card
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-link/" data-astro-cid-yxete6jp>
+                  Card link
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-scroll/" data-astro-cid-yxete6jp>
+                  Card scroll
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/unit-menu/" data-astro-cid-yxete6jp>
+                  Unit menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tick-bar/" data-astro-cid-yxete6jp>
+                  Tick bar
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/ring-chart/" data-astro-cid-yxete6jp>
+                  Ring chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/trend-chart/" data-astro-cid-yxete6jp>
+                  Trend chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/chart-legend/" data-astro-cid-yxete6jp>
+                  Chart legend
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-field/" data-astro-cid-yxete6jp>
+                  Search field
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-result/" data-astro-cid-yxete6jp>
+                  Search result
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Patterns" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Patterns" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/patterns/" data-astro-cid-yxete6jp>
+                Patterns
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/patterns/overview/" data-astro-cid-yxete6jp>
+                  Overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/cards/" data-astro-cid-yxete6jp>
+                  Cards
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/charts/" aria-current="page" data-astro-cid-yxete6jp>
+                  Charts
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/search/" data-astro-cid-yxete6jp>
+                  Search
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/editing/" data-astro-cid-yxete6jp>
+                  Editing the overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/panels/" data-astro-cid-yxete6jp>
+                  Panels
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/feedback/" data-astro-cid-yxete6jp>
+                  Feedback
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/app-shell/" data-astro-cid-yxete6jp>
+                  App shell
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/assistant/" data-astro-cid-yxete6jp>
+                  AI assistant
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/customize/" data-astro-cid-yxete6jp>
+                  Customize overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/unbuilt/" data-astro-cid-yxete6jp>
+                  Unbuilt modules
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Resources" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Resources" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/resources/" data-astro-cid-yxete6jp>
+                Resources
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/resources/changelog/" data-astro-cid-yxete6jp>
+                  Changelog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/downloads/" data-astro-cid-yxete6jp>
+                  Downloads
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/llms.txt" data-astro-cid-yxete6jp>
+                  llms.txt
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/contributing/" data-astro-cid-yxete6jp>
+                  Contributing
+                </a>
+            </li>
+        </ul>
+      </section>
+</div>
+        </div>
+        <div class="sidebar-footer" data-astro-cid-lpetmyok><fieldset class="theme-switch" data-astro-cid-hds7qqbe>
+  <legend class="visually-hidden" data-astro-cid-hds7qqbe>Theme</legend>
+  <label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="system" checked data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>System</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="light" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Light</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="dark" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Dark</span>
+      </label>
+</fieldset>
+
+<script type="module" src="/assets/ThemeSwitch.astro_astro_type_script_index_0_lang.BMJDsczV.js"></script></div>
+      </nav>
+
+      <main id="content" tabindex="-1" data-astro-cid-lpetmyok>
+        
+        <div class="page-body" data-astro-cid-lpetmyok>
+          <nav class="breadcrumb" aria-label="Breadcrumb" data-astro-cid-lpetmyok>
+                <a href="/patterns/" data-astro-cid-lpetmyok>Patterns</a>
+                <span aria-hidden="true" data-astro-cid-lpetmyok>/</span>
+                <span aria-current="page" data-astro-cid-lpetmyok>Charts</span>
+              </nav>
+          
+  <header class="page-header" data-astro-cid-b2i3gsw2>
+  <h1 data-astro-cid-b2i3gsw2>Charts</h1>
+  <p class="lead" data-astro-cid-b2i3gsw2>Three shapes cover the overview: a tick bar for a share, a ring for the parts of a whole, a line for a month day by day, and one legend for all of them. They are drawn in SVG and CSS with the chart roles of the tokens; no charting library.</p>
+  
+</header>
+
+  <section class="section" aria-labelledby="tick-bar" data-astro-cid-w6ymvdtg>
+  <h2 id="tick-bar" data-astro-cid-w6ymvdtg><a href="#tick-bar" data-astro-cid-w6ymvdtg>Tick bar</a></h2>
+  
+    <p class="prose" data-astro-cid-ifzipuwz>One row of fine ticks, each part in its share of the width and in its chart role. The parts meet without a gap, and a legend under the bar names each color.</p>
+    <figure class="demo" data-astro-cid-trxcs2lc>
+  <figcaption data-astro-cid-trxcs2lc>Orders of a month, and an overdue share</figcaption>
+  <div class="preview row" data-astro-cid-trxcs2lc>
+    <div class="chart-demo" data-shape="bars"><figure><figcaption>May orders</figcaption><div role="img" aria-label="May orders: Shipped 1,420 plt, On hold 80 plt, Pending 1,100 plt" class="sonar-tick-bar" style="--_fill:linear-gradient(90deg, var(--_accent) 0% 54.615%, var(--_strong) 54.615% 57.692%, var(--_muted) 57.692% 100%);--_fill-snapped:linear-gradient(90deg, var(--_accent) 0% round(nearest, 54.615%, var(--_pitch)), var(--_strong) round(nearest, 54.615%, var(--_pitch)) round(nearest, 57.692%, var(--_pitch)), var(--_muted) round(nearest, 57.692%, var(--_pitch)) 100%)"></div><ul role="list" class="sonar-chart-legend" aria-hidden="true"><li data-tone="accent">Shipped</li><li data-tone="strong">On hold</li><li data-tone="muted">Pending</li></ul></figure><figure><figcaption>Overdue share of the balance</figcaption><div role="img" aria-label="Overdue share of the balance: Overdue 2,230,800 USD, Not due yet 1,669,200 USD" class="sonar-tick-bar" style="--_fill:linear-gradient(90deg, var(--_danger) 0% 57.2%, var(--_muted) 57.2% 100%);--_fill-snapped:linear-gradient(90deg, var(--_danger) 0% round(nearest, 57.2%, var(--_pitch)), var(--_muted) round(nearest, 57.2%, var(--_pitch)) 100%)"></div><ul role="list" class="sonar-chart-legend" aria-hidden="true"><li data-tone="danger">Overdue</li><li data-tone="muted">Not due yet</li></ul></figure></div>
+  </div>
+  <details class="code" data-astro-cid-trxcs2lc>
+    <summary data-astro-cid-trxcs2lc>Code</summary>
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>tsx</span>
+    <button class="copy" type="button" data-code="import { ChartLegend } from '@orbex/sonar-components/chart-legend'
+import { TickBar } from '@orbex/sonar-components/tick-bar'
+
+const orders = [
+  { value: 1420, tone: 'accent', label: 'Shipped' },
+  { value: 80, tone: 'strong', label: 'On hold' },
+  { value: 1100, tone: 'muted', label: 'Pending' },
+] as const
+
+const balance = [
+  { value: 2_230_800, tone: 'danger', label: 'Overdue' },
+  { value: 1_669_200, tone: 'muted', label: 'Not due yet' },
+] as const
+
+const plt = (value: number) => `${value.toLocaleString('en-US')} plt`
+const usd = (value: number) => `${value.toLocaleString('en-US')} USD`
+
+export default function TickBars() {
+  return (
+    <div className=&quot;chart-demo&quot; data-shape=&quot;bars&quot;>
+      <figure>
+        <figcaption>May orders</figcaption>
+        <TickBar label=&quot;May orders&quot; format={plt} segments={[...orders]} />
+        <ChartLegend aria-hidden=&quot;true&quot; items={orders.map(({ label, tone }) => ({ label, tone }))} />
+      </figure>
+      <figure>
+        <figcaption>Overdue share of the balance</figcaption>
+        <TickBar label=&quot;Overdue share of the balance&quot; format={usd} segments={[...balance]} />
+        <ChartLegend aria-hidden=&quot;true&quot; items={balance.map(({ label, tone }) => ({ label, tone }))} />
+      </figure>
+    </div>
+  )
+}" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="tsx" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>import { ChartLegend } from &#39;@orbex/sonar-components/chart-legend&#39;
+import { TickBar } from &#39;@orbex/sonar-components/tick-bar&#39;
+
+const orders = [
+  { value: 1420, tone: &#39;accent&#39;, label: &#39;Shipped&#39; },
+  { value: 80, tone: &#39;strong&#39;, label: &#39;On hold&#39; },
+  { value: 1100, tone: &#39;muted&#39;, label: &#39;Pending&#39; },
+] as const
+
+const balance = [
+  { value: 2_230_800, tone: &#39;danger&#39;, label: &#39;Overdue&#39; },
+  { value: 1_669_200, tone: &#39;muted&#39;, label: &#39;Not due yet&#39; },
+] as const
+
+const plt = (value: number) =&gt; `${value.toLocaleString(&#39;en-US&#39;)} plt`
+const usd = (value: number) =&gt; `${value.toLocaleString(&#39;en-US&#39;)} USD`
+
+export default function TickBars() {
+  return (
+    &lt;div className=&quot;chart-demo&quot; data-shape=&quot;bars&quot;&gt;
+      &lt;figure&gt;
+        &lt;figcaption&gt;May orders&lt;/figcaption&gt;
+        &lt;TickBar label=&quot;May orders&quot; format={plt} segments={[...orders]} /&gt;
+        &lt;ChartLegend aria-hidden=&quot;true&quot; items={orders.map(({ label, tone }) =&gt; ({ label, tone }))} /&gt;
+      &lt;/figure&gt;
+      &lt;figure&gt;
+        &lt;figcaption&gt;Overdue share of the balance&lt;/figcaption&gt;
+        &lt;TickBar label=&quot;Overdue share of the balance&quot; format={usd} segments={[...balance]} /&gt;
+        &lt;ChartLegend aria-hidden=&quot;true&quot; items={balance.map(({ label, tone }) =&gt; ({ label, tone }))} /&gt;
+      &lt;/figure&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+</div>
+
+<script type="module">function e(e){let t=document.createElement(`textarea`);t.value=e,t.setAttribute(`readonly`,``),t.style.cssText=`position:fixed;inset:0 auto auto 0;width:1px;height:1px;opacity:0`,document.body.append(t),t.select();let n=document.execCommand(`copy`);return t.remove(),n}for(let t of document.querySelectorAll(`.code-block .copy`))t.addEventListener(`click`,async()=>{let n=t.dataset.code??``,r=!1;try{await navigator.clipboard.writeText(n),r=!0}catch{r=e(n)}t.textContent=r?`Copied`:`Copy failed`,setTimeout(()=>t.textContent=`Copy`,1600)});</script>
+  </details>
+</figure>
+  
+</section>
+
+  <section class="section" aria-labelledby="ring-chart" data-astro-cid-w6ymvdtg>
+  <h2 id="ring-chart" data-astro-cid-w6ymvdtg><a href="#ring-chart" data-astro-cid-w6ymvdtg>Ring chart</a></h2>
+  
+    <p class="prose" data-astro-cid-ifzipuwz>Parts of a whole as a ring of 96 ticks, the Inventory donut. The hole can hold the total; the legend names each color.</p>
+    <figure class="demo" data-astro-cid-trxcs2lc>
+  <figcaption data-astro-cid-trxcs2lc>Two and three parts</figcaption>
+  <div class="preview row" data-astro-cid-trxcs2lc>
+    <div class="chart-demo" data-shape="rings"><figure><figcaption>Inventory</figcaption><figure class="sonar-ring-chart" style="width:128px"><svg viewBox="-50 -50 100 100" role="img" aria-label="Inventory: On hold 840 plt, Available 1,960 plt"><line data-tone="danger" x1="0" y1="-38" x2="0" y2="-48"></line><line data-tone="danger" x1="2.485" y1="-37.919" x2="3.139" y2="-47.897"></line><line data-tone="danger" x1="4.96" y1="-37.675" x2="6.265" y2="-47.589"></line><line data-tone="danger" x1="7.413" y1="-37.27" x2="9.364" y2="-47.078"></line><line data-tone="danger" x1="9.835" y1="-36.705" x2="12.423" y2="-46.364"></line><line data-tone="danger" x1="12.215" y1="-35.983" x2="15.429" y2="-45.453"></line><line data-tone="danger" x1="14.542" y1="-35.107" x2="18.369" y2="-44.346"></line><line data-tone="danger" x1="16.807" y1="-34.081" x2="21.23" y2="-43.05"></line><line data-tone="danger" x1="19" y1="-32.909" x2="24" y2="-41.569"></line><line data-tone="danger" x1="21.112" y1="-31.596" x2="26.667" y2="-39.911"></line><line data-tone="danger" x1="23.133" y1="-30.147" x2="29.221" y2="-38.081"></line><line data-tone="danger" x1="25.055" y1="-28.57" x2="31.649" y2="-36.088"></line><line data-tone="danger" x1="26.87" y1="-26.87" x2="33.941" y2="-33.941"></line><line data-tone="danger" x1="28.57" y1="-25.055" x2="36.088" y2="-31.649"></line><line data-tone="danger" x1="30.147" y1="-23.133" x2="38.081" y2="-29.221"></line><line data-tone="danger" x1="31.596" y1="-21.112" x2="39.911" y2="-26.667"></line><line data-tone="danger" x1="32.909" y1="-19" x2="41.569" y2="-24"></line><line data-tone="danger" x1="34.081" y1="-16.807" x2="43.05" y2="-21.23"></line><line data-tone="danger" x1="35.107" y1="-14.542" x2="44.346" y2="-18.369"></line><line data-tone="danger" x1="35.983" y1="-12.215" x2="45.453" y2="-15.429"></line><line data-tone="danger" x1="36.705" y1="-9.835" x2="46.364" y2="-12.423"></line><line data-tone="danger" x1="37.27" y1="-7.413" x2="47.078" y2="-9.364"></line><line data-tone="danger" x1="37.675" y1="-4.96" x2="47.589" y2="-6.265"></line><line data-tone="danger" x1="37.919" y1="-2.485" x2="47.897" y2="-3.139"></line><line data-tone="danger" x1="38" y1="0" x2="48" y2="0"></line><line data-tone="danger" x1="37.919" y1="2.485" x2="47.897" y2="3.139"></line><line data-tone="danger" x1="37.675" y1="4.96" x2="47.589" y2="6.265"></line><line data-tone="danger" x1="37.27" y1="7.413" x2="47.078" y2="9.364"></line><line data-tone="danger" x1="36.705" y1="9.835" x2="46.364" y2="12.423"></line><line data-tone="muted" x1="35.983" y1="12.215" x2="45.453" y2="15.429"></line><line data-tone="muted" x1="35.107" y1="14.542" x2="44.346" y2="18.369"></line><line data-tone="muted" x1="34.081" y1="16.807" x2="43.05" y2="21.23"></line><line data-tone="muted" x1="32.909" y1="19" x2="41.569" y2="24"></line><line data-tone="muted" x1="31.596" y1="21.112" x2="39.911" y2="26.667"></line><line data-tone="muted" x1="30.147" y1="23.133" x2="38.081" y2="29.221"></line><line data-tone="muted" x1="28.57" y1="25.055" x2="36.088" y2="31.649"></line><line data-tone="muted" x1="26.87" y1="26.87" x2="33.941" y2="33.941"></line><line data-tone="muted" x1="25.055" y1="28.57" x2="31.649" y2="36.088"></line><line data-tone="muted" x1="23.133" y1="30.147" x2="29.221" y2="38.081"></line><line data-tone="muted" x1="21.112" y1="31.596" x2="26.667" y2="39.911"></line><line data-tone="muted" x1="19" y1="32.909" x2="24" y2="41.569"></line><line data-tone="muted" x1="16.807" y1="34.081" x2="21.23" y2="43.05"></line><line data-tone="muted" x1="14.542" y1="35.107" x2="18.369" y2="44.346"></line><line data-tone="muted" x1="12.215" y1="35.983" x2="15.429" y2="45.453"></line><line data-tone="muted" x1="9.835" y1="36.705" x2="12.423" y2="46.364"></line><line data-tone="muted" x1="7.413" y1="37.27" x2="9.364" y2="47.078"></line><line data-tone="muted" x1="4.96" y1="37.675" x2="6.265" y2="47.589"></line><line data-tone="muted" x1="2.485" y1="37.919" x2="3.139" y2="47.897"></line><line data-tone="muted" x1="0" y1="38" x2="0" y2="48"></line><line data-tone="muted" x1="-2.485" y1="37.919" x2="-3.139" y2="47.897"></line><line data-tone="muted" x1="-4.96" y1="37.675" x2="-6.265" y2="47.589"></line><line data-tone="muted" x1="-7.413" y1="37.27" x2="-9.364" y2="47.078"></line><line data-tone="muted" x1="-9.835" y1="36.705" x2="-12.423" y2="46.364"></line><line data-tone="muted" x1="-12.215" y1="35.983" x2="-15.429" y2="45.453"></line><line data-tone="muted" x1="-14.542" y1="35.107" x2="-18.369" y2="44.346"></line><line data-tone="muted" x1="-16.807" y1="34.081" x2="-21.23" y2="43.05"></line><line data-tone="muted" x1="-19" y1="32.909" x2="-24" y2="41.569"></line><line data-tone="muted" x1="-21.112" y1="31.596" x2="-26.667" y2="39.911"></line><line data-tone="muted" x1="-23.133" y1="30.147" x2="-29.221" y2="38.081"></line><line data-tone="muted" x1="-25.055" y1="28.57" x2="-31.649" y2="36.088"></line><line data-tone="muted" x1="-26.87" y1="26.87" x2="-33.941" y2="33.941"></line><line data-tone="muted" x1="-28.57" y1="25.055" x2="-36.088" y2="31.649"></line><line data-tone="muted" x1="-30.147" y1="23.133" x2="-38.081" y2="29.221"></line><line data-tone="muted" x1="-31.596" y1="21.112" x2="-39.911" y2="26.667"></line><line data-tone="muted" x1="-32.909" y1="19" x2="-41.569" y2="24"></line><line data-tone="muted" x1="-34.081" y1="16.807" x2="-43.05" y2="21.23"></line><line data-tone="muted" x1="-35.107" y1="14.542" x2="-44.346" y2="18.369"></line><line data-tone="muted" x1="-35.983" y1="12.215" x2="-45.453" y2="15.429"></line><line data-tone="muted" x1="-36.705" y1="9.835" x2="-46.364" y2="12.423"></line><line data-tone="muted" x1="-37.27" y1="7.413" x2="-47.078" y2="9.364"></line><line data-tone="muted" x1="-37.675" y1="4.96" x2="-47.589" y2="6.265"></line><line data-tone="muted" x1="-37.919" y1="2.485" x2="-47.897" y2="3.139"></line><line data-tone="muted" x1="-38" y1="0" x2="-48" y2="0"></line><line data-tone="muted" x1="-37.919" y1="-2.485" x2="-47.897" y2="-3.139"></line><line data-tone="muted" x1="-37.675" y1="-4.96" x2="-47.589" y2="-6.265"></line><line data-tone="muted" x1="-37.27" y1="-7.413" x2="-47.078" y2="-9.364"></line><line data-tone="muted" x1="-36.705" y1="-9.835" x2="-46.364" y2="-12.423"></line><line data-tone="muted" x1="-35.983" y1="-12.215" x2="-45.453" y2="-15.429"></line><line data-tone="muted" x1="-35.107" y1="-14.542" x2="-44.346" y2="-18.369"></line><line data-tone="muted" x1="-34.081" y1="-16.807" x2="-43.05" y2="-21.23"></line><line data-tone="muted" x1="-32.909" y1="-19" x2="-41.569" y2="-24"></line><line data-tone="muted" x1="-31.596" y1="-21.112" x2="-39.911" y2="-26.667"></line><line data-tone="muted" x1="-30.147" y1="-23.133" x2="-38.081" y2="-29.221"></line><line data-tone="muted" x1="-28.57" y1="-25.055" x2="-36.088" y2="-31.649"></line><line data-tone="muted" x1="-26.87" y1="-26.87" x2="-33.941" y2="-33.941"></line><line data-tone="muted" x1="-25.055" y1="-28.57" x2="-31.649" y2="-36.088"></line><line data-tone="muted" x1="-23.133" y1="-30.147" x2="-29.221" y2="-38.081"></line><line data-tone="muted" x1="-21.112" y1="-31.596" x2="-26.667" y2="-39.911"></line><line data-tone="muted" x1="-19" y1="-32.909" x2="-24" y2="-41.569"></line><line data-tone="muted" x1="-16.807" y1="-34.081" x2="-21.23" y2="-43.05"></line><line data-tone="muted" x1="-14.542" y1="-35.107" x2="-18.369" y2="-44.346"></line><line data-tone="muted" x1="-12.215" y1="-35.983" x2="-15.429" y2="-45.453"></line><line data-tone="muted" x1="-9.835" y1="-36.705" x2="-12.423" y2="-46.364"></line><line data-tone="muted" x1="-7.413" y1="-37.27" x2="-9.364" y2="-47.078"></line><line data-tone="muted" x1="-4.96" y1="-37.675" x2="-6.265" y2="-47.589"></line><line data-tone="muted" x1="-2.485" y1="-37.919" x2="-3.139" y2="-47.897"></line></svg></figure><ul role="list" class="sonar-chart-legend" aria-hidden="true"><li data-tone="danger">On hold</li><li data-tone="muted">Available</li></ul></figure><figure><figcaption>May orders</figcaption><figure class="sonar-ring-chart" style="width:160px"><svg viewBox="-50 -50 100 100" role="img" aria-label="May orders: Shipped 1,420 plt, On hold 80 plt, Pending 1,100 plt"><line data-tone="accent" x1="0" y1="-38" x2="0" y2="-48"></line><line data-tone="accent" x1="2.485" y1="-37.919" x2="3.139" y2="-47.897"></line><line data-tone="accent" x1="4.96" y1="-37.675" x2="6.265" y2="-47.589"></line><line data-tone="accent" x1="7.413" y1="-37.27" x2="9.364" y2="-47.078"></line><line data-tone="accent" x1="9.835" y1="-36.705" x2="12.423" y2="-46.364"></line><line data-tone="accent" x1="12.215" y1="-35.983" x2="15.429" y2="-45.453"></line><line data-tone="accent" x1="14.542" y1="-35.107" x2="18.369" y2="-44.346"></line><line data-tone="accent" x1="16.807" y1="-34.081" x2="21.23" y2="-43.05"></line><line data-tone="accent" x1="19" y1="-32.909" x2="24" y2="-41.569"></line><line data-tone="accent" x1="21.112" y1="-31.596" x2="26.667" y2="-39.911"></line><line data-tone="accent" x1="23.133" y1="-30.147" x2="29.221" y2="-38.081"></line><line data-tone="accent" x1="25.055" y1="-28.57" x2="31.649" y2="-36.088"></line><line data-tone="accent" x1="26.87" y1="-26.87" x2="33.941" y2="-33.941"></line><line data-tone="accent" x1="28.57" y1="-25.055" x2="36.088" y2="-31.649"></line><line data-tone="accent" x1="30.147" y1="-23.133" x2="38.081" y2="-29.221"></line><line data-tone="accent" x1="31.596" y1="-21.112" x2="39.911" y2="-26.667"></line><line data-tone="accent" x1="32.909" y1="-19" x2="41.569" y2="-24"></line><line data-tone="accent" x1="34.081" y1="-16.807" x2="43.05" y2="-21.23"></line><line data-tone="accent" x1="35.107" y1="-14.542" x2="44.346" y2="-18.369"></line><line data-tone="accent" x1="35.983" y1="-12.215" x2="45.453" y2="-15.429"></line><line data-tone="accent" x1="36.705" y1="-9.835" x2="46.364" y2="-12.423"></line><line data-tone="accent" x1="37.27" y1="-7.413" x2="47.078" y2="-9.364"></line><line data-tone="accent" x1="37.675" y1="-4.96" x2="47.589" y2="-6.265"></line><line data-tone="accent" x1="37.919" y1="-2.485" x2="47.897" y2="-3.139"></line><line data-tone="accent" x1="38" y1="0" x2="48" y2="0"></line><line data-tone="accent" x1="37.919" y1="2.485" x2="47.897" y2="3.139"></line><line data-tone="accent" x1="37.675" y1="4.96" x2="47.589" y2="6.265"></line><line data-tone="accent" x1="37.27" y1="7.413" x2="47.078" y2="9.364"></line><line data-tone="accent" x1="36.705" y1="9.835" x2="46.364" y2="12.423"></line><line data-tone="accent" x1="35.983" y1="12.215" x2="45.453" y2="15.429"></line><line data-tone="accent" x1="35.107" y1="14.542" x2="44.346" y2="18.369"></line><line data-tone="accent" x1="34.081" y1="16.807" x2="43.05" y2="21.23"></line><line data-tone="accent" x1="32.909" y1="19" x2="41.569" y2="24"></line><line data-tone="accent" x1="31.596" y1="21.112" x2="39.911" y2="26.667"></line><line data-tone="accent" x1="30.147" y1="23.133" x2="38.081" y2="29.221"></line><line data-tone="accent" x1="28.57" y1="25.055" x2="36.088" y2="31.649"></line><line data-tone="accent" x1="26.87" y1="26.87" x2="33.941" y2="33.941"></line><line data-tone="accent" x1="25.055" y1="28.57" x2="31.649" y2="36.088"></line><line data-tone="accent" x1="23.133" y1="30.147" x2="29.221" y2="38.081"></line><line data-tone="accent" x1="21.112" y1="31.596" x2="26.667" y2="39.911"></line><line data-tone="accent" x1="19" y1="32.909" x2="24" y2="41.569"></line><line data-tone="accent" x1="16.807" y1="34.081" x2="21.23" y2="43.05"></line><line data-tone="accent" x1="14.542" y1="35.107" x2="18.369" y2="44.346"></line><line data-tone="accent" x1="12.215" y1="35.983" x2="15.429" y2="45.453"></line><line data-tone="accent" x1="9.835" y1="36.705" x2="12.423" y2="46.364"></line><line data-tone="accent" x1="7.413" y1="37.27" x2="9.364" y2="47.078"></line><line data-tone="accent" x1="4.96" y1="37.675" x2="6.265" y2="47.589"></line><line data-tone="accent" x1="2.485" y1="37.919" x2="3.139" y2="47.897"></line><line data-tone="accent" x1="0" y1="38" x2="0" y2="48"></line><line data-tone="accent" x1="-2.485" y1="37.919" x2="-3.139" y2="47.897"></line><line data-tone="accent" x1="-4.96" y1="37.675" x2="-6.265" y2="47.589"></line><line data-tone="accent" x1="-7.413" y1="37.27" x2="-9.364" y2="47.078"></line><line data-tone="strong" x1="-9.835" y1="36.705" x2="-12.423" y2="46.364"></line><line data-tone="strong" x1="-12.215" y1="35.983" x2="-15.429" y2="45.453"></line><line data-tone="strong" x1="-14.542" y1="35.107" x2="-18.369" y2="44.346"></line><line data-tone="muted" x1="-16.807" y1="34.081" x2="-21.23" y2="43.05"></line><line data-tone="muted" x1="-19" y1="32.909" x2="-24" y2="41.569"></line><line data-tone="muted" x1="-21.112" y1="31.596" x2="-26.667" y2="39.911"></line><line data-tone="muted" x1="-23.133" y1="30.147" x2="-29.221" y2="38.081"></line><line data-tone="muted" x1="-25.055" y1="28.57" x2="-31.649" y2="36.088"></line><line data-tone="muted" x1="-26.87" y1="26.87" x2="-33.941" y2="33.941"></line><line data-tone="muted" x1="-28.57" y1="25.055" x2="-36.088" y2="31.649"></line><line data-tone="muted" x1="-30.147" y1="23.133" x2="-38.081" y2="29.221"></line><line data-tone="muted" x1="-31.596" y1="21.112" x2="-39.911" y2="26.667"></line><line data-tone="muted" x1="-32.909" y1="19" x2="-41.569" y2="24"></line><line data-tone="muted" x1="-34.081" y1="16.807" x2="-43.05" y2="21.23"></line><line data-tone="muted" x1="-35.107" y1="14.542" x2="-44.346" y2="18.369"></line><line data-tone="muted" x1="-35.983" y1="12.215" x2="-45.453" y2="15.429"></line><line data-tone="muted" x1="-36.705" y1="9.835" x2="-46.364" y2="12.423"></line><line data-tone="muted" x1="-37.27" y1="7.413" x2="-47.078" y2="9.364"></line><line data-tone="muted" x1="-37.675" y1="4.96" x2="-47.589" y2="6.265"></line><line data-tone="muted" x1="-37.919" y1="2.485" x2="-47.897" y2="3.139"></line><line data-tone="muted" x1="-38" y1="0" x2="-48" y2="0"></line><line data-tone="muted" x1="-37.919" y1="-2.485" x2="-47.897" y2="-3.139"></line><line data-tone="muted" x1="-37.675" y1="-4.96" x2="-47.589" y2="-6.265"></line><line data-tone="muted" x1="-37.27" y1="-7.413" x2="-47.078" y2="-9.364"></line><line data-tone="muted" x1="-36.705" y1="-9.835" x2="-46.364" y2="-12.423"></line><line data-tone="muted" x1="-35.983" y1="-12.215" x2="-45.453" y2="-15.429"></line><line data-tone="muted" x1="-35.107" y1="-14.542" x2="-44.346" y2="-18.369"></line><line data-tone="muted" x1="-34.081" y1="-16.807" x2="-43.05" y2="-21.23"></line><line data-tone="muted" x1="-32.909" y1="-19" x2="-41.569" y2="-24"></line><line data-tone="muted" x1="-31.596" y1="-21.112" x2="-39.911" y2="-26.667"></line><line data-tone="muted" x1="-30.147" y1="-23.133" x2="-38.081" y2="-29.221"></line><line data-tone="muted" x1="-28.57" y1="-25.055" x2="-36.088" y2="-31.649"></line><line data-tone="muted" x1="-26.87" y1="-26.87" x2="-33.941" y2="-33.941"></line><line data-tone="muted" x1="-25.055" y1="-28.57" x2="-31.649" y2="-36.088"></line><line data-tone="muted" x1="-23.133" y1="-30.147" x2="-29.221" y2="-38.081"></line><line data-tone="muted" x1="-21.112" y1="-31.596" x2="-26.667" y2="-39.911"></line><line data-tone="muted" x1="-19" y1="-32.909" x2="-24" y2="-41.569"></line><line data-tone="muted" x1="-16.807" y1="-34.081" x2="-21.23" y2="-43.05"></line><line data-tone="muted" x1="-14.542" y1="-35.107" x2="-18.369" y2="-44.346"></line><line data-tone="muted" x1="-12.215" y1="-35.983" x2="-15.429" y2="-45.453"></line><line data-tone="muted" x1="-9.835" y1="-36.705" x2="-12.423" y2="-46.364"></line><line data-tone="muted" x1="-7.413" y1="-37.27" x2="-9.364" y2="-47.078"></line><line data-tone="muted" x1="-4.96" y1="-37.675" x2="-6.265" y2="-47.589"></line><line data-tone="muted" x1="-2.485" y1="-37.919" x2="-3.139" y2="-47.897"></line></svg><div class="sonar-ring-chart-center"><span class="ring-total"><strong>2,600</strong><span>plt</span></span></div></figure><ul role="list" class="sonar-chart-legend" aria-hidden="true"><li data-tone="accent">Shipped</li><li data-tone="strong">On hold</li><li data-tone="muted">Pending</li></ul></figure></div>
+  </div>
+  <details class="code" data-astro-cid-trxcs2lc>
+    <summary data-astro-cid-trxcs2lc>Code</summary>
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>tsx</span>
+    <button class="copy" type="button" data-code="import { ChartLegend } from '@orbex/sonar-components/chart-legend'
+import { RingChart } from '@orbex/sonar-components/ring-chart'
+
+const inventory = [
+  { value: 840, tone: 'danger', label: 'On hold' },
+  { value: 1960, tone: 'muted', label: 'Available' },
+] as const
+
+const orders = [
+  { value: 1420, tone: 'accent', label: 'Shipped' },
+  { value: 80, tone: 'strong', label: 'On hold' },
+  { value: 1100, tone: 'muted', label: 'Pending' },
+] as const
+
+const plt = (value: number) => `${value.toLocaleString('en-US')} plt`
+
+export default function Rings() {
+  return (
+    <div className=&quot;chart-demo&quot; data-shape=&quot;rings&quot;>
+      <figure>
+        <figcaption>Inventory</figcaption>
+        <RingChart label=&quot;Inventory&quot; format={plt} style={{ width: 128 }} segments={[...inventory]} />
+        <ChartLegend aria-hidden=&quot;true&quot; items={inventory.map(({ label, tone }) => ({ label, tone }))} />
+      </figure>
+      <figure>
+        <figcaption>May orders</figcaption>
+        <RingChart label=&quot;May orders&quot; format={plt} style={{ width: 160 }} segments={[...orders]}>
+          <span className=&quot;ring-total&quot;>
+            <strong>2,600</strong>
+            <span>plt</span>
+          </span>
+        </RingChart>
+        <ChartLegend aria-hidden=&quot;true&quot; items={orders.map(({ label, tone }) => ({ label, tone }))} />
+      </figure>
+    </div>
+  )
+}" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="tsx" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>import { ChartLegend } from &#39;@orbex/sonar-components/chart-legend&#39;
+import { RingChart } from &#39;@orbex/sonar-components/ring-chart&#39;
+
+const inventory = [
+  { value: 840, tone: &#39;danger&#39;, label: &#39;On hold&#39; },
+  { value: 1960, tone: &#39;muted&#39;, label: &#39;Available&#39; },
+] as const
+
+const orders = [
+  { value: 1420, tone: &#39;accent&#39;, label: &#39;Shipped&#39; },
+  { value: 80, tone: &#39;strong&#39;, label: &#39;On hold&#39; },
+  { value: 1100, tone: &#39;muted&#39;, label: &#39;Pending&#39; },
+] as const
+
+const plt = (value: number) =&gt; `${value.toLocaleString(&#39;en-US&#39;)} plt`
+
+export default function Rings() {
+  return (
+    &lt;div className=&quot;chart-demo&quot; data-shape=&quot;rings&quot;&gt;
+      &lt;figure&gt;
+        &lt;figcaption&gt;Inventory&lt;/figcaption&gt;
+        &lt;RingChart label=&quot;Inventory&quot; format={plt} style={{ width: 128 }} segments={[...inventory]} /&gt;
+        &lt;ChartLegend aria-hidden=&quot;true&quot; items={inventory.map(({ label, tone }) =&gt; ({ label, tone }))} /&gt;
+      &lt;/figure&gt;
+      &lt;figure&gt;
+        &lt;figcaption&gt;May orders&lt;/figcaption&gt;
+        &lt;RingChart label=&quot;May orders&quot; format={plt} style={{ width: 160 }} segments={[...orders]}&gt;
+          &lt;span className=&quot;ring-total&quot;&gt;
+            &lt;strong&gt;2,600&lt;/strong&gt;
+            &lt;span&gt;plt&lt;/span&gt;
+          &lt;/span&gt;
+        &lt;/RingChart&gt;
+        &lt;ChartLegend aria-hidden=&quot;true&quot; items={orders.map(({ label, tone }) =&gt; ({ label, tone }))} /&gt;
+      &lt;/figure&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+</div>
+
+
+  </details>
+</figure>
+  
+</section>
+
+  <section class="section" aria-labelledby="trend-chart" data-astro-cid-w6ymvdtg>
+  <h2 id="trend-chart" data-astro-cid-w6ymvdtg><a href="#trend-chart" data-astro-cid-w6ymvdtg>Trend chart</a></h2>
+  
+    <p class="prose" data-astro-cid-ifzipuwz>
+      A month day by day as a line, with its running total dotted against a second axis. The legend turns each series
+      off and on; hovering, touching or the arrow keys read a day.
+    </p>
+    <figure class="demo" data-astro-cid-trxcs2lc>
+  <figcaption data-astro-cid-trxcs2lc>Daily shipments in April</figcaption>
+  <div class="preview row" data-astro-cid-trxcs2lc>
+    <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(function(){let e=(e,t,n)=>{let r=async()=>{await(await e())()},i=typeof t.value==`object`?t.value:void 0,a={rootMargin:i==null?void 0:i.rootMargin},o=new IntersectionObserver(e=>{for(let t of e)if(t.isIntersecting){o.disconnect(),r();break}},a);for(let e of n.children)o.observe(e)};(self.Astro||(self.Astro={})).visible=e,window.dispatchEvent(new Event(`astro:visible`))})();</script><script>(function(){function e(t){"@babel/helpers - typeof";return e=typeof Symbol==`function`&&typeof Symbol.iterator==`symbol`?function(e){return typeof e}:function(e){return e&&typeof Symbol==`function`&&e.constructor===Symbol&&e!==Symbol.prototype?`symbol`:typeof e},e(t)}function t(t,n){if(e(t)!=`object`||!t)return t;var r=t[Symbol.toPrimitive];if(r!==void 0){var i=r.call(t,n||`default`);if(e(i)!=`object`)return i;throw TypeError(`@@toPrimitive must return a primitive value.`)}return(n===`string`?String:Number)(t)}function n(n){var r=t(n,`string`);return e(r)==`symbol`?r:r+``}function r(e,t,r){return(t=n(t))in e?Object.defineProperty(e,t,{value:r,enumerable:!0,configurable:!0,writable:!0}):e[t]=r,e}let i=/* @__PURE__ */ new Set([`__proto__`,`constructor`,`prototype`]);{let e={0:e=>a(e),1:e=>n(e),2:e=>new RegExp(e),3:e=>new Date(e),4:e=>new Map(n(e)),5:e=>new Set(n(e)),6:e=>BigInt(e),7:e=>new URL(e),8:e=>new Uint8Array(e),9:e=>new Uint16Array(e),10:e=>new Uint32Array(e),11:e=>1/0*e},t=t=>{let[n,r]=t;return n in e?e[n](r):void 0},n=e=>e.map(t),a=e=>typeof e!=`object`||!e?e:Object.fromEntries(Object.entries(e).map(([e,n])=>[e,t(n)]));class o extends HTMLElement{constructor(...e){super(...e),r(this,`Component`,void 0),r(this,`hydrator`,void 0),r(this,`hydrate`,async()=>{var e;if(!this.hydrator||!this.isConnected)return;let t=(e=this.parentElement)==null?void 0:e.closest(`astro-island[ssr]`);if(t){t.addEventListener(`astro:hydrate`,this.hydrate,{once:!0});return}let n=this.querySelectorAll(`astro-slot`),r={},i=this.querySelectorAll(`template[data-astro-template]`);for(let e of i){let t=e.closest(this.tagName);t!=null&&t.isSameNode(this)&&(r[e.getAttribute(`data-astro-template`)||`default`]=e.innerHTML,e.remove())}for(let e of n){let t=e.closest(this.tagName);t!=null&&t.isSameNode(this)&&(r[e.getAttribute(`name`)||`default`]=e.innerHTML)}let o;try{o=this.hasAttribute(`props`)?a(JSON.parse(this.getAttribute(`props`))):{}}catch(e){let t=this.getAttribute(`component-url`)||`<unknown>`,n=this.getAttribute(`component-export`);throw n&&(t+=` (export ${n})`),console.error(`[hydrate] Error parsing props for component ${t}`,this.getAttribute(`props`),e),e}await this.hydrator(this)(this.Component,o,r,{client:this.getAttribute(`client`)}),this.removeAttribute(`ssr`),this.dispatchEvent(new CustomEvent(`astro:hydrate`))}),r(this,`unmount`,()=>{this.isConnected||this.dispatchEvent(new CustomEvent(`astro:unmount`))})}disconnectedCallback(){document.removeEventListener(`astro:after-swap`,this.unmount),document.addEventListener(`astro:after-swap`,this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute(`await-children`)||document.readyState===`interactive`||document.readyState===`complete`)this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener(`DOMContentLoaded`,e),t.disconnect(),this.childrenConnectedCallback()},t=new MutationObserver(()=>{var t;((t=this.lastChild)==null?void 0:t.nodeType)===Node.COMMENT_NODE&&this.lastChild.nodeValue===`astro:end`&&(this.lastChild.remove(),e())});t.observe(this,{childList:!0}),document.addEventListener(`DOMContentLoaded`,e)}}async childrenConnectedCallback(){let e=this.getAttribute(`before-hydration-url`);e&&await import(e),this.start()}getRetryImportUrl(e){let t=new URL(e,document.baseURI);return t.searchParams.set(`astro-retry`,Date.now().toString()),t.toString()}async importWithRetry(e){try{return await import(e)}catch(t){return await new Promise(e=>setTimeout(e,1e3)),import(this.getRetryImportUrl(e))}}handleHydrationError(e){let t=this.getAttribute(`component-url`),n=new CustomEvent(`astro:hydration-error`,{cancelable:!0,bubbles:!0,composed:!0,detail:{error:e,componentUrl:t}});this.dispatchEvent(n)&&console.error(`[astro-island] Error hydrating ${t}`,e)}async start(){let e=JSON.parse(this.getAttribute(`opts`)),t=this.getAttribute(`client`);if(Astro[t]===void 0){window.addEventListener(`astro:${t}`,()=>this.start(),{once:!0});return}try{await Astro[t](async()=>{let e=this.getAttribute(`renderer-url`);try{let[t,{default:n}]=await Promise.all([this.importWithRetry(this.getAttribute(`component-url`)),e?this.importWithRetry(e):Promise.resolve({default:()=>()=>{}})]),r=this.getAttribute(`component-export`)||`default`;if(r.includes(`.`)){this.Component=t;for(let e of r.split(`.`)){if(i.has(e)||!this.Component||typeof this.Component!=`object`&&typeof this.Component!=`function`||!Object.hasOwn(this.Component,e))throw Error(`Invalid component export path: ${r}`);this.Component=this.Component[e]}}else{if(i.has(r))throw Error(`Invalid component export path: ${r}`);this.Component=t[r]}return this.hydrator=n,this.hydrate}catch(e){return this.handleHydrationError(e),()=>{}}},e,this)}catch(e){this.handleHydrationError(e)}}attributeChangedCallback(){this.hydrate()}}r(o,`observedAttributes`,[`props`]),customElements.get(`astro-island`)||customElements.define(`astro-island`,o)}})();</script><astro-island uid="Z1wQiwW" prefix="r7" component-url="/assets/Trend.BxO8DKq3.js" component-export="default" renderer-url="/assets/client.y4608tsh.js" props="{&quot;data-astro-cid-ifzipuwz&quot;:[0,true]}" ssr client="visible" opts="{&quot;name&quot;:&quot;Trend&quot;,&quot;value&quot;:true}" await-children><div style="width:min(100%, 560px)"><figure class="sonar-trend-chart"><div class="sonar-trend-legend" role="group" aria-label="Series"><button type="button" aria-pressed="true" data-series="primary"><span class="sonar-trend-marker" aria-hidden="true"></span>Shipments (plt)</button><button type="button" aria-pressed="true" data-series="cumulative"><span class="sonar-trend-marker" aria-hidden="true"></span>Cumulative (plt)</button></div><div class="sonar-trend-frame" tabindex="0" role="group" aria-label="Daily shipments in April, 11,020 pallets in total. Use the arrow keys to read each day." aria-describedby="_r7R_0_-readout"><svg viewBox="0 0 480 200" width="100%" height="200" aria-hidden="true"><g><line class="sonar-trend-grid" x1="34" x2="436" y1="174" y2="174"></line><text class="sonar-trend-axis" x="26" y="174" text-anchor="end" dominant-baseline="middle">0</text></g><g><line class="sonar-trend-grid" x1="34" x2="436" y1="119.33333333333334" y2="119.33333333333334"></line><text class="sonar-trend-axis" x="26" y="119.33333333333334" text-anchor="end" dominant-baseline="middle">200</text></g><g><line class="sonar-trend-grid" x1="34" x2="436" y1="64.66666666666667" y2="64.66666666666667"></line><text class="sonar-trend-axis" x="26" y="64.66666666666667" text-anchor="end" dominant-baseline="middle">400</text></g><g><line class="sonar-trend-grid" x1="34" x2="436" y1="10" y2="10"></line><text class="sonar-trend-axis" x="26" y="10" text-anchor="end" dominant-baseline="middle">600</text></g><text class="sonar-trend-axis" x="444" y="174" dominant-baseline="middle">0</text><text class="sonar-trend-axis" x="444" y="119.33333333333334" dominant-baseline="middle">5,000</text><text class="sonar-trend-axis" x="444" y="64.66666666666667" dominant-baseline="middle">10,000</text><text class="sonar-trend-axis" x="444" y="10" dominant-baseline="middle">15,000</text><text class="sonar-trend-axis" x="34" y="192" text-anchor="middle">Apr 1</text><text class="sonar-trend-axis" x="228.0689655172414" y="192" text-anchor="middle">Apr 15</text><text class="sonar-trend-axis" x="436" y="192" text-anchor="middle">Apr 30</text><path class="sonar-trend-line" data-series="cumulative" d="M34.0,170.1L47.9,166.0L61.7,162.6L75.6,157.1L89.4,152.6L103.3,147.9L117.2,144.4L131.0,141.0L144.9,137.8L158.8,134.6L172.6,130.2L186.5,125.2L200.3,121.2L214.2,118.0L228.1,114.1L241.9,109.3L255.8,104.4L269.7,100.0L283.5,96.0L297.4,92.4L311.2,89.0L325.1,85.1L339.0,81.3L352.8,78.2L366.7,72.9L380.6,68.9L394.4,64.9L408.3,61.2L422.1,57.6L436.0,53.5"></path><path class="sonar-trend-line" data-series="primary" d="M34.0,77.0L47.9,71.5L61.7,89.3L75.6,34.6L89.4,63.3L103.3,56.5L117.2,85.2L131.0,90.6L144.9,92.0L158.8,96.1L172.6,63.3L186.5,49.6L200.3,72.9L214.2,93.4L228.1,78.3L241.9,52.4L255.8,51.0L269.7,66.0L283.5,74.2L297.4,82.4L311.2,89.3L325.1,75.6L339.0,79.7L352.8,96.1L366.7,41.4L380.6,75.6L394.4,74.2L408.3,81.1L422.1,83.8L436.0,71.5"></path><rect class="sonar-trend-hit" x="34" y="10" width="402" height="164"></rect></svg></div><p class="sonar-trend-readout" id="_r7R_0_-readout" aria-live="polite"></p></figure></div><!--astro:end--></astro-island>
+  </div>
+  <details class="code" data-astro-cid-trxcs2lc>
+    <summary data-astro-cid-trxcs2lc>Code</summary>
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>tsx</span>
+    <button class="copy" type="button" data-code="/* A month day by day, with its running total: daily shipments in April */
+import { TrendChart } from '@orbex/sonar-components/trend-chart'
+import '@orbex/sonar-components/trend-chart.css'
+
+const shipped = [
+  355, 375, 310, 510, 405, 430, 325, 305, 300, 285, 405, 455, 370, 295, 350, 445, 450, 395, 365, 335, 310, 360, 345, 285,
+  485, 360, 365, 340, 330, 375,
+]
+const days = shipped.map((_, index) => `Apr ${index + 1}`)
+const total = shipped.reduce((sum, value) => sum + value, 0)
+
+export default function Trend() {
+  return (
+    <div style={{ width: 'min(100%, 560px)' }}>
+      <TrendChart
+        label={`Daily shipments in April, ${total.toLocaleString('en-US')} pallets in total`}
+        categories={days}
+        series={{ name: 'Shipments (plt)', values: shipped }}
+        cumulative={{ name: 'Cumulative (plt)' }}
+        unit=&quot;plt&quot;
+        axisLabels={[0, 14, days.length - 1]}
+      />
+    </div>
+  )
+}" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="tsx" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>/* A month day by day, with its running total: daily shipments in April */
+import { TrendChart } from &#39;@orbex/sonar-components/trend-chart&#39;
+import &#39;@orbex/sonar-components/trend-chart.css&#39;
+
+const shipped = [
+  355, 375, 310, 510, 405, 430, 325, 305, 300, 285, 405, 455, 370, 295, 350, 445, 450, 395, 365, 335, 310, 360, 345, 285,
+  485, 360, 365, 340, 330, 375,
+]
+const days = shipped.map((_, index) =&gt; `Apr ${index + 1}`)
+const total = shipped.reduce((sum, value) =&gt; sum + value, 0)
+
+export default function Trend() {
+  return (
+    &lt;div style={{ width: &#39;min(100%, 560px)&#39; }}&gt;
+      &lt;TrendChart
+        label={`Daily shipments in April, ${total.toLocaleString(&#39;en-US&#39;)} pallets in total`}
+        categories={days}
+        series={{ name: &#39;Shipments (plt)&#39;, values: shipped }}
+        cumulative={{ name: &#39;Cumulative (plt)&#39; }}
+        unit=&quot;plt&quot;
+        axisLabels={[0, 14, days.length - 1]}
+      /&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+</div>
+
+
+  </details>
+</figure>
+  
+</section>
+
+  <section class="section" aria-labelledby="rules" data-astro-cid-w6ymvdtg>
+  <h2 id="rules" data-astro-cid-w6ymvdtg><a href="#rules" data-astro-cid-w6ymvdtg>Rules</a></h2>
+  
+    <ul class="prose" data-astro-cid-ifzipuwz>
+      <li data-astro-cid-ifzipuwz><strong data-astro-cid-ifzipuwz>Color by role.</strong> The first series in accent, the second in the strong neutral, the rest of a whole in the rest tone, alerts in danger. Never a hue that means nothing.</li>
+      <li data-astro-cid-ifzipuwz><strong data-astro-cid-ifzipuwz>A series that is off keeps its name readable.</strong> It drops to the tertiary level at full opacity and its marker turns hollow; it is never faded.</li>
+      <li data-astro-cid-ifzipuwz><strong data-astro-cid-ifzipuwz>Figures in the data role</strong>, the mono face at 10 px, with tabular numerals; gridlines dotted and quiet.</li>
+      <li data-astro-cid-ifzipuwz><strong data-astro-cid-ifzipuwz>Labels beside the chart, not inside it.</strong> The card states the key figures in text; the chart shows their shape.</li>
+      <li data-astro-cid-ifzipuwz><strong data-astro-cid-ifzipuwz>No animation on load.</strong> A chart draws at once; values move only when the unit or the period changes.</li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="do-dont" data-astro-cid-w6ymvdtg>
+  <h2 id="do-dont" data-astro-cid-w6ymvdtg><a href="#do-dont" data-astro-cid-w6ymvdtg>Do and don’t</a></h2>
+  
+      <div class="guidance"><div class="guidance-pair"><figure class="guidance-example" data-verdict="do"><div class="guidance-stage" inert="" aria-hidden="true"><div class="g-stack"><div role="img" aria-label="May orders: Shipped 1,420, On hold 80, Pending 1,100" class="sonar-tick-bar" style="--_fill:linear-gradient(90deg, var(--_accent) 0% 54.615%, var(--_strong) 54.615% 57.692%, var(--_muted) 57.692% 100%);--_fill-snapped:linear-gradient(90deg, var(--_accent) 0% round(nearest, 54.615%, var(--_pitch)), var(--_strong) round(nearest, 54.615%, var(--_pitch)) round(nearest, 57.692%, var(--_pitch)), var(--_muted) round(nearest, 57.692%, var(--_pitch)) 100%)"></div><ul role="list" class="sonar-chart-legend" aria-hidden="true"><li data-tone="accent">Shipped</li><li data-tone="strong">On hold</li><li data-tone="muted">Pending</li></ul></div></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</span><span class="guidance-text">Color by role: the first part in accent, then strong, the rest in the rest tone.</span></figcaption></figure><figure class="guidance-example" data-verdict="dont"><div class="guidance-stage" inert="" aria-hidden="true"><div class="g-stack"><div role="img" aria-label="May orders: Shipped 1,420, On hold 80, Pending 1,100" class="sonar-tick-bar" style="--_fill:linear-gradient(90deg, var(--_warning) 0% 54.615%, var(--_danger) 54.615% 57.692%, var(--_accent) 57.692% 100%);--_fill-snapped:linear-gradient(90deg, var(--_warning) 0% round(nearest, 54.615%, var(--_pitch)), var(--_danger) round(nearest, 54.615%, var(--_pitch)) round(nearest, 57.692%, var(--_pitch)), var(--_accent) round(nearest, 57.692%, var(--_pitch)) 100%)"></div><ul role="list" class="sonar-chart-legend" aria-hidden="true"><li data-tone="warning">Shipped</li><li data-tone="danger">On hold</li><li data-tone="accent">Pending</li></ul></div></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don’t</span><span class="guidance-text">Warning and danger for parts that are not alerts: the chart cries wolf.</span></figcaption></figure></div><div class="guidance-pair"><figure class="guidance-example" data-verdict="do"><div class="guidance-stage" inert="" aria-hidden="true"><div class="g-row" style="gap:16px"><span class="g-meta">840 plt<br/>On hold</span><figure class="sonar-ring-chart" style="width:88px"><svg viewBox="-50 -50 100 100" role="img" aria-label="Inventory: On hold 840, Available 1,960"><line data-tone="danger" x1="0" y1="-38" x2="0" y2="-48"></line><line data-tone="danger" x1="-2.485" y1="-37.919" x2="-3.139" y2="-47.897"></line><line data-tone="danger" x1="-4.96" y1="-37.675" x2="-6.265" y2="-47.589"></line><line data-tone="danger" x1="-7.413" y1="-37.27" x2="-9.364" y2="-47.078"></line><line data-tone="danger" x1="-9.835" y1="-36.705" x2="-12.423" y2="-46.364"></line><line data-tone="danger" x1="-12.215" y1="-35.983" x2="-15.429" y2="-45.453"></line><line data-tone="danger" x1="-14.542" y1="-35.107" x2="-18.369" y2="-44.346"></line><line data-tone="danger" x1="-16.807" y1="-34.081" x2="-21.23" y2="-43.05"></line><line data-tone="danger" x1="-19" y1="-32.909" x2="-24" y2="-41.569"></line><line data-tone="danger" x1="-21.112" y1="-31.596" x2="-26.667" y2="-39.911"></line><line data-tone="danger" x1="-23.133" y1="-30.147" x2="-29.221" y2="-38.081"></line><line data-tone="danger" x1="-25.055" y1="-28.57" x2="-31.649" y2="-36.088"></line><line data-tone="danger" x1="-26.87" y1="-26.87" x2="-33.941" y2="-33.941"></line><line data-tone="danger" x1="-28.57" y1="-25.055" x2="-36.088" y2="-31.649"></line><line data-tone="danger" x1="-30.147" y1="-23.133" x2="-38.081" y2="-29.221"></line><line data-tone="danger" x1="-31.596" y1="-21.112" x2="-39.911" y2="-26.667"></line><line data-tone="danger" x1="-32.909" y1="-19" x2="-41.569" y2="-24"></line><line data-tone="danger" x1="-34.081" y1="-16.807" x2="-43.05" y2="-21.23"></line><line data-tone="danger" x1="-35.107" y1="-14.542" x2="-44.346" y2="-18.369"></line><line data-tone="danger" x1="-35.983" y1="-12.215" x2="-45.453" y2="-15.429"></line><line data-tone="danger" x1="-36.705" y1="-9.835" x2="-46.364" y2="-12.423"></line><line data-tone="danger" x1="-37.27" y1="-7.413" x2="-47.078" y2="-9.364"></line><line data-tone="danger" x1="-37.675" y1="-4.96" x2="-47.589" y2="-6.265"></line><line data-tone="danger" x1="-37.919" y1="-2.485" x2="-47.897" y2="-3.139"></line><line data-tone="danger" x1="-38" y1="0" x2="-48" y2="0"></line><line data-tone="danger" x1="-37.919" y1="2.485" x2="-47.897" y2="3.139"></line><line data-tone="danger" x1="-37.675" y1="4.96" x2="-47.589" y2="6.265"></line><line data-tone="danger" x1="-37.27" y1="7.413" x2="-47.078" y2="9.364"></line><line data-tone="danger" x1="-36.705" y1="9.835" x2="-46.364" y2="12.423"></line><line data-tone="muted" x1="-35.983" y1="12.215" x2="-45.453" y2="15.429"></line><line data-tone="muted" x1="-35.107" y1="14.542" x2="-44.346" y2="18.369"></line><line data-tone="muted" x1="-34.081" y1="16.807" x2="-43.05" y2="21.23"></line><line data-tone="muted" x1="-32.909" y1="19" x2="-41.569" y2="24"></line><line data-tone="muted" x1="-31.596" y1="21.112" x2="-39.911" y2="26.667"></line><line data-tone="muted" x1="-30.147" y1="23.133" x2="-38.081" y2="29.221"></line><line data-tone="muted" x1="-28.57" y1="25.055" x2="-36.088" y2="31.649"></line><line data-tone="muted" x1="-26.87" y1="26.87" x2="-33.941" y2="33.941"></line><line data-tone="muted" x1="-25.055" y1="28.57" x2="-31.649" y2="36.088"></line><line data-tone="muted" x1="-23.133" y1="30.147" x2="-29.221" y2="38.081"></line><line data-tone="muted" x1="-21.112" y1="31.596" x2="-26.667" y2="39.911"></line><line data-tone="muted" x1="-19" y1="32.909" x2="-24" y2="41.569"></line><line data-tone="muted" x1="-16.807" y1="34.081" x2="-21.23" y2="43.05"></line><line data-tone="muted" x1="-14.542" y1="35.107" x2="-18.369" y2="44.346"></line><line data-tone="muted" x1="-12.215" y1="35.983" x2="-15.429" y2="45.453"></line><line data-tone="muted" x1="-9.835" y1="36.705" x2="-12.423" y2="46.364"></line><line data-tone="muted" x1="-7.413" y1="37.27" x2="-9.364" y2="47.078"></line><line data-tone="muted" x1="-4.96" y1="37.675" x2="-6.265" y2="47.589"></line><line data-tone="muted" x1="-2.485" y1="37.919" x2="-3.139" y2="47.897"></line><line data-tone="muted" x1="0" y1="38" x2="0" y2="48"></line><line data-tone="muted" x1="2.485" y1="37.919" x2="3.139" y2="47.897"></line><line data-tone="muted" x1="4.96" y1="37.675" x2="6.265" y2="47.589"></line><line data-tone="muted" x1="7.413" y1="37.27" x2="9.364" y2="47.078"></line><line data-tone="muted" x1="9.835" y1="36.705" x2="12.423" y2="46.364"></line><line data-tone="muted" x1="12.215" y1="35.983" x2="15.429" y2="45.453"></line><line data-tone="muted" x1="14.542" y1="35.107" x2="18.369" y2="44.346"></line><line data-tone="muted" x1="16.807" y1="34.081" x2="21.23" y2="43.05"></line><line data-tone="muted" x1="19" y1="32.909" x2="24" y2="41.569"></line><line data-tone="muted" x1="21.112" y1="31.596" x2="26.667" y2="39.911"></line><line data-tone="muted" x1="23.133" y1="30.147" x2="29.221" y2="38.081"></line><line data-tone="muted" x1="25.055" y1="28.57" x2="31.649" y2="36.088"></line><line data-tone="muted" x1="26.87" y1="26.87" x2="33.941" y2="33.941"></line><line data-tone="muted" x1="28.57" y1="25.055" x2="36.088" y2="31.649"></line><line data-tone="muted" x1="30.147" y1="23.133" x2="38.081" y2="29.221"></line><line data-tone="muted" x1="31.596" y1="21.112" x2="39.911" y2="26.667"></line><line data-tone="muted" x1="32.909" y1="19" x2="41.569" y2="24"></line><line data-tone="muted" x1="34.081" y1="16.807" x2="43.05" y2="21.23"></line><line data-tone="muted" x1="35.107" y1="14.542" x2="44.346" y2="18.369"></line><line data-tone="muted" x1="35.983" y1="12.215" x2="45.453" y2="15.429"></line><line data-tone="muted" x1="36.705" y1="9.835" x2="46.364" y2="12.423"></line><line data-tone="muted" x1="37.27" y1="7.413" x2="47.078" y2="9.364"></line><line data-tone="muted" x1="37.675" y1="4.96" x2="47.589" y2="6.265"></line><line data-tone="muted" x1="37.919" y1="2.485" x2="47.897" y2="3.139"></line><line data-tone="muted" x1="38" y1="0" x2="48" y2="0"></line><line data-tone="muted" x1="37.919" y1="-2.485" x2="47.897" y2="-3.139"></line><line data-tone="muted" x1="37.675" y1="-4.96" x2="47.589" y2="-6.265"></line><line data-tone="muted" x1="37.27" y1="-7.413" x2="47.078" y2="-9.364"></line><line data-tone="muted" x1="36.705" y1="-9.835" x2="46.364" y2="-12.423"></line><line data-tone="muted" x1="35.983" y1="-12.215" x2="45.453" y2="-15.429"></line><line data-tone="muted" x1="35.107" y1="-14.542" x2="44.346" y2="-18.369"></line><line data-tone="muted" x1="34.081" y1="-16.807" x2="43.05" y2="-21.23"></line><line data-tone="muted" x1="32.909" y1="-19" x2="41.569" y2="-24"></line><line data-tone="muted" x1="31.596" y1="-21.112" x2="39.911" y2="-26.667"></line><line data-tone="muted" x1="30.147" y1="-23.133" x2="38.081" y2="-29.221"></line><line data-tone="muted" x1="28.57" y1="-25.055" x2="36.088" y2="-31.649"></line><line data-tone="muted" x1="26.87" y1="-26.87" x2="33.941" y2="-33.941"></line><line data-tone="muted" x1="25.055" y1="-28.57" x2="31.649" y2="-36.088"></line><line data-tone="muted" x1="23.133" y1="-30.147" x2="29.221" y2="-38.081"></line><line data-tone="muted" x1="21.112" y1="-31.596" x2="26.667" y2="-39.911"></line><line data-tone="muted" x1="19" y1="-32.909" x2="24" y2="-41.569"></line><line data-tone="muted" x1="16.807" y1="-34.081" x2="21.23" y2="-43.05"></line><line data-tone="muted" x1="14.542" y1="-35.107" x2="18.369" y2="-44.346"></line><line data-tone="muted" x1="12.215" y1="-35.983" x2="15.429" y2="-45.453"></line><line data-tone="muted" x1="9.835" y1="-36.705" x2="12.423" y2="-46.364"></line><line data-tone="muted" x1="7.413" y1="-37.27" x2="9.364" y2="-47.078"></line><line data-tone="muted" x1="4.96" y1="-37.675" x2="6.265" y2="-47.589"></line><line data-tone="muted" x1="2.485" y1="-37.919" x2="3.139" y2="-47.897"></line></svg></figure><span class="g-meta">1,960 plt<br/>Available</span></div></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</span><span class="guidance-text">Labels beside the chart: the card states the key figures in text.</span></figcaption></figure><figure class="guidance-example" data-verdict="dont"><div class="guidance-stage" inert="" aria-hidden="true"><figure class="sonar-ring-chart" style="width:88px"><svg viewBox="-50 -50 100 100" role="img" aria-label="Inventory: On hold 840, Available 1,960"><line data-tone="danger" x1="0" y1="-38" x2="0" y2="-48"></line><line data-tone="danger" x1="-2.485" y1="-37.919" x2="-3.139" y2="-47.897"></line><line data-tone="danger" x1="-4.96" y1="-37.675" x2="-6.265" y2="-47.589"></line><line data-tone="danger" x1="-7.413" y1="-37.27" x2="-9.364" y2="-47.078"></line><line data-tone="danger" x1="-9.835" y1="-36.705" x2="-12.423" y2="-46.364"></line><line data-tone="danger" x1="-12.215" y1="-35.983" x2="-15.429" y2="-45.453"></line><line data-tone="danger" x1="-14.542" y1="-35.107" x2="-18.369" y2="-44.346"></line><line data-tone="danger" x1="-16.807" y1="-34.081" x2="-21.23" y2="-43.05"></line><line data-tone="danger" x1="-19" y1="-32.909" x2="-24" y2="-41.569"></line><line data-tone="danger" x1="-21.112" y1="-31.596" x2="-26.667" y2="-39.911"></line><line data-tone="danger" x1="-23.133" y1="-30.147" x2="-29.221" y2="-38.081"></line><line data-tone="danger" x1="-25.055" y1="-28.57" x2="-31.649" y2="-36.088"></line><line data-tone="danger" x1="-26.87" y1="-26.87" x2="-33.941" y2="-33.941"></line><line data-tone="danger" x1="-28.57" y1="-25.055" x2="-36.088" y2="-31.649"></line><line data-tone="danger" x1="-30.147" y1="-23.133" x2="-38.081" y2="-29.221"></line><line data-tone="danger" x1="-31.596" y1="-21.112" x2="-39.911" y2="-26.667"></line><line data-tone="danger" x1="-32.909" y1="-19" x2="-41.569" y2="-24"></line><line data-tone="danger" x1="-34.081" y1="-16.807" x2="-43.05" y2="-21.23"></line><line data-tone="danger" x1="-35.107" y1="-14.542" x2="-44.346" y2="-18.369"></line><line data-tone="danger" x1="-35.983" y1="-12.215" x2="-45.453" y2="-15.429"></line><line data-tone="danger" x1="-36.705" y1="-9.835" x2="-46.364" y2="-12.423"></line><line data-tone="danger" x1="-37.27" y1="-7.413" x2="-47.078" y2="-9.364"></line><line data-tone="danger" x1="-37.675" y1="-4.96" x2="-47.589" y2="-6.265"></line><line data-tone="danger" x1="-37.919" y1="-2.485" x2="-47.897" y2="-3.139"></line><line data-tone="danger" x1="-38" y1="0" x2="-48" y2="0"></line><line data-tone="danger" x1="-37.919" y1="2.485" x2="-47.897" y2="3.139"></line><line data-tone="danger" x1="-37.675" y1="4.96" x2="-47.589" y2="6.265"></line><line data-tone="danger" x1="-37.27" y1="7.413" x2="-47.078" y2="9.364"></line><line data-tone="danger" x1="-36.705" y1="9.835" x2="-46.364" y2="12.423"></line><line data-tone="muted" x1="-35.983" y1="12.215" x2="-45.453" y2="15.429"></line><line data-tone="muted" x1="-35.107" y1="14.542" x2="-44.346" y2="18.369"></line><line data-tone="muted" x1="-34.081" y1="16.807" x2="-43.05" y2="21.23"></line><line data-tone="muted" x1="-32.909" y1="19" x2="-41.569" y2="24"></line><line data-tone="muted" x1="-31.596" y1="21.112" x2="-39.911" y2="26.667"></line><line data-tone="muted" x1="-30.147" y1="23.133" x2="-38.081" y2="29.221"></line><line data-tone="muted" x1="-28.57" y1="25.055" x2="-36.088" y2="31.649"></line><line data-tone="muted" x1="-26.87" y1="26.87" x2="-33.941" y2="33.941"></line><line data-tone="muted" x1="-25.055" y1="28.57" x2="-31.649" y2="36.088"></line><line data-tone="muted" x1="-23.133" y1="30.147" x2="-29.221" y2="38.081"></line><line data-tone="muted" x1="-21.112" y1="31.596" x2="-26.667" y2="39.911"></line><line data-tone="muted" x1="-19" y1="32.909" x2="-24" y2="41.569"></line><line data-tone="muted" x1="-16.807" y1="34.081" x2="-21.23" y2="43.05"></line><line data-tone="muted" x1="-14.542" y1="35.107" x2="-18.369" y2="44.346"></line><line data-tone="muted" x1="-12.215" y1="35.983" x2="-15.429" y2="45.453"></line><line data-tone="muted" x1="-9.835" y1="36.705" x2="-12.423" y2="46.364"></line><line data-tone="muted" x1="-7.413" y1="37.27" x2="-9.364" y2="47.078"></line><line data-tone="muted" x1="-4.96" y1="37.675" x2="-6.265" y2="47.589"></line><line data-tone="muted" x1="-2.485" y1="37.919" x2="-3.139" y2="47.897"></line><line data-tone="muted" x1="0" y1="38" x2="0" y2="48"></line><line data-tone="muted" x1="2.485" y1="37.919" x2="3.139" y2="47.897"></line><line data-tone="muted" x1="4.96" y1="37.675" x2="6.265" y2="47.589"></line><line data-tone="muted" x1="7.413" y1="37.27" x2="9.364" y2="47.078"></line><line data-tone="muted" x1="9.835" y1="36.705" x2="12.423" y2="46.364"></line><line data-tone="muted" x1="12.215" y1="35.983" x2="15.429" y2="45.453"></line><line data-tone="muted" x1="14.542" y1="35.107" x2="18.369" y2="44.346"></line><line data-tone="muted" x1="16.807" y1="34.081" x2="21.23" y2="43.05"></line><line data-tone="muted" x1="19" y1="32.909" x2="24" y2="41.569"></line><line data-tone="muted" x1="21.112" y1="31.596" x2="26.667" y2="39.911"></line><line data-tone="muted" x1="23.133" y1="30.147" x2="29.221" y2="38.081"></line><line data-tone="muted" x1="25.055" y1="28.57" x2="31.649" y2="36.088"></line><line data-tone="muted" x1="26.87" y1="26.87" x2="33.941" y2="33.941"></line><line data-tone="muted" x1="28.57" y1="25.055" x2="36.088" y2="31.649"></line><line data-tone="muted" x1="30.147" y1="23.133" x2="38.081" y2="29.221"></line><line data-tone="muted" x1="31.596" y1="21.112" x2="39.911" y2="26.667"></line><line data-tone="muted" x1="32.909" y1="19" x2="41.569" y2="24"></line><line data-tone="muted" x1="34.081" y1="16.807" x2="43.05" y2="21.23"></line><line data-tone="muted" x1="35.107" y1="14.542" x2="44.346" y2="18.369"></line><line data-tone="muted" x1="35.983" y1="12.215" x2="45.453" y2="15.429"></line><line data-tone="muted" x1="36.705" y1="9.835" x2="46.364" y2="12.423"></line><line data-tone="muted" x1="37.27" y1="7.413" x2="47.078" y2="9.364"></line><line data-tone="muted" x1="37.675" y1="4.96" x2="47.589" y2="6.265"></line><line data-tone="muted" x1="37.919" y1="2.485" x2="47.897" y2="3.139"></line><line data-tone="muted" x1="38" y1="0" x2="48" y2="0"></line><line data-tone="muted" x1="37.919" y1="-2.485" x2="47.897" y2="-3.139"></line><line data-tone="muted" x1="37.675" y1="-4.96" x2="47.589" y2="-6.265"></line><line data-tone="muted" x1="37.27" y1="-7.413" x2="47.078" y2="-9.364"></line><line data-tone="muted" x1="36.705" y1="-9.835" x2="46.364" y2="-12.423"></line><line data-tone="muted" x1="35.983" y1="-12.215" x2="45.453" y2="-15.429"></line><line data-tone="muted" x1="35.107" y1="-14.542" x2="44.346" y2="-18.369"></line><line data-tone="muted" x1="34.081" y1="-16.807" x2="43.05" y2="-21.23"></line><line data-tone="muted" x1="32.909" y1="-19" x2="41.569" y2="-24"></line><line data-tone="muted" x1="31.596" y1="-21.112" x2="39.911" y2="-26.667"></line><line data-tone="muted" x1="30.147" y1="-23.133" x2="38.081" y2="-29.221"></line><line data-tone="muted" x1="28.57" y1="-25.055" x2="36.088" y2="-31.649"></line><line data-tone="muted" x1="26.87" y1="-26.87" x2="33.941" y2="-33.941"></line><line data-tone="muted" x1="25.055" y1="-28.57" x2="31.649" y2="-36.088"></line><line data-tone="muted" x1="23.133" y1="-30.147" x2="29.221" y2="-38.081"></line><line data-tone="muted" x1="21.112" y1="-31.596" x2="26.667" y2="-39.911"></line><line data-tone="muted" x1="19" y1="-32.909" x2="24" y2="-41.569"></line><line data-tone="muted" x1="16.807" y1="-34.081" x2="21.23" y2="-43.05"></line><line data-tone="muted" x1="14.542" y1="-35.107" x2="18.369" y2="-44.346"></line><line data-tone="muted" x1="12.215" y1="-35.983" x2="15.429" y2="-45.453"></line><line data-tone="muted" x1="9.835" y1="-36.705" x2="12.423" y2="-46.364"></line><line data-tone="muted" x1="7.413" y1="-37.27" x2="9.364" y2="-47.078"></line><line data-tone="muted" x1="4.96" y1="-37.675" x2="6.265" y2="-47.589"></line><line data-tone="muted" x1="2.485" y1="-37.919" x2="3.139" y2="-47.897"></line></svg></figure></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don’t</span><span class="guidance-text">A chart with no figure anywhere: its shape alone has to be decoded.</span></figcaption></figure></div></div>
+    
+</section>
+
+  <section class="section" aria-labelledby="accessibility" data-astro-cid-w6ymvdtg>
+  <h2 id="accessibility" data-astro-cid-w6ymvdtg><a href="#accessibility" data-astro-cid-w6ymvdtg>Accessibility</a></h2>
+  
+    <div class="a11y" data-astro-cid-bxr4t4t4>
+  <div class="block" data-astro-cid-bxr4t4t4>
+        <h3 data-astro-cid-bxr4t4t4>Keyboard</h3>
+        <table data-astro-cid-bxr4t4t4>
+          <thead data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+              <th scope="col" data-astro-cid-bxr4t4t4>Key</th>
+              <th scope="col" data-astro-cid-bxr4t4t4>What it does</th>
+            </tr>
+          </thead>
+          <tbody data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Tab</th>
+                <td data-astro-cid-bxr4t4t4>Reaches the trend chart and its legend buttons. Tick bars and rings take no focus.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Left and Right arrows</th>
+                <td data-astro-cid-bxr4t4t4>In the trend chart: read the previous or next day.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Home and End</th>
+                <td data-astro-cid-bxr4t4t4>Go to the first day or the last day with data.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Escape</th>
+                <td data-astro-cid-bxr4t4t4>Clears the day being read.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Enter or Space</th>
+                <td data-astro-cid-bxr4t4t4>On a legend button: shows or hides that series.</td>
+              </tr>
+          </tbody>
+        </table>
+      </div><div class="block" data-astro-cid-bxr4t4t4>
+        <h3 data-astro-cid-bxr4t4t4>Roles and attributes</h3>
+        <table data-astro-cid-bxr4t4t4>
+          <thead data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+              <th scope="col" data-astro-cid-bxr4t4t4>Element or attribute</th>
+              <th scope="col" data-astro-cid-bxr4t4t4>What it gives</th>
+            </tr>
+          </thead>
+          <tbody data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>role=&quot;img&quot; with aria-label</code></th>
+                <td data-astro-cid-bxr4t4t4>Tick bars and rings: one name lists every part with its value.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>role=&quot;group&quot;</code></th>
+                <td data-astro-cid-bxr4t4t4>The trend chart, named by its label with a hint to use the arrow keys.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>aria-live=&quot;polite&quot;</code></th>
+                <td data-astro-cid-bxr4t4t4>The trend chart reads the chosen day: “May 12: 350 plt, 4,485 plt so far”.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>aria-pressed</code></th>
+                <td data-astro-cid-bxr4t4t4>Legend buttons say whether their series is shown.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Chart legend</th>
+                <td data-astro-cid-bxr4t4t4>aria-hidden when the chart’s own name already lists the parts, as in every demo here.</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+</div>
+    <h3 class="notes" data-astro-cid-ifzipuwz>Notes</h3>
+    <ul class="prose" data-astro-cid-ifzipuwz>
+      <li data-astro-cid-ifzipuwz>A chart is never the only way to a figure: the card states its key figures in text beside it.</li>
+      <li data-astro-cid-ifzipuwz>Color is never the only cue: a legend names every color, and a series that is off keeps its name readable.</li>
+      <li data-astro-cid-ifzipuwz>The parts of one chart differ in lightness as well as hue (accent, strong and rest; or danger and rest), so they stay distinct without color vision.</li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="tokens" data-astro-cid-w6ymvdtg>
+  <h2 id="tokens" data-astro-cid-w6ymvdtg><a href="#tokens" data-astro-cid-w6ymvdtg>Chart roles</a></h2>
+  
+    <figure class="specimen-figure" data-astro-cid-h2dlglp7>
+  <figcaption data-astro-cid-h2dlglp7>The tones, as a tick bar and in the legend</figcaption>
+  <div class="body" data-astro-cid-h2dlglp7><div class="specimen-frame" data-scroll-region="true" role="img" aria-label="The five chart tones as a tick bar and as a legend entry"><div class="specimen" inert="" aria-hidden="true" style="grid-template-columns:auto repeat(2, max-content)"><span></span><span class="specimen-head">Tick bar</span><span class="specimen-head">Legend</span><span class="specimen-name">Accent</span><div class="specimen-cell"><div role="img" aria-label="Accent: First series 1" class="sonar-tick-bar" style="--_fill:linear-gradient(90deg, var(--_accent) 0% 100%);--_fill-snapped:linear-gradient(90deg, var(--_accent) 0% 100%);width:160px"></div></div><div class="specimen-cell"><ul role="list" class="sonar-chart-legend"><li data-tone="accent">First series</li></ul></div><span class="specimen-name">Strong</span><div class="specimen-cell"><div role="img" aria-label="Strong: Second series 1" class="sonar-tick-bar" style="--_fill:linear-gradient(90deg, var(--_strong) 0% 100%);--_fill-snapped:linear-gradient(90deg, var(--_strong) 0% 100%);width:160px"></div></div><div class="specimen-cell"><ul role="list" class="sonar-chart-legend"><li data-tone="strong">Second series</li></ul></div><span class="specimen-name">Rest</span><div class="specimen-cell"><div role="img" aria-label="Rest: Rest of a whole 1" class="sonar-tick-bar" style="--_fill:linear-gradient(90deg, var(--_muted) 0% 100%);--_fill-snapped:linear-gradient(90deg, var(--_muted) 0% 100%);width:160px"></div></div><div class="specimen-cell"><ul role="list" class="sonar-chart-legend"><li data-tone="muted">Rest of a whole</li></ul></div><span class="specimen-name">Danger</span><div class="specimen-cell"><div role="img" aria-label="Danger: Alert 1" class="sonar-tick-bar" style="--_fill:linear-gradient(90deg, var(--_danger) 0% 100%);--_fill-snapped:linear-gradient(90deg, var(--_danger) 0% 100%);width:160px"></div></div><div class="specimen-cell"><ul role="list" class="sonar-chart-legend"><li data-tone="danger">Alert</li></ul></div><span class="specimen-name">Warning</span><div class="specimen-cell"><div role="img" aria-label="Warning: Caution 1" class="sonar-tick-bar" style="--_fill:linear-gradient(90deg, var(--_warning) 0% 100%);--_fill-snapped:linear-gradient(90deg, var(--_warning) 0% 100%);width:160px"></div></div><div class="specimen-cell"><ul role="list" class="sonar-chart-legend"><li data-tone="warning">Caution</li></ul></div></div></div></div>
+</figure>
+    <div class="table-wrap" data-scroll-region data-label="Chart roles, table" data-astro-cid-gkql7nzv>
+  <table data-astro-cid-gkql7nzv>
+    <caption class="visually-hidden" data-astro-cid-gkql7nzv>Chart roles</caption>
+    <thead data-astro-cid-gkql7nzv>
+      <tr data-astro-cid-gkql7nzv>
+        <th scope="col" data-astro-cid-gkql7nzv>Token</th>
+        <th scope="col" class="preview-head" data-astro-cid-gkql7nzv>Preview</th>
+        <th scope="col" data-astro-cid-gkql7nzv>Light</th><th scope="col" data-astro-cid-gkql7nzv>Dark</th>
+      </tr>
+    </thead>
+    <tbody data-astro-cid-gkql7nzv>
+      <tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-color-chart-primary</code>
+              
+              <p data-astro-cid-gkql7nzv>First series.</p>
+            </th>
+            <td class="previews" data-astro-cid-gkql7nzv>
+                <span class="preview fill" aria-hidden="true" data-theme="light" style="--token: var(--sonar-color-chart-primary)" title="light" data-astro-cid-gkql7nzv>
+                    
+                  </span><span class="preview fill" aria-hidden="true" data-theme="dark" style="--token: var(--sonar-color-chart-primary)" title="dark" data-astro-cid-gkql7nzv>
+                    
+                  </span>
+              </td>
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>accent</span>
+                    <code data-astro-cid-gkql7nzv>#1A8838</code>
+                    
+                  </div>
+                </td><td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>accent</span>
+                    <code data-astro-cid-gkql7nzv>#76B27C</code>
+                    
+                  </div>
+                </td>
+          </tr><tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-color-chart-secondary</code>
+              
+              <p data-astro-cid-gkql7nzv>Second series (cumulative).</p>
+            </th>
+            <td class="previews" data-astro-cid-gkql7nzv>
+                <span class="preview fill" aria-hidden="true" data-theme="light" style="--token: var(--sonar-color-chart-secondary)" title="light" data-astro-cid-gkql7nzv>
+                    
+                  </span><span class="preview fill" aria-hidden="true" data-theme="dark" style="--token: var(--sonar-color-chart-secondary)" title="dark" data-astro-cid-gkql7nzv>
+                    
+                  </span>
+              </td>
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>palette.black</span>
+                    <code data-astro-cid-gkql7nzv>#000000</code>
+                    
+                  </div>
+                </td><td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>palette.neutral-dark.90</span>
+                    <code data-astro-cid-gkql7nzv>#DCE5D9</code>
+                    
+                  </div>
+                </td>
+          </tr><tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-color-chart-alert</code>
+              
+              <p data-astro-cid-gkql7nzv>Values that need attention, such as stock on hold.</p>
+            </th>
+            <td class="previews" data-astro-cid-gkql7nzv>
+                <span class="preview fill" aria-hidden="true" data-theme="light" style="--token: var(--sonar-color-chart-alert)" title="light" data-astro-cid-gkql7nzv>
+                    
+                  </span><span class="preview fill" aria-hidden="true" data-theme="dark" style="--token: var(--sonar-color-chart-alert)" title="dark" data-astro-cid-gkql7nzv>
+                    
+                  </span>
+              </td>
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>danger</span>
+                    <code data-astro-cid-gkql7nzv>#DD3535</code>
+                    
+                  </div>
+                </td><td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>danger</span>
+                    <code data-astro-cid-gkql7nzv>#F04B4B</code>
+                    
+                  </div>
+                </td>
+          </tr><tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-color-chart-rest</code>
+              
+              <p data-astro-cid-gkql7nzv>Remainder of a whole: the rest of a donut or bar.</p>
+            </th>
+            <td class="previews" data-astro-cid-gkql7nzv>
+                <span class="preview fill" aria-hidden="true" data-theme="light" style="--token: var(--sonar-color-chart-rest)" title="light" data-astro-cid-gkql7nzv>
+                    
+                  </span><span class="preview fill" aria-hidden="true" data-theme="dark" style="--token: var(--sonar-color-chart-rest)" title="dark" data-astro-cid-gkql7nzv>
+                    
+                  </span>
+              </td>
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>palette.neutral.76</span>
+                    <code data-astro-cid-gkql7nzv>#B5BEB2</code>
+                    
+                  </div>
+                </td><td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>palette.neutral-tinted.36</span>
+                    <code data-astro-cid-gkql7nzv>#4C584A</code>
+                    
+                  </div>
+                </td>
+          </tr><tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-color-chart-grid</code>
+              
+              <p data-astro-cid-gkql7nzv>Grid lines.</p>
+            </th>
+            <td class="previews" data-astro-cid-gkql7nzv>
+                <span class="preview fill" aria-hidden="true" data-theme="light" style="--token: var(--sonar-color-chart-grid)" title="light" data-astro-cid-gkql7nzv>
+                    
+                  </span><span class="preview fill" aria-hidden="true" data-theme="dark" style="--token: var(--sonar-color-chart-grid)" title="dark" data-astro-cid-gkql7nzv>
+                    
+                  </span>
+              </td>
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>palette.neutral.90</span>
+                    <code data-astro-cid-gkql7nzv>#DDE5D9</code>
+                    
+                  </div>
+                </td><td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>palette.neutral.21</span>
+                    <code data-astro-cid-gkql7nzv>#2D352C</code>
+                    
+                  </div>
+                </td>
+          </tr><tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-color-chart-axis</code>
+              
+              <p data-astro-cid-gkql7nzv>Axis figures.</p>
+            </th>
+            <td class="previews" data-astro-cid-gkql7nzv>
+                <span class="preview fill" aria-hidden="true" data-theme="light" style="--token: var(--sonar-color-chart-axis)" title="light" data-astro-cid-gkql7nzv>
+                    
+                  </span><span class="preview fill" aria-hidden="true" data-theme="dark" style="--token: var(--sonar-color-chart-axis)" title="dark" data-astro-cid-gkql7nzv>
+                    
+                  </span>
+              </td>
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>text.default</span>
+                    <code data-astro-cid-gkql7nzv>#2D352C</code>
+                    
+                  </div>
+                </td><td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>text.default</span>
+                    <code data-astro-cid-gkql7nzv>#DDE5D9</code>
+                    
+                  </div>
+                </td>
+          </tr><tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-color-chart-tip-shadow</code>
+              
+              <p data-astro-cid-gkql7nzv>The chart bubble’s drop shadow; none in dark, where the bubble is light.</p>
+            </th>
+            <td class="previews" data-astro-cid-gkql7nzv>
+                <span class="preview fill" aria-hidden="true" data-theme="light" style="--token: var(--sonar-color-chart-tip-shadow)" title="light" data-astro-cid-gkql7nzv>
+                    
+                  </span><span class="preview fill" aria-hidden="true" data-theme="dark" style="--token: var(--sonar-color-chart-tip-shadow)" title="dark" data-astro-cid-gkql7nzv>
+                    
+                  </span>
+              </td>
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>palette.black</span>
+                    <code data-astro-cid-gkql7nzv>#0000001F</code>
+                    
+                  </div>
+                </td><td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    <span class="reference" data-astro-cid-gkql7nzv>palette.black</span>
+                    <code data-astro-cid-gkql7nzv>#00000000</code>
+                    
+                  </div>
+                </td>
+          </tr>
+    </tbody>
+  </table>
+</div>
+  
+</section>
+
+  <section class="section" aria-labelledby="built-with" data-astro-cid-w6ymvdtg>
+  <h2 id="built-with" data-astro-cid-w6ymvdtg><a href="#built-with" data-astro-cid-w6ymvdtg>Built with</a></h2>
+  
+    <p class="prose" data-astro-cid-ifzipuwz>
+      Each chart is its own component, with its API: <a href="/components/tick-bar/" data-astro-cid-ifzipuwz>Tick bar</a>,
+      <a href="/components/ring-chart/" data-astro-cid-ifzipuwz>Ring chart</a>, <a href="/components/trend-chart/" data-astro-cid-ifzipuwz>Trend chart</a> and
+      <a href="/components/chart-legend/" data-astro-cid-ifzipuwz>Chart legend</a>. The trend chart has a budget of 4 KB instead of 3: it draws
+      axes, two series, a legend and reading by pointer and keys.
+    </p>
+  
+</section>
+
+        </div>
+        <div class="page-end" data-astro-cid-lpetmyok>
+          <nav class="pager" aria-label="Previous and next pages" data-astro-cid-lpetmyok>
+                <a href="/patterns/cards/" rel="prev" class="previous" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Previous</span>
+                    Cards
+                  </a>
+                <a href="/patterns/search/" rel="next" class="next" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Next</span>
+                    Search
+                  </a>
+              </nav>
+          <footer class="site-footer" data-astro-cid-nns7i3if>
+  <p data-astro-cid-nns7i3if>
+    Design system by <strong data-astro-cid-nns7i3if>988©STUDIO</strong>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    <a href="/resources/changelog/" data-astro-cid-nns7i3if>v1.1.4</a>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    © 2026
+  </p>
+</footer>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="/assets/Docs.astro_astro_type_script_index_0_lang.CIhC640A.js"></script>
+  </body>
+</html>

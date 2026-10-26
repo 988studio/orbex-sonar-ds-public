@@ -1,0 +1,1230 @@
+{
+  "components": [
+    {
+      "entry": "badge",
+      "name": "Badge",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "Badge",
+          "description": "A small count or dot on a navigation item, an icon button or a tab.",
+          "props": [
+            {
+              "name": "count",
+              "type": "number",
+              "required": false,
+              "description": "The number to show. Without it, the badge is a dot that only signals something new."
+            },
+            {
+              "name": "max",
+              "type": "number",
+              "required": false,
+              "default": "99",
+              "description": "Counts above this show as `99+`."
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "required": false,
+              "description": "What the badge means, read by assistive technology instead of the bare number, such as “3 unpaid invoices”. Leave it out only when the element the badge sits on already says it."
+            },
+            {
+              "name": "tone",
+              "type": "'danger' | 'accent'",
+              "required": false,
+              "default": "'danger'",
+              "description": "Danger for things that need attention; accent for news."
+            }
+          ],
+          "extends": "Omit<ComponentProps<'span'>, 'children'>"
+        }
+      ]
+    },
+    {
+      "entry": "button",
+      "name": "Button",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "Button",
+          "description": "A native button. For navigation, use a link with the same class and data attributes instead: `<a class=\"sonar-button\" data-variant=\"tonal\" data-size=\"medium\" href=\"…\">`.",
+          "props": [
+            {
+              "name": "variant",
+              "type": "'filled' | 'tonal' | 'outlined' | 'text'",
+              "required": false,
+              "default": "'filled'",
+              "description": "Visual weight. Filled for the one main action of a view, tonal for secondary actions, outlined and text for the rest."
+            },
+            {
+              "name": "size",
+              "type": "'small' | 'medium'",
+              "required": false,
+              "default": "'medium'",
+              "description": "Medium in forms, panels and dialogs; small in cards and toolbars."
+            },
+            {
+              "name": "icon",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Icon before the label. It is decorative: the label names the action."
+            },
+            {
+              "name": "iconEnd",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Icon after the label, such as a chevron on a button that opens a menu."
+            }
+          ],
+          "extends": "ComponentProps<'button'>"
+        }
+      ]
+    },
+    {
+      "entry": "card",
+      "name": "Card",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "Card",
+          "description": "A card of the overview: a titled region with an optional summary figure, content and a way to the full page. The card is a section named by its title, so the overview reads as a list of landmarks.",
+          "props": [
+            {
+              "name": "title",
+              "type": "ReactNode",
+              "required": true,
+              "description": "The card’s name, which also names the region for assistive technology."
+            },
+            {
+              "name": "titleAs",
+              "type": "'h2' | 'h3'",
+              "required": false,
+              "default": "'h2'",
+              "description": "Heading level of the title, to fit the page’s outline."
+            },
+            {
+              "name": "actions",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Controls at the end of the header, such as a UnitMenu."
+            },
+            {
+              "name": "summary",
+              "type": "{ label: ReactNode; value: ReactNode; tone?: 'accent' | 'default' }",
+              "required": false,
+              "description": "The figure that sums the card up, under the title: a label and a value, such as Open total and 6,720 plt."
+            },
+            {
+              "name": "footer",
+              "type": "ReactNode",
+              "required": false,
+              "description": "The way out of the card, usually a CardLink to the full page."
+            },
+            {
+              "name": "size",
+              "type": "'s' | 'm' | 'l' | 'xl'",
+              "required": false,
+              "description": "Height in the overview grid: S, M, L or XL from the layout tokens. The header and footer stay put; content that does not fit scrolls between them. Without a size the card takes the height of its content."
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "required": false,
+              "description": "The region’s accessible name, when the title alone would repeat on the page: the same card shown twice, as in “Orders, size S” and “Orders, size M”. By default the title names the region."
+            }
+          ],
+          "extends": "Omit<ComponentProps<'section'>, 'title'>"
+        },
+        {
+          "name": "CardScroll",
+          "description": "The part of a card’s content that gives way first when the card’s size leaves no room, such as a list of deliveries: it keeps its full height while it fits, and scrolls when it does not. The rest of the content stays in place.",
+          "props": [
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "description": "What the list is, read when it takes focus to scroll: “Deliveries of May 12”."
+            }
+          ],
+          "extends": "ComponentProps<'div'>"
+        },
+        {
+          "name": "CardLink",
+          "description": "The link at the foot of a card to the page it summarizes, with the arrow in a filled circle.",
+          "props": [
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": true,
+              "description": "Where it goes, as a verb phrase: Go to Orders."
+            }
+          ],
+          "extends": "ComponentProps<'a'>"
+        },
+        {
+          "name": "UnitMenu",
+          "description": "The unit a card’s figures are shown in, as a small pill that opens a menu. Changing it converts every figure in the card; it is the card’s only setting.",
+          "props": [
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "description": "What the unit measures, read with the current value: “Unit: plt, Pallets”."
+            },
+            {
+              "name": "value",
+              "type": "string",
+              "required": true,
+              "description": "The value of the unit shown, one of the options' values. The menu is always controlled."
+            },
+            {
+              "name": "options",
+              "type": "{ value: string; short: string; name: string }[]",
+              "required": true,
+              "description": "The units to choose from: a short code, shown in caps on the pill and in the menu, and the full name, read with it."
+            },
+            {
+              "name": "onValueChange",
+              "type": "(value: string) => void",
+              "required": true,
+              "description": "Called with the value of the unit chosen. The card converts its figures; the menu closes on its own."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entry": "chart-legend",
+      "name": "ChartLegend",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "ChartLegend",
+          "description": "The key to a chart’s colors: a dot in each part’s tone, then its name.",
+          "props": [
+            {
+              "name": "items",
+              "type": "ChartLegendItem[]",
+              "required": true,
+              "description": "One entry per color, in the order of the chart’s parts."
+            }
+          ],
+          "extends": "Omit<ComponentProps<'ul'>, 'children'>"
+        }
+      ]
+    },
+    {
+      "entry": "checkbox",
+      "name": "Checkbox",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "Checkbox",
+          "description": "A native checkbox, for choices that are submitted with a form or confirmed later.",
+          "props": [
+            {
+              "name": "label",
+              "type": "ReactNode",
+              "required": true,
+              "description": "What is being chosen."
+            },
+            {
+              "name": "description",
+              "type": "ReactNode",
+              "required": false,
+              "description": "One line of help, read after the label."
+            },
+            {
+              "name": "indeterminate",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Shown as a dash: some, not all, of the items it governs are checked. Clicking it checks it."
+            }
+          ],
+          "extends": "Omit<ComponentProps<'input'>, 'type'>"
+        }
+      ]
+    },
+    {
+      "entry": "dialog",
+      "name": "Dialog",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "DialogHost",
+          "description": "Holds the side panels and sheets written inside it, as a drawn app frame does, instead of placing them against the window.",
+          "props": [],
+          "extends": "{ children: ReactNode }"
+        },
+        {
+          "name": "Dialog",
+          "description": "",
+          "props": [
+            {
+              "name": "open",
+              "type": "boolean",
+              "required": true,
+              "description": "Whether the dialog is shown. The dialog is always controlled."
+            },
+            {
+              "name": "onOpenChange",
+              "type": "(open: boolean) => void",
+              "required": true,
+              "description": "Called with `false` when the person closes it: the close button, Escape, a click outside, or a swipe down."
+            },
+            {
+              "name": "title",
+              "type": "ReactNode",
+              "required": true,
+              "description": "The heading, which also names the dialog for assistive technology."
+            },
+            {
+              "name": "description",
+              "type": "ReactNode",
+              "required": false,
+              "description": "One paragraph under the title, read when the dialog opens."
+            },
+            {
+              "name": "placement",
+              "type": "'center' | 'end' | 'bottom'",
+              "required": false,
+              "default": "'center'",
+              "description": "Center for a decision; end for a side panel, such as the details of a delivery; bottom for a sheet on phones. On phones (under 600 px) a side panel becomes a sheet from the bottom, with a handle to swipe it down; tablets and desktops keep it at the side."
+            },
+            {
+              "name": "modal",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Whether the rest of the page waits behind a scrim. A side panel that sits beside the overview, such as the details of a delivery or a new order, is not modal: no scrim, the page stays in view and the row it came from stays marked. It starts under the top bar (--sonar-dialog-top) and closes on Escape or a click outside."
+            },
+            {
+              "name": "actions",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Buttons at the foot of the dialog, the main action last."
+            },
+            {
+              "name": "closeLabel",
+              "type": "string",
+              "required": false,
+              "default": "'Close'",
+              "description": "Name of the close button."
+            },
+            {
+              "name": "dismissible",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Whether a click on the scrim, or outside a panel that is not modal, closes it. Turn it off when closing would lose what the person typed."
+            }
+          ],
+          "extends": "Omit<ComponentProps<'dialog'>, 'open' | 'title' | 'onClose' | 'onCancel'>"
+        }
+      ]
+    },
+    {
+      "entry": "field",
+      "name": "SelectField",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "TextField",
+          "description": "A native text input with its label, help and error. Any input type that takes text: text, search, email, number…",
+          "props": [
+            {
+              "name": "label",
+              "type": "ReactNode",
+              "required": true,
+              "description": "The field’s name, always visible above it. Placeholders are examples, never labels."
+            },
+            {
+              "name": "description",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Help shown under the field and read after the label."
+            },
+            {
+              "name": "error",
+              "type": "ReactNode",
+              "required": false,
+              "description": "What is wrong and how to fix it. When present, the field is marked invalid."
+            },
+            {
+              "name": "size",
+              "type": "'small' | 'medium'",
+              "required": false,
+              "default": "'medium'",
+              "description": "Height of the field: medium (48 px) in forms, small (36 px) inside rows and panels, such as a quantity in a list."
+            },
+            {
+              "name": "icon",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Icon at the start of the control, such as a search glass."
+            },
+            {
+              "name": "suffix",
+              "type": "ReactNode",
+              "required": false,
+              "description": "A unit after the value, inside the field, such as plt; it is read after the value."
+            }
+          ],
+          "extends": "Omit<ComponentProps<'input'>, 'size'>"
+        },
+        {
+          "name": "SelectField",
+          "description": "A native select with its label, help and error. The list is the platform’s own: the best picker on phones and full keyboard and screen reader support everywhere.",
+          "props": [
+            {
+              "name": "label",
+              "type": "ReactNode",
+              "required": true,
+              "description": "The field’s name, always visible above it. Placeholders are examples, never labels."
+            },
+            {
+              "name": "description",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Help shown under the field and read after the label."
+            },
+            {
+              "name": "error",
+              "type": "ReactNode",
+              "required": false,
+              "description": "What is wrong and how to fix it. When present, the field is marked invalid."
+            },
+            {
+              "name": "size",
+              "type": "'small' | 'medium'",
+              "required": false,
+              "default": "'medium'",
+              "description": "Height of the field: medium (48 px) in forms, small (36 px) inside rows and panels, such as a quantity in a list."
+            },
+            {
+              "name": "icon",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Icon at the start of the control, such as a search glass."
+            },
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": true,
+              "description": "The `<option>` and `<optgroup>` elements."
+            }
+          ],
+          "extends": "Omit<ComponentProps<'select'>, 'size'>"
+        }
+      ]
+    },
+    {
+      "entry": "icon-button",
+      "name": "IconButton",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "IconButton",
+          "description": "A round button that shows only an icon.",
+          "props": [
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "description": "What the button does, read by assistive technology. Pair the button with a Tooltip to show it on hover."
+            },
+            {
+              "name": "icon",
+              "type": "ReactNode",
+              "required": true,
+              "description": "The icon. Decorative: the label names the action."
+            },
+            {
+              "name": "variant",
+              "type": "'standard' | 'filled' | 'tonal' | 'outlined'",
+              "required": false,
+              "default": "'standard'",
+              "description": "Standard sits on any surface with no fill; the others follow the weights of Button."
+            },
+            {
+              "name": "size",
+              "type": "'small' | 'medium'",
+              "required": false,
+              "default": "'medium'",
+              "description": "Medium is a 40 px button; small is 32 px, for card headers and dense rows. Both keep a 48 px touch target."
+            }
+          ],
+          "extends": "Omit<ComponentProps<'button'>, 'children'>"
+        }
+      ]
+    },
+    {
+      "entry": "menu",
+      "name": "Menu",
+      "behavior": "base-ui",
+      "parts": [
+        {
+          "name": "Root",
+          "description": "Holds the menu’s open state.",
+          "props": [],
+          "extends": "BaseMenu.Root.Props"
+        },
+        {
+          "name": "Trigger",
+          "description": "The element that opens the menu. Pass a Button or an IconButton with `render`, so the trigger keeps its look.",
+          "props": [],
+          "extends": "BaseMenu.Trigger.Props"
+        },
+        {
+          "name": "Content",
+          "description": "The popup, positioned against the trigger and rendered at the end of the document.",
+          "props": [
+            {
+              "name": "className",
+              "type": "ClassName",
+              "required": false,
+              "description": "Classes added to the menu’s popup, after sonar-menu: a string, or a function of the menu’s state."
+            },
+            {
+              "name": "side",
+              "type": "BaseMenu.Positioner.Props['side']",
+              "required": false,
+              "default": "'bottom'",
+              "description": "Side of the trigger the menu opens on. It flips when there is no room."
+            },
+            {
+              "name": "align",
+              "type": "BaseMenu.Positioner.Props['align']",
+              "required": false,
+              "default": "'start'",
+              "description": "How the menu lines up with its trigger along that side: start, center or end. A menu in a card header aligns to the end, so it opens inward."
+            },
+            {
+              "name": "sideOffset",
+              "type": "number",
+              "required": false,
+              "default": "6",
+              "description": "Distance from the trigger, in pixels."
+            }
+          ],
+          "extends": "Omit<BaseMenu.Popup.Props, 'className'>"
+        },
+        {
+          "name": "Item",
+          "description": "An action.",
+          "props": [
+            {
+              "name": "className",
+              "type": "ClassName",
+              "required": false,
+              "description": "Classes added to the item, after its own: a string, or a function of its state."
+            },
+            {
+              "name": "icon",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Icon before the label."
+            },
+            {
+              "name": "trailing",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Text at the end of the row, such as a shortcut or a count."
+            },
+            {
+              "name": "tone",
+              "type": "'default' | 'danger'",
+              "required": false,
+              "default": "'default'",
+              "description": "Danger for destructive actions: the label turns red, and the action should still be confirmed or undoable."
+            }
+          ],
+          "extends": "Omit<BaseMenu.Item.Props, 'className'>"
+        },
+        {
+          "name": "Separator",
+          "description": "A rule between groups of items.",
+          "props": [
+            {
+              "name": "className",
+              "type": "ClassName",
+              "required": false,
+              "description": "Classes added to the separator, after its own: a string, or a function of its state."
+            }
+          ],
+          "extends": "Omit<BaseMenu.Separator.Props, 'className'>"
+        },
+        {
+          "name": "Group",
+          "description": "Items that belong together, named by a GroupLabel.",
+          "props": [],
+          "extends": "BaseMenu.Group.Props"
+        },
+        {
+          "name": "GroupLabel",
+          "description": "The name of a group, read when focus enters it.",
+          "props": [
+            {
+              "name": "className",
+              "type": "ClassName",
+              "required": false,
+              "description": "Classes added to the group label, after its own: a string, or a function of its state."
+            }
+          ],
+          "extends": "Omit<BaseMenu.GroupLabel.Props, 'className'>"
+        },
+        {
+          "name": "RadioGroup",
+          "description": "A set of items where exactly one is chosen, such as the unit figures are shown in.",
+          "props": [],
+          "extends": "BaseMenu.RadioGroup.Props"
+        },
+        {
+          "name": "RadioItem",
+          "description": "One choice in a RadioGroup, with a check when chosen.",
+          "props": [
+            {
+              "name": "className",
+              "type": "ClassName",
+              "required": false,
+              "description": "Classes added to the radio item, after its own: a string, or a function of its state."
+            }
+          ],
+          "extends": "Omit<BaseMenu.RadioItem.Props, 'className'>"
+        }
+      ]
+    },
+    {
+      "entry": "notice",
+      "name": "Notice",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "Notice",
+          "description": "A message inside the page, next to what it is about. It stays until the situation changes; for feedback on an action that just happened, use a toast. Add `role=\"status\"` or `role=\"alert\"` when the notice appears while the person is working, so it is announced.",
+          "props": [
+            {
+              "name": "tone",
+              "type": "'info' | 'success' | 'warning' | 'danger'",
+              "required": false,
+              "default": "'info'",
+              "description": "Info for news and tips, success for a finished task, warning for something to check, danger for a problem."
+            },
+            {
+              "name": "title",
+              "type": "ReactNode",
+              "required": false,
+              "description": "A few words in bold before the message."
+            },
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": true,
+              "description": "The message, one or two sentences."
+            },
+            {
+              "name": "action",
+              "type": "ReactNode",
+              "required": false,
+              "description": "One action at the end, such as a Button with `variant=\"text\"`."
+            }
+          ],
+          "extends": "Omit<ComponentProps<'div'>, 'title'>"
+        }
+      ]
+    },
+    {
+      "entry": "ring-chart",
+      "name": "RingChart",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "RingChart",
+          "description": "Parts of a whole as a ring of ticks: the donut of the Inventory card.",
+          "props": [
+            {
+              "name": "segments",
+              "type": "ChartSegment[]",
+              "required": true,
+              "description": "The parts of the whole, in order around the ring: each with a label, a value and a chart tone."
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "description": "What the ring measures, read before its parts: “Inventory”."
+            },
+            {
+              "name": "ticks",
+              "type": "number",
+              "required": false,
+              "default": "96",
+              "description": "Ticks around the ring. Fewer read as coarser; the dashboard uses 96."
+            },
+            {
+              "name": "format",
+              "type": "(value: number) => string",
+              "required": false,
+              "description": "Writes a value for the chart’s accessible name: “On hold 1,420 plt”. Plain numbers when left out."
+            },
+            {
+              "name": "direction",
+              "type": "'clockwise' | 'counterclockwise'",
+              "required": false,
+              "default": "'clockwise'",
+              "description": "Which way the parts run from twelve o’clock. Counterclockwise puts the first part on the left, beside a label set on that side, as in the Inventory card."
+            },
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Content in the hole of the ring, such as the total."
+            }
+          ],
+          "extends": "Omit<ComponentProps<'figure'>, 'children'>"
+        }
+      ]
+    },
+    {
+      "entry": "scroll-area",
+      "name": "ScrollArea",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "ScrollArea",
+          "description": "Content that scrolls inside a fixed height, as the product’s lists do: no scrollbar of the system, a fade at each edge that has more, and a thin indicator that shows while it scrolls and fades out a second after. The indicator never covers the content or its buttons. While it scrolls the area is a named group that takes focus, so the keyboard scrolls it; when everything fits it is plain content and adds no tab stop.",
+          "props": [
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "description": "What the content is, read when the area takes focus to scroll: “Invoices”, “System notifications”."
+            },
+            {
+              "name": "indicator",
+              "type": "'outside' | 'inside'",
+              "required": false,
+              "default": "'outside'",
+              "description": "Where the indicator runs. Outside: in the padding beside the area, 4 to 6 px past its end, as in the product’s cards and panels, where there is padding to hold it. Inside: in a lane of its own at the end of the area, which the content never reaches, for an area with no padding beside it."
+            }
+          ],
+          "extends": "ComponentProps<'div'>"
+        }
+      ]
+    },
+    {
+      "entry": "search",
+      "name": "SearchField",
+      "behavior": "base-ui",
+      "parts": [
+        {
+          "name": "SearchField",
+          "description": "A search field with its results in a list under it.",
+          "props": [
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "description": "What is searched, read by assistive technology: “Search orders, deliveries and invoices”."
+            },
+            {
+              "name": "showLabel",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Whether the label is drawn above the field. In a top bar the icon and the placeholder say what it is."
+            },
+            {
+              "name": "placeholder",
+              "type": "string",
+              "required": false,
+              "description": "An example of what to type, never a label."
+            },
+            {
+              "name": "value",
+              "type": "string",
+              "required": true,
+              "description": "The text in the field. The field is always controlled."
+            },
+            {
+              "name": "onValueChange",
+              "type": "(value: string) => void",
+              "required": true,
+              "description": "Called with the new text as people type or clear the field; not when a result is chosen."
+            },
+            {
+              "name": "items",
+              "type": "Item[]",
+              "required": true,
+              "description": "The results for the current text, or suggestions while the field is empty."
+            },
+            {
+              "name": "itemToString",
+              "type": "(item: Item) => string",
+              "required": true,
+              "description": "The text of an item: its key, and what is announced when it is highlighted."
+            },
+            {
+              "name": "renderItem",
+              "type": "(item: Item) => ReactNode",
+              "required": true,
+              "description": "Draws one result, usually as a SearchResult."
+            },
+            {
+              "name": "onItemChoose",
+              "type": "(item: Item) => boolean | void",
+              "required": true,
+              "description": "Called when a result is chosen, by click or with Enter. Return true to keep the list open with the field focused, as when a suggestion fills the field with its text."
+            },
+            {
+              "name": "status",
+              "type": "ReactNode",
+              "required": false,
+              "description": "A line at the top of the list, announced politely: how the text was read, or that the search is running."
+            },
+            {
+              "name": "busy",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "While the results are on their way: the field says so and the list keeps the previous results out of reach."
+            },
+            {
+              "name": "empty",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Shown when the text has no results."
+            },
+            {
+              "name": "busyIcon",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Icon shown while busy, instead of the magnifier."
+            },
+            {
+              "name": "size",
+              "type": "'small' | 'medium'",
+              "required": false,
+              "default": "'medium'",
+              "description": "Medium in a top bar; small inside a card or a panel."
+            },
+            {
+              "name": "className",
+              "type": "string",
+              "required": false,
+              "description": "Classes added to the field’s wrapper, after sonar-search."
+            },
+            {
+              "name": "variant",
+              "type": "'field' | 'top-bar'",
+              "required": false,
+              "default": "'field'",
+              "description": "`field`: the outlined box. `top-bar`: the product’s top-bar search (v38): no box of its own, it fills the app bar’s search pill (39 px), with a 22 px icon, 12 px text and an 18 px clear mark. On touch screens its text is 16 px drawn at three quarters, so it looks the same and iOS does not zoom in."
+            },
+            {
+              "name": "icon",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Replaces the magnifier, such as the app’s own icon font glyph."
+            },
+            {
+              "name": "clearIcon",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Replaces the clear mark."
+            },
+            {
+              "name": "statusIcon",
+              "type": "ReactNode",
+              "required": false,
+              "description": "Drawn before the status line as the 28 px accent circle: what reads the text (an AI sparkle)."
+            },
+            {
+              "name": "popupClassName",
+              "type": "string",
+              "required": false,
+              "description": "Classes added to the results popup, to place or size it from the app."
+            },
+            {
+              "name": "align",
+              "type": "'start' | 'center' | 'end'",
+              "required": false,
+              "default": "'start'",
+              "description": "Where the results line up with the field."
+            },
+            {
+              "name": "popupWidth",
+              "type": "'auto' | 'anchor' | string",
+              "required": false,
+              "default": "'auto'",
+              "description": "Width of the results: `anchor` is the field’s width, `auto` the field’s width but at least 320 px, or any CSS length (`calc(100vw - 24px)`)."
+            }
+          ]
+        },
+        {
+          "name": "SearchResult",
+          "description": "One row of results: an icon, a title, a line under it and something at the end.",
+          "props": [
+            {
+              "name": "icon",
+              "type": "ReactNode",
+              "required": false,
+              "description": "What kind of thing it is, as an icon: a truck for a delivery, a receipt for an invoice."
+            },
+            {
+              "name": "title",
+              "type": "ReactNode",
+              "required": true,
+              "description": "The result itself, on one line: a code and its key figure, such as “04-127C 12 items · 6 plt”."
+            },
+            {
+              "name": "description",
+              "type": "ReactNode",
+              "required": false,
+              "description": "A second line: the kind of result and when it is."
+            },
+            {
+              "name": "trailing",
+              "type": "ReactNode",
+              "required": false,
+              "description": "At the end of the row, such as a Status dot."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entry": "segmented-control",
+      "name": "SegmentedControl",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "SegmentedControl",
+          "description": "A choice of one among a few, drawn as a row of segments. Native radios underneath: arrow keys move the choice, and the control works in forms without JavaScript.",
+          "props": [
+            {
+              "name": "legend",
+              "type": "string",
+              "required": true,
+              "description": "What is being chosen, such as “Unit”. Always present for assistive technology; drawn unless `hideLegend`."
+            },
+            {
+              "name": "hideLegend",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Hides the legend from view while keeping it for assistive technology, when the options explain themselves."
+            },
+            {
+              "name": "options",
+              "type": "SegmentedOption[]",
+              "required": true,
+              "description": "Two to five options. More than that is a select."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "description": "Shared by the radios, so the choice is submitted with a form. A unique name is made when it is left out."
+            },
+            {
+              "name": "value",
+              "type": "string",
+              "required": false,
+              "description": "The chosen value, for a controlled control."
+            },
+            {
+              "name": "defaultValue",
+              "type": "string",
+              "required": false,
+              "description": "The value chosen at first, for an uncontrolled control."
+            },
+            {
+              "name": "onValueChange",
+              "type": "(value: string) => void",
+              "required": false,
+              "description": "Called with the new value when the choice changes."
+            },
+            {
+              "name": "iconOnly",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Show icons only. Every option still needs a label."
+            },
+            {
+              "name": "size",
+              "type": "'small' | 'medium'",
+              "required": false,
+              "default": "'medium'",
+              "description": "Medium for toolbars and forms; small inside a card header, beside its title."
+            }
+          ],
+          "extends": "Omit<ComponentProps<'fieldset'>, 'onChange' | 'defaultValue'>"
+        }
+      ]
+    },
+    {
+      "entry": "status",
+      "name": "Status",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "Status",
+          "description": "The state of an order, a delivery or an invoice.",
+          "props": [
+            {
+              "name": "tone",
+              "type": "'neutral' | 'positive' | 'warning' | 'danger'",
+              "required": false,
+              "default": "'neutral'",
+              "description": "What the state means. Color never carries it alone: the text always names it."
+            },
+            {
+              "name": "appearance",
+              "type": "'dot' | 'chip'",
+              "required": false,
+              "default": "'dot'",
+              "description": "A dot beside the text, for rows and lists; or a chip, for headers and for containers, where colored text would not reach 4.5:1."
+            },
+            {
+              "name": "hideLabel",
+              "type": "boolean",
+              "required": false,
+              "default": "false",
+              "description": "Only the dot shows; the state stays in the text for assistive technology. For dense rows where a tooltip or the row’s details name the state, as in the overview’s calendars."
+            },
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": true,
+              "description": "The state in words: Delivered, Delayed, Due today."
+            }
+          ],
+          "extends": "ComponentProps<'span'>"
+        }
+      ]
+    },
+    {
+      "entry": "switch",
+      "name": "Switch",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "Switch",
+          "description": "A native checkbox with the switch role: it works without JavaScript, in forms and with every assistive technology. Use it for settings that apply at once; for a choice that is submitted later, use Checkbox.",
+          "props": [
+            {
+              "name": "label",
+              "type": "ReactNode",
+              "required": true,
+              "description": "What the switch turns on."
+            },
+            {
+              "name": "description",
+              "type": "ReactNode",
+              "required": false,
+              "description": "One line on the effect, read after the label."
+            }
+          ],
+          "extends": "Omit<ComponentProps<'input'>, 'type' | 'role'>"
+        }
+      ]
+    },
+    {
+      "entry": "tick-bar",
+      "name": "TickBar",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "TickBar",
+          "description": "A proportion as a row of fine ticks.",
+          "props": [
+            {
+              "name": "segments",
+              "type": "ChartSegment[]",
+              "required": true,
+              "description": "The parts of a whole, in order. Each takes its share of the width."
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "description": "What the bar measures, read before its parts: “May orders”."
+            },
+            {
+              "name": "format",
+              "type": "(value: number) => string",
+              "required": false,
+              "description": "Formats values for the accessible description."
+            }
+          ],
+          "extends": "Omit<ComponentProps<'div'>, 'children'>"
+        }
+      ]
+    },
+    {
+      "entry": "toast",
+      "name": "ToastProvider",
+      "behavior": "base-ui",
+      "parts": [
+        {
+          "name": "ToastProvider",
+          "description": "Feedback on something that just happened, on the inverse surface at the bottom of the window, with at most one action. One toast at a time: a new one replaces the last. Base UI announces it, pauses it while hovered or focused, and lets it be swiped away.",
+          "props": [
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "required": true,
+              "description": "The part of the app that can show toasts, usually all of it. useToast works anywhere inside."
+            },
+            {
+              "name": "timeout",
+              "type": "number",
+              "required": false,
+              "default": "5000",
+              "description": "Time a toast stays, in milliseconds. One with an action stays twice as long, so there is time to use it."
+            },
+            {
+              "name": "closeLabel",
+              "type": "string",
+              "required": false,
+              "default": "'Dismiss'",
+              "description": "Name of the close button."
+            },
+            {
+              "name": "label",
+              "type": "string",
+              "required": false,
+              "default": "'Notifications'",
+              "description": "Name of the region the toasts appear in. Give each provider its own when a page has more than one."
+            },
+            {
+              "name": "inset",
+              "type": "{ left?: string; right?: string; bottom?: string }",
+              "required": false,
+              "default": "{ left: 0, right: 0, bottom: 24px }",
+              "description": "Where the toasts sit, as CSS lengths: `left` and `right` bound the area they centre in (such as the main area, right of a sidebar), `bottom` lifts them above a footer or a bottom app bar. The window’s safe area is added to `bottom`."
+            },
+            {
+              "name": "closeButton",
+              "type": "boolean",
+              "required": false,
+              "default": "true",
+              "description": "Whether toasts carry a close button. One with an action can still be swiped away or wait for its timeout."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entry": "tooltip",
+      "name": "Tooltip",
+      "behavior": "base-ui",
+      "parts": [
+        {
+          "name": "Tooltip",
+          "description": "A short label on the inverse surface, shown on hover and focus. Wrap groups of triggers in TooltipProvider so that, once one tooltip is open, moving to the next shows it without the delay.",
+          "props": [
+            {
+              "name": "content",
+              "type": "ReactNode",
+              "required": true,
+              "description": "The text shown. Short: a name or a hint, never something the person must read to continue."
+            },
+            {
+              "name": "children",
+              "type": "ReactElement",
+              "required": true,
+              "description": "The element it describes, usually an IconButton. It must be focusable, so keyboard users get the tooltip too."
+            },
+            {
+              "name": "side",
+              "type": "BaseTooltip.Positioner.Props['side']",
+              "required": false,
+              "default": "'top'",
+              "description": "Side of the element the tooltip opens on. It flips when there is no room."
+            },
+            {
+              "name": "delay",
+              "type": "number",
+              "required": false,
+              "default": "300",
+              "description": "Time the pointer rests on the trigger before the tooltip opens, in milliseconds. Keyboard focus opens it at once."
+            }
+          ]
+        },
+        {
+          "name": "TooltipProvider",
+          "description": "Shares the open delay between tooltips, so moving along a toolbar does not wait at every button.",
+          "props": [],
+          "extends": "BaseTooltip.Provider.Props"
+        }
+      ]
+    },
+    {
+      "entry": "trend-chart",
+      "name": "TrendChart",
+      "behavior": "native",
+      "parts": [
+        {
+          "name": "TrendChart",
+          "description": "A daily series as a line, with its running total dotted against a second axis. The legend turns each series off and on; the pointer, a finger or the arrow keys show the values of a day.",
+          "props": [
+            {
+              "name": "label",
+              "type": "string",
+              "required": true,
+              "description": "One sentence that sums the chart up, read first: “Daily shipments in May, 11,940 pallets in total”."
+            },
+            {
+              "name": "categories",
+              "type": "string[]",
+              "required": true,
+              "description": "The label of each point along the x axis, such as the days of the month."
+            },
+            {
+              "name": "series",
+              "type": "{ name: string; values: (number | null)[] }",
+              "required": true,
+              "description": "The series drawn as a solid line. Missing points (null) leave a gap: days still to come."
+            },
+            {
+              "name": "cumulative",
+              "type": "{ name: string }",
+              "required": false,
+              "description": "A second series drawn dotted against its own axis on the right: the running total of the first."
+            },
+            {
+              "name": "unit",
+              "type": "string",
+              "required": true,
+              "description": "Unit of the values, after each figure in the tooltip."
+            },
+            {
+              "name": "axisLabels",
+              "type": "number[]",
+              "required": false,
+              "default": "first, middle and last",
+              "description": "Indices of the categories labeled on the x axis."
+            },
+            {
+              "name": "height",
+              "type": "number",
+              "required": false,
+              "default": "200",
+              "description": "Height of the chart in pixels, axes included. The width follows its container."
+            },
+            {
+              "name": "className",
+              "type": "string",
+              "required": false,
+              "description": "Classes added to the chart’s root element, after sonar-trend-chart."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

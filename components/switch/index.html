@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en" data-astro-cid-lpetmyok>
+  <head>
+    <meta charset="utf-8">
+    <!-- The order of the cascade layers, before any stylesheet: bundling may load the files in any order -->
+    <style>
+      @layer reset, base, sonar;
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <!-- iOS would turn dates and figures into links, changing the elements React hydrates -->
+    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+    <title>Switch · Orbex Sonar-DB Design System</title>
+    <meta name="description" content="Switch, a component of the Orbex Sonar-DB Design System: examples, guidance, accessibility and API.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/assets/ibm-plex-sans-latin-400-normal.CDDApCn2.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-500-normal.6ng42L7E.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-600-normal.CuJfVYMP.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-normal.CRd5VyFf.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-italic.CDUi4ehg.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-400-normal.DMJ8VG8y.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-500-normal.DSY6xOcd.woff2" as="font" type="font/woff2" crossorigin>
+    <script>
+      try {
+        const theme = localStorage.getItem('sonar-ds-theme')
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {}
+
+      /* A page opened from a link starts at the top. Browsers do this already; some embedded viewers keep the previous
+         page’s scroll instead. Going back, reloading and links to a section are left to the browser, and the reset
+         stops as soon as the reader scrolls. */
+      try {
+        const navigation = performance.getEntriesByType('navigation')[0]
+        if (!location.hash && (!navigation || navigation.type === 'navigate')) {
+          const toTop = () => scrollTo(0, 0)
+          const stop = () => {
+            removeEventListener('DOMContentLoaded', toTop)
+            removeEventListener('load', toTop)
+          }
+          toTop()
+          addEventListener('DOMContentLoaded', toTop, { once: true })
+          addEventListener('load', toTop, { once: true })
+          for (const type of ['wheel', 'touchstart', 'keydown']) addEventListener(type, stop, { once: true, passive: true })
+        }
+      } catch {}
+    </script>
+  <style>.code-block[data-astro-cid-c6nuo4je]{min-width:0;max-width:var(--site-measure);border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-container-low)}.bar[data-astro-cid-c6nuo4je]{padding:var(--sonar-space-6) var(--sonar-space-8) 0 var(--sonar-space-24);justify-content:space-between;align-items:center;display:flex}.language[data-astro-cid-c6nuo4je]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-sm);letter-spacing:var(--sonar-type-label-sm-tracking);text-transform:uppercase}pre[data-astro-cid-c6nuo4je]{overscroll-behavior-x:contain;padding:var(--sonar-space-8) var(--sonar-space-24) var(--sonar-space-20);color:var(--sonar-color-text-strong);font:400 13px/1.6 var(--sonar-font-family-mono);overflow:auto hidden}pre[data-astro-cid-c6nuo4je]:focus-visible{outline:var(--sonar-focus-width) solid var(--sonar-color-focus);outline-offset:calc(-1 * var(--sonar-focus-width));border-radius:0 0 var(--sonar-shape-corner-medium) var(--sonar-shape-corner-medium)}code[data-astro-cid-c6nuo4je]{font:inherit}.copy[data-astro-cid-c6nuo4je]{min-height:32px;padding:0 var(--sonar-space-12);border-radius:var(--sonar-shape-corner-full);color:var(--sonar-color-text-secondary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);cursor:pointer;transition:background-color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);background:0 0;border:0}.copy[data-astro-cid-c6nuo4je]:hover{background:var(--sonar-color-state-hover);color:var(--sonar-color-text-strong)}.copy[data-astro-cid-c6nuo4je]:focus-visible{outline:2px solid var(--sonar-color-accent);outline-offset:2px}
+</style>
+<link rel="stylesheet" href="/assets/DoDont.DV84UQhT.css">
+<link rel="stylesheet" href="/assets/Docs.pfYhGa-X.css">
+<style>.specimen-figure[data-astro-cid-h2dlglp7]{margin-inline:0;border-radius:var(--sonar-shape-corner-large);background:var(--sonar-color-surface-card);min-width:0;box-shadow:var(--sonar-elevation-1);grid-template-columns:minmax(0,1fr);margin-bottom:0;display:grid}figcaption[data-astro-cid-h2dlglp7]{padding:var(--sonar-space-16) var(--sonar-space-20) 0;color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}.body[data-astro-cid-h2dlglp7]{min-width:0;padding:var(--sonar-space-24) var(--sonar-space-24) var(--sonar-space-28)}.body[data-astro-cid-h2dlglp7] .specimen-frame:focus-visible{outline:var(--sonar-focus-width) solid var(--sonar-color-focus);outline-offset:var(--sonar-focus-offset);border-radius:var(--sonar-shape-corner-small)}@container page (width<608px){.body[data-astro-cid-h2dlglp7]{padding:var(--sonar-space-20) var(--sonar-space-16) var(--sonar-space-24)}}
+.specimen-frame{overscroll-behavior-x:contain;margin:-6px 0 -6px -6px;padding:6px 0 6px 6px;overflow:auto hidden}.specimen{gap:var(--sonar-space-16) var(--sonar-space-24);width:max-content;padding-bottom:var(--sonar-space-4);align-items:center;display:grid}.specimen-head,.specimen-name{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-sm);letter-spacing:var(--sonar-type-label-sm-tracking);white-space:nowrap}.specimen-name{padding-right:var(--sonar-space-8);color:var(--sonar-color-text-secondary)}.specimen-cell{justify-content:flex-start;align-items:center;min-height:32px;display:flex}
+.a11y[data-astro-cid-bxr4t4t4]{gap:var(--sonar-space-28);max-width:880px;display:grid}h3[data-astro-cid-bxr4t4t4]{margin-bottom:var(--sonar-space-8);font:var(--sonar-type-title-md);letter-spacing:var(--sonar-type-title-md-tracking)}table[data-astro-cid-bxr4t4t4]{border-collapse:collapse;border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);width:100%;box-shadow:var(--sonar-elevation-1);font:var(--sonar-type-body-md);letter-spacing:var(--sonar-type-body-md-tracking)}th[data-astro-cid-bxr4t4t4],td[data-astro-cid-bxr4t4t4]{padding:var(--sonar-space-10) var(--sonar-space-16);border-bottom:1px solid var(--sonar-color-divider);text-align:left;vertical-align:top}tbody[data-astro-cid-bxr4t4t4] tr[data-astro-cid-bxr4t4t4]:last-child>[data-astro-cid-bxr4t4t4]{border-bottom:0}thead[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{width:34%;color:var(--sonar-color-text-strong);font-weight:var(--sonar-font-weight-medium)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4] code[data-astro-cid-bxr4t4t4]{font:400 12px/1.5 var(--sonar-font-family-mono);overflow-wrap:anywhere}td[data-astro-cid-bxr4t4t4]{color:var(--sonar-color-text-secondary)}@container page (width<608px){th[data-astro-cid-bxr4t4t4],td[data-astro-cid-bxr4t4t4]{padding:var(--sonar-space-10) var(--sonar-space-12)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{width:40%}}
+.page-header[data-astro-cid-b2i3gsw2]{max-width:var(--site-content-width);margin-bottom:var(--sonar-space-48)}h1[data-astro-cid-b2i3gsw2]{font:var(--site-heading-1);letter-spacing:-.01em}.lead[data-astro-cid-b2i3gsw2]{max-width:var(--site-measure);margin-top:var(--sonar-space-16);color:var(--sonar-color-text-secondary);font:var(--site-lead)}
+.part[data-astro-cid-ogedjwls]+.part[data-astro-cid-ogedjwls]{margin-top:var(--sonar-space-32)}h3[data-astro-cid-ogedjwls]{margin-bottom:var(--sonar-space-4);font:var(--sonar-type-title-md)}h3[data-astro-cid-ogedjwls] code[data-astro-cid-ogedjwls]{font:600 14px/1.4 var(--sonar-font-family-mono)}.description[data-astro-cid-ogedjwls]{max-width:var(--site-measure);margin-bottom:var(--sonar-space-12);color:var(--sonar-color-text-secondary);font:var(--sonar-type-body-lg)}.table-wrap[data-astro-cid-ogedjwls]{overscroll-behavior-x:contain;border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);box-shadow:var(--sonar-elevation-1);overflow:auto hidden}table[data-astro-cid-ogedjwls]{border-collapse:collapse;width:100%;min-width:560px;font:var(--sonar-type-body-md);letter-spacing:var(--sonar-type-body-md-tracking)}th[data-astro-cid-ogedjwls],td[data-astro-cid-ogedjwls]{padding:var(--sonar-space-12) var(--sonar-space-16);border-bottom:1px solid var(--sonar-color-divider);text-align:left;vertical-align:top}tbody[data-astro-cid-ogedjwls] tr[data-astro-cid-ogedjwls]:last-child>[data-astro-cid-ogedjwls]{border-bottom:0}thead[data-astro-cid-ogedjwls] th[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}tbody[data-astro-cid-ogedjwls] th[data-astro-cid-ogedjwls]{width:50%;font-weight:inherit}tbody[data-astro-cid-ogedjwls] th[data-astro-cid-ogedjwls]>code[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-strong);font:500 12px/1.4 var(--sonar-font-family-mono)}tbody[data-astro-cid-ogedjwls] th[data-astro-cid-ogedjwls] p[data-astro-cid-ogedjwls]{margin-top:var(--sonar-space-4);color:var(--sonar-color-text-secondary)}.required[data-astro-cid-ogedjwls]{margin-left:var(--sonar-space-8);color:var(--sonar-color-text-danger);font:var(--sonar-type-label-sm)}td[data-astro-cid-ogedjwls] code[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-default);font:400 12px/1.5 var(--sonar-font-family-mono);overflow-wrap:anywhere}.none[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-tertiary)}.note[data-astro-cid-ogedjwls]{max-width:var(--site-measure);margin-top:var(--sonar-space-12);color:var(--sonar-color-text-secondary);font:var(--sonar-type-body-md)}.note[data-astro-cid-ogedjwls] a[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-accent)}.facts[data-astro-cid-cndiwttc]{gap:var(--sonar-space-8);margin-top:var(--sonar-space-20);flex-wrap:wrap;padding:0;display:flex}.facts[data-astro-cid-cndiwttc] code[data-astro-cid-cndiwttc]{font:500 11px/1 var(--sonar-font-family-mono)}.facts[data-astro-cid-cndiwttc] li[data-astro-cid-cndiwttc]{text-overflow:ellipsis;white-space:nowrap;box-sizing:border-box;max-width:100%;height:28px;padding:0 var(--sonar-space-12);border-radius:var(--sonar-shape-corner-full);background:var(--sonar-color-surface-container);color:var(--sonar-color-text-default);line-height:28px;font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);line-height:28px;display:inline-block;overflow:hidden}.notes[data-astro-cid-cndiwttc]{margin:var(--sonar-space-28) 0 var(--sonar-space-8);font:var(--sonar-type-title-md);letter-spacing:var(--sonar-type-title-md-tracking)}.demos[data-astro-cid-cndiwttc]{gap:var(--sonar-space-20);display:grid}
+</style>
+<link rel="stylesheet" href="/assets/styles.Dexbwagh.css">
+<style>.section[data-astro-cid-w6ymvdtg]{max-width:var(--site-content-width)}.section[data-astro-cid-w6ymvdtg]+.section{margin-top:72px}h2[data-astro-cid-w6ymvdtg]{margin-bottom:var(--sonar-space-16);font:var(--site-heading-2);letter-spacing:-.01em}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]{color:inherit;text-decoration:none}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]:hover{text-decoration:underline}.section[data-astro-cid-w6ymvdtg]>*+*{margin-top:var(--sonar-space-24)}.section[data-astro-cid-w6ymvdtg]>h2+*{margin-top:0}
+</style></head>
+  <body data-astro-cid-lpetmyok>
+    <a class="skip-link" href="#content" data-astro-cid-lpetmyok>Skip to content</a>
+
+    <header class="masthead" data-astro-cid-lpetmyok>
+      <div class="brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  <span class="wordmark-system" data-astro-cid-qisgtjgl>Design system</span>
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a></div>
+      <button class="menu-button" type="button" popovertarget="sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation" data-astro-cid-lpetmyok>
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" data-astro-cid-lpetmyok><path d="M4 7h16M4 12h16M4 17h16" data-astro-cid-lpetmyok></path></svg>
+      </button>
+    </header>
+
+    <div class="shell" data-astro-cid-lpetmyok>
+      <nav class="sidebar" id="sidebar" popover aria-label="Documentation" data-astro-cid-lpetmyok>
+        
+        <div class="sidebar-brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a><span class="sidebar-version" data-astro-cid-lpetmyok><a class="version-chip" href="/resources/changelog/" data-astro-cid-2qsy24n7>v1.1.4<span class="visually-hidden" data-astro-cid-2qsy24n7>, changelog</span></a></span></div>
+        <div class="sidebar-scroll" data-astro-cid-lpetmyok>
+          <p class="outline-title" data-astro-cid-lpetmyok>Design system</p>
+          <div class="navigation" data-astro-cid-yxete6jp>
+  <section aria-labelledby="nav-Get started" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Get started" data-astro-cid-yxete6jp>
+            Get started
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/" data-astro-cid-yxete6jp>
+                  Introduction
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/get-started/installation/" data-astro-cid-yxete6jp>
+                  Installation
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Foundations" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Foundations" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/foundations/" data-astro-cid-yxete6jp>
+                Foundations
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/foundations/principles/" data-astro-cid-yxete6jp>
+                  Principles
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/accessibility/" data-astro-cid-yxete6jp>
+                  Accessibility
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/color/" data-astro-cid-yxete6jp>
+                  Color
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/typography/" data-astro-cid-yxete6jp>
+                  Typography
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/icons/" data-astro-cid-yxete6jp>
+                  Icons
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/spacing/" data-astro-cid-yxete6jp>
+                  Spacing
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/shape/" data-astro-cid-yxete6jp>
+                  Shape
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/elevation/" data-astro-cid-yxete6jp>
+                  Elevation
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/motion/" data-astro-cid-yxete6jp>
+                  Motion
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Layout" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Layout" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/layout/" data-astro-cid-yxete6jp>
+                Layout
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/layout/grid/" data-astro-cid-yxete6jp>
+                  Breakpoints and grid
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/layout/navigation/" data-astro-cid-yxete6jp>
+                  Navigation by device
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Components" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Components" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/components/" data-astro-cid-yxete6jp>
+                Components
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/components/button/" data-astro-cid-yxete6jp>
+                  Button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/icon-button/" data-astro-cid-yxete6jp>
+                  Icon button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/badge/" data-astro-cid-yxete6jp>
+                  Badge
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/status/" data-astro-cid-yxete6jp>
+                  Status
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/switch/" aria-current="page" data-astro-cid-yxete6jp>
+                  Switch
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/checkbox/" data-astro-cid-yxete6jp>
+                  Checkbox
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/segmented-control/" data-astro-cid-yxete6jp>
+                  Segmented control
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/field/" data-astro-cid-yxete6jp>
+                  Text field and select
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/notice/" data-astro-cid-yxete6jp>
+                  Notice
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/toast/" data-astro-cid-yxete6jp>
+                  Toast
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/menu/" data-astro-cid-yxete6jp>
+                  Menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tooltip/" data-astro-cid-yxete6jp>
+                  Tooltip
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/dialog/" data-astro-cid-yxete6jp>
+                  Dialog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/scroll-area/" data-astro-cid-yxete6jp>
+                  Scroll area
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card/" data-astro-cid-yxete6jp>
+                  Card
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-link/" data-astro-cid-yxete6jp>
+                  Card link
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-scroll/" data-astro-cid-yxete6jp>
+                  Card scroll
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/unit-menu/" data-astro-cid-yxete6jp>
+                  Unit menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tick-bar/" data-astro-cid-yxete6jp>
+                  Tick bar
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/ring-chart/" data-astro-cid-yxete6jp>
+                  Ring chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/trend-chart/" data-astro-cid-yxete6jp>
+                  Trend chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/chart-legend/" data-astro-cid-yxete6jp>
+                  Chart legend
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-field/" data-astro-cid-yxete6jp>
+                  Search field
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-result/" data-astro-cid-yxete6jp>
+                  Search result
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Patterns" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Patterns" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/patterns/" data-astro-cid-yxete6jp>
+                Patterns
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/patterns/overview/" data-astro-cid-yxete6jp>
+                  Overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/cards/" data-astro-cid-yxete6jp>
+                  Cards
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/charts/" data-astro-cid-yxete6jp>
+                  Charts
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/search/" data-astro-cid-yxete6jp>
+                  Search
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/editing/" data-astro-cid-yxete6jp>
+                  Editing the overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/panels/" data-astro-cid-yxete6jp>
+                  Panels
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/feedback/" data-astro-cid-yxete6jp>
+                  Feedback
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/app-shell/" data-astro-cid-yxete6jp>
+                  App shell
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/assistant/" data-astro-cid-yxete6jp>
+                  AI assistant
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/customize/" data-astro-cid-yxete6jp>
+                  Customize overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/unbuilt/" data-astro-cid-yxete6jp>
+                  Unbuilt modules
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Resources" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Resources" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/resources/" data-astro-cid-yxete6jp>
+                Resources
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/resources/changelog/" data-astro-cid-yxete6jp>
+                  Changelog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/downloads/" data-astro-cid-yxete6jp>
+                  Downloads
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/llms.txt" data-astro-cid-yxete6jp>
+                  llms.txt
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/contributing/" data-astro-cid-yxete6jp>
+                  Contributing
+                </a>
+            </li>
+        </ul>
+      </section>
+</div>
+        </div>
+        <div class="sidebar-footer" data-astro-cid-lpetmyok><fieldset class="theme-switch" data-astro-cid-hds7qqbe>
+  <legend class="visually-hidden" data-astro-cid-hds7qqbe>Theme</legend>
+  <label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="system" checked data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>System</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="light" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Light</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="dark" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Dark</span>
+      </label>
+</fieldset>
+
+<script type="module" src="/assets/ThemeSwitch.astro_astro_type_script_index_0_lang.BMJDsczV.js"></script></div>
+      </nav>
+
+      <main id="content" tabindex="-1" data-astro-cid-lpetmyok>
+        
+        <div class="page-body" data-astro-cid-lpetmyok>
+          <nav class="breadcrumb" aria-label="Breadcrumb" data-astro-cid-lpetmyok>
+                <a href="/components/" data-astro-cid-lpetmyok>Components</a>
+                <span aria-hidden="true" data-astro-cid-lpetmyok>/</span>
+                <span aria-current="page" data-astro-cid-lpetmyok>Switch</span>
+              </nav>
+          
+  <header class="page-header" data-astro-cid-b2i3gsw2>
+  <h1 data-astro-cid-b2i3gsw2>Switch</h1>
+  <p class="lead" data-astro-cid-b2i3gsw2>The Material 3 switch on a native checkbox. It turns something on at once, such as a card on the overview, and works before any script has loaded.</p>
+  
+    <ul class="facts" role="list" data-astro-cid-cndiwttc>
+      <li data-astro-cid-cndiwttc>Native HTML</li>
+      <li data-astro-cid-cndiwttc>1.7 KB gzipped · script and styles</li>
+      
+      <li data-astro-cid-cndiwttc><code data-astro-cid-cndiwttc>@orbex/sonar-components/switch</code></li>
+    </ul>
+  
+</header>
+
+  <section class="section" aria-labelledby="examples" data-astro-cid-w6ymvdtg>
+  <h2 id="examples" data-astro-cid-w6ymvdtg><a href="#examples" data-astro-cid-w6ymvdtg>Examples</a></h2>
+  
+    <div class="demos" data-astro-cid-cndiwttc>
+  <figure class="demo" data-astro-cid-trxcs2lc>
+  <figcaption data-astro-cid-trxcs2lc>On, off with help, disabled</figcaption>
+  <div class="preview stack" data-astro-cid-trxcs2lc>
+    <div class="sonar-switch"><label class="sonar-switch-main" for="_r3R_1_"><input type="checkbox" role="switch" id="_r3R_1_" class="sonar-switch-input" checked=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Daily shipments</span></label></div><div class="sonar-switch"><label class="sonar-switch-main" for="_r3R_2_"><input type="checkbox" role="switch" id="_r3R_2_" class="sonar-switch-input" aria-describedby="_r3R_2_-description"/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Compact figures</span></label><span class="sonar-switch-description" id="_r3R_2_-description">Shows 1.96K instead of 1,960 where space is short.</span></div><div class="sonar-switch"><label class="sonar-switch-main" for="_r3R_3_"><input type="checkbox" role="switch" id="_r3R_3_" class="sonar-switch-input" disabled=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Recurring orders</span></label></div>
+  </div>
+  <details class="code" data-astro-cid-trxcs2lc>
+    <summary data-astro-cid-trxcs2lc>Code</summary>
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>tsx</span>
+    <button class="copy" type="button" data-code="import { Switch } from '@orbex/sonar-components/switch'
+
+export default function Examples() {
+  return (
+    <>
+      <Switch label=&quot;Daily shipments&quot; defaultChecked />
+      <Switch label=&quot;Compact figures&quot; description=&quot;Shows 1.96K instead of 1,960 where space is short.&quot; />
+      <Switch label=&quot;Recurring orders&quot; disabled />
+    </>
+  )
+}" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="tsx" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>import { Switch } from &#39;@orbex/sonar-components/switch&#39;
+
+export default function Examples() {
+  return (
+    &lt;&gt;
+      &lt;Switch label=&quot;Daily shipments&quot; defaultChecked /&gt;
+      &lt;Switch label=&quot;Compact figures&quot; description=&quot;Shows 1.96K instead of 1,960 where space is short.&quot; /&gt;
+      &lt;Switch label=&quot;Recurring orders&quot; disabled /&gt;
+    &lt;/&gt;
+  )
+}</code></pre>
+</div>
+
+<script type="module">function e(e){let t=document.createElement(`textarea`);t.value=e,t.setAttribute(`readonly`,``),t.style.cssText=`position:fixed;inset:0 auto auto 0;width:1px;height:1px;opacity:0`,document.body.append(t),t.select();let n=document.execCommand(`copy`);return t.remove(),n}for(let t of document.querySelectorAll(`.code-block .copy`))t.addEventListener(`click`,async()=>{let n=t.dataset.code??``,r=!1;try{await navigator.clipboard.writeText(n),r=!0}catch{r=e(n)}t.textContent=r?`Copied`:`Copy failed`,setTimeout(()=>t.textContent=`Copy`,1600)});</script>
+  </details>
+</figure>
+  
+
+  
+
+  
+</div>
+  
+</section>
+
+  <section class="section" aria-labelledby="variants" data-astro-cid-w6ymvdtg>
+  <h2 id="variants" data-astro-cid-w6ymvdtg><a href="#variants" data-astro-cid-w6ymvdtg>Sizes, variants and states</a></h2>
+  
+        <div class="demos" data-astro-cid-cndiwttc>
+          <figure class="specimen-figure" data-astro-cid-h2dlglp7>
+  <figcaption data-astro-cid-h2dlglp7>States</figcaption>
+  <div class="body" data-astro-cid-h2dlglp7><div class="specimen-frame" data-scroll-region="true" role="img" aria-label="Switches off and on, at rest, hovered, focused, pressed and disabled"><div class="specimen" inert="" aria-hidden="true" style="grid-template-columns:auto repeat(5, max-content)"><span></span><span class="specimen-head">Rest</span><span class="specimen-head">Hover</span><span class="specimen-head">Focus</span><span class="specimen-head">Pressed</span><span class="specimen-head">Disabled</span><span class="specimen-name">Off</span><div class="specimen-cell"><div class="sonar-switch"><label class="sonar-switch-main" for="_r4R_17_"><input type="checkbox" role="switch" id="_r4R_17_" class="sonar-switch-input" readOnly=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Shipments</span></label></div></div><div class="specimen-cell" data-preview="hover"><div class="sonar-switch"><label class="sonar-switch-main" for="_r4R_1n_"><input type="checkbox" role="switch" id="_r4R_1n_" class="sonar-switch-input" readOnly=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Shipments</span></label></div></div><div class="specimen-cell" data-preview="focus"><div class="sonar-switch"><label class="sonar-switch-main" for="_r4R_27_"><input type="checkbox" role="switch" id="_r4R_27_" class="sonar-switch-input" readOnly=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Shipments</span></label></div></div><div class="specimen-cell" data-preview="pressed"><div class="sonar-switch"><label class="sonar-switch-main" for="_r4R_2n_"><input type="checkbox" role="switch" id="_r4R_2n_" class="sonar-switch-input" readOnly=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Shipments</span></label></div></div><div class="specimen-cell"><div class="sonar-switch"><label class="sonar-switch-main" for="_r4R_37_"><input type="checkbox" role="switch" id="_r4R_37_" class="sonar-switch-input" readOnly="" disabled=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Shipments</span></label></div></div><span class="specimen-name">On</span><div class="specimen-cell"><div class="sonar-switch"><label class="sonar-switch-main" for="_r4R_1b_"><input type="checkbox" role="switch" id="_r4R_1b_" class="sonar-switch-input" readOnly="" checked=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Shipments</span></label></div></div><div class="specimen-cell" data-preview="hover"><div class="sonar-switch"><label class="sonar-switch-main" for="_r4R_1r_"><input type="checkbox" role="switch" id="_r4R_1r_" class="sonar-switch-input" readOnly="" checked=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Shipments</span></label></div></div><div class="specimen-cell" data-preview="focus"><div class="sonar-switch"><label class="sonar-switch-main" for="_r4R_2b_"><input type="checkbox" role="switch" id="_r4R_2b_" class="sonar-switch-input" readOnly="" checked=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Shipments</span></label></div></div><div class="specimen-cell" data-preview="pressed"><div class="sonar-switch"><label class="sonar-switch-main" for="_r4R_2r_"><input type="checkbox" role="switch" id="_r4R_2r_" class="sonar-switch-input" readOnly="" checked=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Shipments</span></label></div></div><div class="specimen-cell"><div class="sonar-switch"><label class="sonar-switch-main" for="_r4R_3b_"><input type="checkbox" role="switch" id="_r4R_3b_" class="sonar-switch-input" readOnly="" disabled="" checked=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Shipments</span></label></div></div></div></div></div>
+</figure>
+        </div>
+      
+</section><section class="section" aria-labelledby="usage" data-astro-cid-w6ymvdtg>
+  <h2 id="usage" data-astro-cid-w6ymvdtg><a href="#usage" data-astro-cid-w6ymvdtg>Usage</a></h2>
+  
+    <ul class="prose">
+      <li>For settings that apply immediately. For a choice that is submitted later, use Checkbox.</li>
+      <li>Name what is turned on, not the action: “Daily shipments”, not “Show daily shipments”.</li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="do-dont" data-astro-cid-w6ymvdtg>
+  <h2 id="do-dont" data-astro-cid-w6ymvdtg><a href="#do-dont" data-astro-cid-w6ymvdtg>Do and don’t</a></h2>
+  
+      <div class="guidance"><div class="guidance-pair"><figure class="guidance-example" data-verdict="do"><div class="guidance-stage" inert="" aria-hidden="true"><div class="g-stack"><div class="sonar-switch"><label class="sonar-switch-main" for="_r5R_2l_"><input type="checkbox" role="switch" id="_r5R_2l_" class="sonar-switch-input" checked=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Email me when a delivery is late</span></label></div><div class="sonar-switch"><label class="sonar-switch-main" for="_r5R_4l_"><input type="checkbox" role="switch" id="_r5R_4l_" class="sonar-switch-input"/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Show weekends in calendars</span></label></div></div></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</span><span class="guidance-text">A switch acts at once: the setting is on as soon as it is turned on.</span></figcaption></figure><figure class="guidance-example" data-verdict="dont"><div class="guidance-stage" inert="" aria-hidden="true"><div class="g-stack"><div class="sonar-switch"><label class="sonar-switch-main" for="_r5R_2p_"><input type="checkbox" role="switch" id="_r5R_2p_" class="sonar-switch-input" checked=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Include returns</span></label></div><div class="sonar-switch"><label class="sonar-switch-main" for="_r5R_4p_"><input type="checkbox" role="switch" id="_r5R_4p_" class="sonar-switch-input"/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Include drafts</span></label></div><div class="g-actions"><button type="button" class="sonar-button" data-variant="filled" data-size="small">Save</button></div></div></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don’t</span><span class="guidance-text">Switches in a form that waits for Save. Choices confirmed later are checkboxes.</span></figcaption></figure></div><div class="guidance-pair"><figure class="guidance-example" data-verdict="do"><div class="guidance-stage" inert="" aria-hidden="true"><div class="sonar-switch"><label class="sonar-switch-main" for="_r5R_m_"><input type="checkbox" role="switch" id="_r5R_m_" class="sonar-switch-input" checked=""/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Show weekends</span></label></div></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</span><span class="guidance-text">Name the setting in positive words, so on means yes.</span></figcaption></figure><figure class="guidance-example" data-verdict="dont"><div class="guidance-stage" inert="" aria-hidden="true"><div class="sonar-switch"><label class="sonar-switch-main" for="_r5R_q_"><input type="checkbox" role="switch" id="_r5R_q_" class="sonar-switch-input"/><span class="sonar-switch-track" aria-hidden="true"></span><span class="sonar-switch-label">Don’t hide weekends</span></label></div></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don’t</span><span class="guidance-text">A negative label, where on means no.</span></figcaption></figure></div></div>
+    
+</section>
+
+  <section class="section" aria-labelledby="accessibility" data-astro-cid-w6ymvdtg>
+  <h2 id="accessibility" data-astro-cid-w6ymvdtg><a href="#accessibility" data-astro-cid-w6ymvdtg>Accessibility</a></h2>
+  
+    <div class="a11y" data-astro-cid-bxr4t4t4>
+  <div class="block" data-astro-cid-bxr4t4t4>
+        <h3 data-astro-cid-bxr4t4t4>Keyboard</h3>
+        <table data-astro-cid-bxr4t4t4>
+          <thead data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+              <th scope="col" data-astro-cid-bxr4t4t4>Key</th>
+              <th scope="col" data-astro-cid-bxr4t4t4>What it does</th>
+            </tr>
+          </thead>
+          <tbody data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Tab</th>
+                <td data-astro-cid-bxr4t4t4>Moves focus to the switch.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Space</th>
+                <td data-astro-cid-bxr4t4t4>Turns it on or off.</td>
+              </tr>
+          </tbody>
+        </table>
+      </div><div class="block" data-astro-cid-bxr4t4t4>
+        <h3 data-astro-cid-bxr4t4t4>Roles and attributes</h3>
+        <table data-astro-cid-bxr4t4t4>
+          <thead data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+              <th scope="col" data-astro-cid-bxr4t4t4>Element or attribute</th>
+              <th scope="col" data-astro-cid-bxr4t4t4>What it gives</th>
+            </tr>
+          </thead>
+          <tbody data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>&lt;input type=&quot;checkbox&quot; role=&quot;switch&quot;&gt;</code></th>
+                <td data-astro-cid-bxr4t4t4>Announced as a switch, on or off; still a checkbox in forms and without JavaScript.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>&lt;label&gt;</code></th>
+                <td data-astro-cid-bxr4t4t4>Wraps the input, so the label names it and clicking the label toggles it.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>aria-describedby</code></th>
+                <td data-astro-cid-bxr4t4t4>Ties the help text to the input without adding it to the name.</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+</div>
+    <h3 class="notes" data-astro-cid-cndiwttc>Notes</h3>
+    <ul class="prose">
+    <li>A native checkbox with <code>role="switch"</code>: announced as a switch, on or off, toggled with Space.</li>
+    <li>The help text sits outside the label, so it describes the switch without lengthening its name.</li>
+    <li>On touch screens the row grows to 48 px.</li>
+  </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="use" data-astro-cid-w6ymvdtg>
+  <h2 id="use" data-astro-cid-w6ymvdtg><a href="#use" data-astro-cid-w6ymvdtg>Use it</a></h2>
+  
+    <p class="prose" data-astro-cid-cndiwttc>
+      Each component is its own entry point with its own stylesheet, so an app loads only what it uses.
+       The tokens and the cascade layers are set once for the app: see <a href="/get-started/installation/" data-astro-cid-cndiwttc>Installation</a>.
+    </p>
+    
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>tsx</span>
+    <button class="copy" type="button" data-code="import { Switch } from '@orbex/sonar-components/switch'
+import '@orbex/sonar-components/switch.css'" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="tsx" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>import { Switch } from &#39;@orbex/sonar-components/switch&#39;
+import &#39;@orbex/sonar-components/switch.css&#39;</code></pre>
+</div>
+
+
+  
+</section>
+
+  <section class="section" aria-labelledby="api" data-astro-cid-w6ymvdtg>
+  <h2 id="api" data-astro-cid-w6ymvdtg><a href="#api" data-astro-cid-w6ymvdtg>API</a></h2>
+  <div class="part" data-astro-cid-ogedjwls>
+  
+  
+  <div class="table-wrap" data-scroll-region data-label="Props of Switch" data-astro-cid-ogedjwls>
+        <table data-astro-cid-ogedjwls>
+          <caption class="visually-hidden" data-astro-cid-ogedjwls>Props of Switch</caption>
+          <thead data-astro-cid-ogedjwls>
+            <tr data-astro-cid-ogedjwls>
+              <th scope="col" data-astro-cid-ogedjwls>Prop</th>
+              <th scope="col" data-astro-cid-ogedjwls>Type</th>
+              <th scope="col" data-astro-cid-ogedjwls>Default</th>
+            </tr>
+          </thead>
+          <tbody data-astro-cid-ogedjwls>
+            <tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>label</code>
+                  <span class="required" data-astro-cid-ogedjwls>Required</span>
+                  <p data-astro-cid-ogedjwls>What the switch turns on.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>ReactNode</code>
+                </td>
+                <td data-astro-cid-ogedjwls><span class="none" data-astro-cid-ogedjwls>—</span></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>description</code>
+                  
+                  <p data-astro-cid-ogedjwls>One line on the effect, read after the label.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>ReactNode</code>
+                </td>
+                <td data-astro-cid-ogedjwls><span class="none" data-astro-cid-ogedjwls>—</span></td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+  <p class="note" data-astro-cid-ogedjwls>
+        Also takes every attribute of the native <code data-astro-cid-ogedjwls>&lt;input&gt;</code>
+        <span data-astro-cid-ogedjwls>, except type | role</span>, and a <code data-astro-cid-ogedjwls>ref</code> to it.
+      </p>
+  
+</div>
+  
+</section>
+
+        </div>
+        <div class="page-end" data-astro-cid-lpetmyok>
+          <nav class="pager" aria-label="Previous and next pages" data-astro-cid-lpetmyok>
+                <a href="/components/status/" rel="prev" class="previous" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Previous</span>
+                    Status
+                  </a>
+                <a href="/components/checkbox/" rel="next" class="next" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Next</span>
+                    Checkbox
+                  </a>
+              </nav>
+          <footer class="site-footer" data-astro-cid-nns7i3if>
+  <p data-astro-cid-nns7i3if>
+    Design system by <strong data-astro-cid-nns7i3if>988©STUDIO</strong>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    <a href="/resources/changelog/" data-astro-cid-nns7i3if>v1.1.4</a>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    © 2026
+  </p>
+</footer>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="/assets/Docs.astro_astro_type_script_index_0_lang.CIhC640A.js"></script>
+  </body>
+</html>

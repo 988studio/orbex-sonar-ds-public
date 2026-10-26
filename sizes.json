@@ -1,0 +1,145 @@
+{
+  "budget": 3072,
+  "components": [
+    {
+      "name": "badge",
+      "js": 507,
+      "css": 658,
+      "total": 1165,
+      "budget": 3072
+    },
+    {
+      "name": "button",
+      "js": 528,
+      "css": 1327,
+      "total": 1855,
+      "budget": 3072
+    },
+    {
+      "name": "card",
+      "js": 1466,
+      "css": 3099,
+      "total": 4565,
+      "budget": 4608
+    },
+    {
+      "name": "chart-legend",
+      "js": 467,
+      "css": 465,
+      "total": 932,
+      "budget": 3072
+    },
+    {
+      "name": "checkbox",
+      "js": 796,
+      "css": 1047,
+      "total": 1843,
+      "budget": 3072
+    },
+    {
+      "name": "dialog",
+      "js": 5601,
+      "css": 3644,
+      "total": 9245,
+      "budget": 9472
+    },
+    {
+      "name": "field",
+      "js": 1071,
+      "css": 1197,
+      "total": 2268,
+      "budget": 3072
+    },
+    {
+      "name": "icon-button",
+      "js": 436,
+      "css": 1072,
+      "total": 1508,
+      "budget": 3072
+    },
+    {
+      "name": "menu",
+      "js": 1002,
+      "css": 1081,
+      "total": 2083,
+      "budget": 3072
+    },
+    {
+      "name": "notice",
+      "js": 642,
+      "css": 675,
+      "total": 1317,
+      "budget": 3072
+    },
+    {
+      "name": "ring-chart",
+      "js": 1024,
+      "css": 407,
+      "total": 1431,
+      "budget": 3072
+    },
+    {
+      "name": "scroll-area",
+      "js": 742,
+      "css": 1328,
+      "total": 2070,
+      "budget": 3072
+    },
+    {
+      "name": "search",
+      "js": 1634,
+      "css": 2664,
+      "total": 4298,
+      "budget": 4352
+    },
+    {
+      "name": "segmented-control",
+      "js": 791,
+      "css": 1125,
+      "total": 1916,
+      "budget": 3072
+    },
+    {
+      "name": "status",
+      "js": 461,
+      "css": 632,
+      "total": 1093,
+      "budget": 3072
+    },
+    {
+      "name": "switch",
+      "js": 647,
+      "css": 1101,
+      "total": 1748,
+      "budget": 3072
+    },
+    {
+      "name": "tick-bar",
+      "js": 870,
+      "css": 436,
+      "total": 1306,
+      "budget": 3072
+    },
+    {
+      "name": "toast",
+      "js": 1148,
+      "css": 1276,
+      "total": 2424,
+      "budget": 3072
+    },
+    {
+      "name": "tooltip",
+      "js": 601,
+      "css": 592,
+      "total": 1193,
+      "budget": 3072
+    },
+    {
+      "name": "trend-chart",
+      "js": 2797,
+      "css": 1511,
+      "total": 4308,
+      "budget": 5632
+    }
+  ]
+}

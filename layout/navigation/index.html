@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en" data-astro-cid-lpetmyok>
+  <head>
+    <meta charset="utf-8">
+    <!-- The order of the cascade layers, before any stylesheet: bundling may load the files in any order -->
+    <style>
+      @layer reset, base, sonar;
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <!-- iOS would turn dates and figures into links, changing the elements React hydrates -->
+    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+    <title>Navigation by device · Orbex Sonar-DB Design System</title>
+    <meta name="description" content="Where Sonar-DB navigation and panels live on phones, tablets and desktops, and how they behave.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/assets/ibm-plex-sans-latin-400-normal.CDDApCn2.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-500-normal.6ng42L7E.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-600-normal.CuJfVYMP.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-normal.CRd5VyFf.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-italic.CDUi4ehg.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-400-normal.DMJ8VG8y.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-500-normal.DSY6xOcd.woff2" as="font" type="font/woff2" crossorigin>
+    <script>
+      try {
+        const theme = localStorage.getItem('sonar-ds-theme')
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {}
+
+      /* A page opened from a link starts at the top. Browsers do this already; some embedded viewers keep the previous
+         page’s scroll instead. Going back, reloading and links to a section are left to the browser, and the reset
+         stops as soon as the reader scrolls. */
+      try {
+        const navigation = performance.getEntriesByType('navigation')[0]
+        if (!location.hash && (!navigation || navigation.type === 'navigate')) {
+          const toTop = () => scrollTo(0, 0)
+          const stop = () => {
+            removeEventListener('DOMContentLoaded', toTop)
+            removeEventListener('load', toTop)
+          }
+          toTop()
+          addEventListener('DOMContentLoaded', toTop, { once: true })
+          addEventListener('load', toTop, { once: true })
+          for (const type of ['wheel', 'touchstart', 'keydown']) addEventListener(type, stop, { once: true, passive: true })
+        }
+      } catch {}
+    </script>
+  <link rel="stylesheet" href="/assets/navigation.B2SwiBFd.css">
+<style>.page-header[data-astro-cid-b2i3gsw2]{max-width:var(--site-content-width);margin-bottom:var(--sonar-space-48)}h1[data-astro-cid-b2i3gsw2]{font:var(--site-heading-1);letter-spacing:-.01em}.lead[data-astro-cid-b2i3gsw2]{max-width:var(--site-measure);margin-top:var(--sonar-space-16);color:var(--sonar-color-text-secondary);font:var(--site-lead)}
+.section[data-astro-cid-w6ymvdtg]{max-width:var(--site-content-width)}.section[data-astro-cid-w6ymvdtg]+.section{margin-top:72px}h2[data-astro-cid-w6ymvdtg]{margin-bottom:var(--sonar-space-16);font:var(--site-heading-2);letter-spacing:-.01em}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]{color:inherit;text-decoration:none}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]:hover{text-decoration:underline}.section[data-astro-cid-w6ymvdtg]>*+*{margin-top:var(--sonar-space-24)}.section[data-astro-cid-w6ymvdtg]>h2+*{margin-top:0}
+</style>
+<link rel="stylesheet" href="/assets/Docs.pfYhGa-X.css">
+<style>code[data-astro-cid-gkql7nzv].layers{white-space:pre}.deprecated[data-astro-cid-gkql7nzv]{margin-top:var(--sonar-space-4);padding:var(--sonar-space-2) var(--sonar-space-8);border-radius:var(--sonar-shape-corner-full);background:var(--sonar-color-warning-container);color:var(--sonar-color-text-strong);font:var(--sonar-type-label-sm);letter-spacing:var(--sonar-type-label-sm-tracking);display:inline-block}.table-wrap[data-astro-cid-gkql7nzv]{overscroll-behavior-x:contain;border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);box-shadow:var(--sonar-elevation-1);overflow:auto hidden}table[data-astro-cid-gkql7nzv]{border-collapse:collapse;width:100%;min-width:640px;font:var(--sonar-type-body-md);letter-spacing:var(--sonar-type-body-md-tracking)}table[data-astro-cid-gkql7nzv].compact{min-width:0}th[data-astro-cid-gkql7nzv],td[data-astro-cid-gkql7nzv]{padding:var(--sonar-space-12) var(--sonar-space-16);border-bottom:1px solid var(--sonar-color-divider);text-align:left;vertical-align:top}tbody[data-astro-cid-gkql7nzv] tr[data-astro-cid-gkql7nzv]:last-child>[data-astro-cid-gkql7nzv]{border-bottom:0}thead[data-astro-cid-gkql7nzv] th[data-astro-cid-gkql7nzv]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);white-space:nowrap}tbody[data-astro-cid-gkql7nzv] th[data-astro-cid-gkql7nzv]{width:46%;font-weight:inherit}tbody[data-astro-cid-gkql7nzv] th[data-astro-cid-gkql7nzv] code[data-astro-cid-gkql7nzv]{font:500 12px/1.4 var(--sonar-font-family-mono);overflow-wrap:anywhere}tbody[data-astro-cid-gkql7nzv] th[data-astro-cid-gkql7nzv] p[data-astro-cid-gkql7nzv]{margin-top:var(--sonar-space-4);color:var(--sonar-color-text-secondary)}.previews[data-astro-cid-gkql7nzv]{white-space:nowrap}.preview[data-astro-cid-gkql7nzv]{border-radius:var(--sonar-shape-corner-small);vertical-align:top;place-items:center;width:36px;height:36px;display:inline-grid}.preview[data-astro-cid-gkql7nzv]+.preview[data-astro-cid-gkql7nzv]{margin-left:var(--sonar-space-6)}.preview[data-astro-cid-gkql7nzv].fill{background:linear-gradient(var(--token), var(--token)), var(--sonar-color-surface-card);box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--sonar-color-text-strong) 10%, transparent)}.preview[data-astro-cid-gkql7nzv].text{background:var(--sonar-color-surface-card);box-shadow:inset 0 0 0 1px var(--sonar-color-divider);color:var(--token);font:var(--sonar-type-title-md)}.preview[data-astro-cid-gkql7nzv].text.inverse{background:var(--sonar-color-surface-inverse);box-shadow:none}.preview[data-astro-cid-gkql7nzv].border{background:var(--sonar-color-surface-card);box-shadow:inset 0 0 0 2px var(--token)}.preview[data-astro-cid-gkql7nzv].shadow{background:var(--sonar-color-surface-card);box-shadow:var(--token)}.value[data-astro-cid-gkql7nzv]{gap:var(--sonar-space-2);align-content:start;min-width:132px;display:grid}.value[data-astro-cid-gkql7nzv] code[data-astro-cid-gkql7nzv]{color:var(--sonar-color-text-secondary);font:400 12px/1.4 var(--sonar-font-family-mono)}.reference[data-astro-cid-gkql7nzv]{color:var(--sonar-color-text-default);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}.ratio[data-astro-cid-gkql7nzv]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}.ratio[data-astro-cid-gkql7nzv].low{color:var(--sonar-color-text-warning)}.preview[data-astro-cid-gkql7nzv].text[data-exempt-contrast]:before{content:"Aa"}
+</style></head>
+  <body data-astro-cid-lpetmyok>
+    <a class="skip-link" href="#content" data-astro-cid-lpetmyok>Skip to content</a>
+
+    <header class="masthead" data-astro-cid-lpetmyok>
+      <div class="brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  <span class="wordmark-system" data-astro-cid-qisgtjgl>Design system</span>
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a></div>
+      <button class="menu-button" type="button" popovertarget="sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation" data-astro-cid-lpetmyok>
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" data-astro-cid-lpetmyok><path d="M4 7h16M4 12h16M4 17h16" data-astro-cid-lpetmyok></path></svg>
+      </button>
+    </header>
+
+    <div class="shell" data-astro-cid-lpetmyok>
+      <nav class="sidebar" id="sidebar" popover aria-label="Documentation" data-astro-cid-lpetmyok>
+        
+        <div class="sidebar-brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a><span class="sidebar-version" data-astro-cid-lpetmyok><a class="version-chip" href="/resources/changelog/" data-astro-cid-2qsy24n7>v1.1.4<span class="visually-hidden" data-astro-cid-2qsy24n7>, changelog</span></a></span></div>
+        <div class="sidebar-scroll" data-astro-cid-lpetmyok>
+          <p class="outline-title" data-astro-cid-lpetmyok>Design system</p>
+          <div class="navigation" data-astro-cid-yxete6jp>
+  <section aria-labelledby="nav-Get started" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Get started" data-astro-cid-yxete6jp>
+            Get started
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/" data-astro-cid-yxete6jp>
+                  Introduction
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/get-started/installation/" data-astro-cid-yxete6jp>
+                  Installation
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Foundations" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Foundations" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/foundations/" data-astro-cid-yxete6jp>
+                Foundations
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/foundations/principles/" data-astro-cid-yxete6jp>
+                  Principles
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/accessibility/" data-astro-cid-yxete6jp>
+                  Accessibility
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/color/" data-astro-cid-yxete6jp>
+                  Color
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/typography/" data-astro-cid-yxete6jp>
+                  Typography
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/icons/" data-astro-cid-yxete6jp>
+                  Icons
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/spacing/" data-astro-cid-yxete6jp>
+                  Spacing
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/shape/" data-astro-cid-yxete6jp>
+                  Shape
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/elevation/" data-astro-cid-yxete6jp>
+                  Elevation
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/motion/" data-astro-cid-yxete6jp>
+                  Motion
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Layout" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Layout" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/layout/" data-astro-cid-yxete6jp>
+                Layout
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/layout/grid/" data-astro-cid-yxete6jp>
+                  Breakpoints and grid
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/layout/navigation/" aria-current="page" data-astro-cid-yxete6jp>
+                  Navigation by device
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Components" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Components" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/components/" data-astro-cid-yxete6jp>
+                Components
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/components/button/" data-astro-cid-yxete6jp>
+                  Button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/icon-button/" data-astro-cid-yxete6jp>
+                  Icon button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/badge/" data-astro-cid-yxete6jp>
+                  Badge
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/status/" data-astro-cid-yxete6jp>
+                  Status
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/switch/" data-astro-cid-yxete6jp>
+                  Switch
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/checkbox/" data-astro-cid-yxete6jp>
+                  Checkbox
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/segmented-control/" data-astro-cid-yxete6jp>
+                  Segmented control
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/field/" data-astro-cid-yxete6jp>
+                  Text field and select
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/notice/" data-astro-cid-yxete6jp>
+                  Notice
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/toast/" data-astro-cid-yxete6jp>
+                  Toast
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/menu/" data-astro-cid-yxete6jp>
+                  Menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tooltip/" data-astro-cid-yxete6jp>
+                  Tooltip
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/dialog/" data-astro-cid-yxete6jp>
+                  Dialog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/scroll-area/" data-astro-cid-yxete6jp>
+                  Scroll area
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card/" data-astro-cid-yxete6jp>
+                  Card
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-link/" data-astro-cid-yxete6jp>
+                  Card link
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-scroll/" data-astro-cid-yxete6jp>
+                  Card scroll
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/unit-menu/" data-astro-cid-yxete6jp>
+                  Unit menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tick-bar/" data-astro-cid-yxete6jp>
+                  Tick bar
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/ring-chart/" data-astro-cid-yxete6jp>
+                  Ring chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/trend-chart/" data-astro-cid-yxete6jp>
+                  Trend chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/chart-legend/" data-astro-cid-yxete6jp>
+                  Chart legend
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-field/" data-astro-cid-yxete6jp>
+                  Search field
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-result/" data-astro-cid-yxete6jp>
+                  Search result
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Patterns" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Patterns" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/patterns/" data-astro-cid-yxete6jp>
+                Patterns
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/patterns/overview/" data-astro-cid-yxete6jp>
+                  Overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/cards/" data-astro-cid-yxete6jp>
+                  Cards
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/charts/" data-astro-cid-yxete6jp>
+                  Charts
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/search/" data-astro-cid-yxete6jp>
+                  Search
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/editing/" data-astro-cid-yxete6jp>
+                  Editing the overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/panels/" data-astro-cid-yxete6jp>
+                  Panels
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/feedback/" data-astro-cid-yxete6jp>
+                  Feedback
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/app-shell/" data-astro-cid-yxete6jp>
+                  App shell
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/assistant/" data-astro-cid-yxete6jp>
+                  AI assistant
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/customize/" data-astro-cid-yxete6jp>
+                  Customize overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/unbuilt/" data-astro-cid-yxete6jp>
+                  Unbuilt modules
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Resources" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Resources" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/resources/" data-astro-cid-yxete6jp>
+                Resources
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/resources/changelog/" data-astro-cid-yxete6jp>
+                  Changelog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/downloads/" data-astro-cid-yxete6jp>
+                  Downloads
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/llms.txt" data-astro-cid-yxete6jp>
+                  llms.txt
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/contributing/" data-astro-cid-yxete6jp>
+                  Contributing
+                </a>
+            </li>
+        </ul>
+      </section>
+</div>
+        </div>
+        <div class="sidebar-footer" data-astro-cid-lpetmyok><fieldset class="theme-switch" data-astro-cid-hds7qqbe>
+  <legend class="visually-hidden" data-astro-cid-hds7qqbe>Theme</legend>
+  <label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="system" checked data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>System</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="light" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Light</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="dark" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Dark</span>
+      </label>
+</fieldset>
+
+<script type="module" src="/assets/ThemeSwitch.astro_astro_type_script_index_0_lang.BMJDsczV.js"></script></div>
+      </nav>
+
+      <main id="content" tabindex="-1" data-astro-cid-lpetmyok>
+        
+        <div class="page-body" data-astro-cid-lpetmyok>
+          <nav class="breadcrumb" aria-label="Breadcrumb" data-astro-cid-lpetmyok>
+                <a href="/layout/" data-astro-cid-lpetmyok>Layout</a>
+                <span aria-hidden="true" data-astro-cid-lpetmyok>/</span>
+                <span aria-current="page" data-astro-cid-lpetmyok>Navigation by device</span>
+              </nav>
+          
+  <header class="page-header" data-astro-cid-b2i3gsw2>
+  <h1 data-astro-cid-b2i3gsw2>Navigation by device</h1>
+  <p class="lead" data-astro-cid-b2i3gsw2>The same destinations in every size class, placed where the hand or the pointer already is: a bottom bar on phones, a rail on tablets, a sidebar on desktops. Panels follow the same logic.</p>
+  
+</header>
+
+  <section class="section" aria-labelledby="phones" data-astro-cid-w6ymvdtg>
+  <h2 id="phones" data-astro-cid-w6ymvdtg><a href="#phones" data-astro-cid-w6ymvdtg>Phones</a></h2>
+  
+    <div class="pair" data-astro-cid-cnhx7swt>
+      <figure class="specimen" data-kind="bar" data-max-zoom="0.62" style="--window-width: 390px; --window-height: 844px; --zoom: 0.62; --margin: var(--sonar-layout-margin-compact); --top-bar: var(--sonar-layout-bar-top-compact); --columns: 1" data-astro-cid-m3jauqtw>
+  <div class="viewport" data-astro-cid-m3jauqtw>
+    <div class="window" aria-hidden="true" data-astro-cid-m3jauqtw>
+      <div class="navigation" data-part="navigation" data-astro-cid-m3jauqtw>
+        <span class="brand" data-astro-cid-m3jauqtw></span>
+        <span class="destination active" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span>
+        
+      </div>
+      <div class="main" data-astro-cid-m3jauqtw>
+        <div class="top-bar" data-astro-cid-m3jauqtw>
+          
+          <span class="brand" data-astro-cid-m3jauqtw></span>
+          <span class="accounts" data-astro-cid-m3jauqtw></span>
+          <span class="search" data-astro-cid-m3jauqtw></span>
+          
+          
+          
+        </div>
+        <div class="content" data-astro-cid-m3jauqtw>
+          <div class="column" data-astro-cid-m3jauqtw>
+                <span class="card" style="height: var(--sonar-layout-card-m)" data-card="orders" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    <span class="details" data-action="details" data-astro-cid-m3jauqtw></span>
+                  </span><span class="card" style="height: var(--sonar-layout-card-xl)" data-card="shipments" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span><span class="card" style="height: var(--sonar-layout-card-m)" data-card="balance" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span><span class="card" style="height: var(--sonar-layout-card-l)" data-card="deliveries" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span><span class="card" style="height: var(--sonar-layout-card-l)" data-card="recurring" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span><span class="card" style="height: var(--sonar-layout-card-s)" data-card="inventory" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span>
+              </div>
+        </div>
+      </div>
+      <div class="bottom-bar" data-astro-cid-m3jauqtw>
+            
+            <span class="destination" data-astro-cid-m3jauqtw>
+                <i data-astro-cid-m3jauqtw></i>
+                <em data-astro-cid-m3jauqtw></em>
+                
+                <b data-astro-cid-m3jauqtw></b>
+              </span><span class="destination" data-astro-cid-m3jauqtw>
+                <i data-astro-cid-m3jauqtw></i>
+                
+                
+                <b data-astro-cid-m3jauqtw></b>
+              </span><span class="destination" data-astro-cid-m3jauqtw>
+                <i data-astro-cid-m3jauqtw></i>
+                
+                
+                <b data-astro-cid-m3jauqtw></b>
+              </span><span class="destination" data-astro-cid-m3jauqtw>
+                <i data-astro-cid-m3jauqtw></i>
+                
+                
+                <b data-astro-cid-m3jauqtw></b>
+              </span><span class="destination" data-action="navigation" data-astro-cid-m3jauqtw>
+                <i data-astro-cid-m3jauqtw></i>
+                
+                <s data-astro-cid-m3jauqtw></s>
+                <b data-astro-cid-m3jauqtw></b>
+              </span>
+          </div>
+      <div class="scrim" data-action="close" data-astro-cid-m3jauqtw></div>
+      <div class="sheet" data-astro-cid-m3jauqtw>
+        <span class="handle" data-astro-cid-m3jauqtw></span>
+        <b data-astro-cid-m3jauqtw></b>
+        <i data-astro-cid-m3jauqtw></i>
+        <i data-astro-cid-m3jauqtw></i>
+        <i data-astro-cid-m3jauqtw></i>
+      </div>
+    </div>
+  </div>
+  <figcaption data-astro-cid-m3jauqtw>
+    <span class="label" data-astro-cid-m3jauqtw>Compact, 390 × 844</span>
+    <span class="controls" data-astro-cid-m3jauqtw>
+      <button type="button" aria-pressed="false" data-control="navigation" aria-controls="specimen-compact" data-astro-cid-m3jauqtw>Open the menu</button>
+      <button type="button" aria-pressed="false" data-control="details" aria-controls="specimen-compact" data-astro-cid-m3jauqtw>Open details</button>
+    </span>
+    <span class="visually-hidden" id="specimen-compact" aria-live="polite" data-astro-cid-m3jauqtw></span>
+  </figcaption>
+</figure>
+
+<script type="module">for(let e of document.querySelectorAll(`.specimen`)){let t=Number(e.dataset.maxZoom),n=e.querySelector(`[aria-live]`),r={navigation:e.querySelector(`[data-control="navigation"]`),details:e.querySelector(`[data-control="details"]`)},i=e.dataset.kind,a=i===`sidebar`,o={navigation:{bar:[`Open the menu`,`Close the menu`],rail:[`Expand the rail`,`Fold the rail`],sidebar:[`Collapse the sidebar`,`Expand the sidebar`]}[i],details:[`Open details`,`Close details`]};function s(t,i){e.toggleAttribute(`data-${t}`,i),r[t].setAttribute(`aria-pressed`,String(i)),r[t].textContent=o[t][+!!i],i&&t===`details`&&!a&&s(`navigation`,!1),i&&t===`navigation`&&!a&&s(`details`,!1),n.textContent=i?t===`details`?`Details panel open`:a?`Sidebar collapsed to the rail`:`Navigation open`:``}let c=t=>s(t,!e.hasAttribute(`data-${t}`));r.navigation.addEventListener(`click`,()=>c(`navigation`)),r.details.addEventListener(`click`,()=>c(`details`)),e.querySelector(`.window`).addEventListener(`click`,e=>{let t=e.target.closest(`[data-action]`)?.dataset.action;(t===`navigation`||t===`details`)&&c(t),t===`close`&&(s(`details`,!1),a||s(`navigation`,!1))}),e.addEventListener(`keydown`,e=>{e.key===`Escape`&&(s(`details`,!1),a||s(`navigation`,!1))});let l=parseFloat(getComputedStyle(e).getPropertyValue(`--window-width`));new ResizeObserver(([n])=>{e.style.setProperty(`--zoom`,String(Math.min(t,n.contentRect.width/l)))}).observe(e)}</script>
+      <ul class="prose" data-astro-cid-cnhx7swt>
+        <li data-astro-cid-cnhx7swt>
+          <strong data-astro-cid-cnhx7swt>Bottom app bar</strong>, 60 px plus the safe area: Alerts, Assistant, Edit, Account and
+          Menu, at the end. Alerts carries the count of new notices; a red dot on Menu says something inside it needs a
+          look.
+        </li>
+        <li data-astro-cid-cnhx7swt>
+          <strong data-astro-cid-cnhx7swt>Menu opens the whole sidebar as a drawer</strong> from the left, 304 px wide and
+          never more than 84% of the window, over a scrim. Choosing a destination or touching the scrim closes it.
+        </li>
+        <li data-astro-cid-cnhx7swt>
+          <strong data-astro-cid-cnhx7swt>Panels are bottom sheets</strong> with a handle, from under the top bar: details, new orders,
+          notifications and the assistant. There is no scrim. They close by swiping down from the handle or the header,
+          with the close button, or with Escape.
+        </li>
+        <li data-astro-cid-cnhx7swt>
+          <strong data-astro-cid-cnhx7swt>The top bar is compact</strong>, 56 px: the brand, All accounts and
+          search. Search opens across the whole bar, with Cancel. The page title moves to a header at the top of the page.
+        </li>
+      </ul>
+    </div>
+  
+</section>
+
+  <section class="section" aria-labelledby="tablets" data-astro-cid-w6ymvdtg>
+  <h2 id="tablets" data-astro-cid-w6ymvdtg><a href="#tablets" data-astro-cid-w6ymvdtg>Tablets</a></h2>
+  
+    <div class="pair" data-astro-cid-cnhx7swt>
+      <figure class="specimen" data-kind="rail" data-max-zoom="0.42" style="--window-width: 834px; --window-height: 1194px; --zoom: 0.42; --margin: var(--sonar-layout-margin-medium); --top-bar: var(--sonar-layout-bar-top-medium); --columns: 2" data-astro-cid-m3jauqtw>
+  <div class="viewport" data-astro-cid-m3jauqtw>
+    <div class="window" aria-hidden="true" data-astro-cid-m3jauqtw>
+      <div class="navigation" data-part="navigation" data-astro-cid-m3jauqtw>
+        <span class="brand" data-astro-cid-m3jauqtw></span>
+        <span class="destination active" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span>
+        <span class="toggle" data-action="navigation" data-astro-cid-m3jauqtw><i data-astro-cid-m3jauqtw></i></span>
+      </div>
+      <div class="main" data-astro-cid-m3jauqtw>
+        <div class="top-bar" data-astro-cid-m3jauqtw>
+          
+          
+          
+          <span class="search" data-astro-cid-m3jauqtw></span>
+          <span class="icon" data-astro-cid-m3jauqtw></span>
+          <span class="icon" data-astro-cid-m3jauqtw></span>
+          <span class="avatar" data-astro-cid-m3jauqtw></span>
+        </div>
+        <div class="content" data-astro-cid-m3jauqtw>
+          <div class="column" data-astro-cid-m3jauqtw>
+                <span class="card" style="height: var(--sonar-layout-card-m)" data-card="orders" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    <span class="details" data-action="details" data-astro-cid-m3jauqtw></span>
+                  </span><span class="card" style="height: var(--sonar-layout-card-m)" data-card="balance" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span><span class="card" style="height: var(--sonar-layout-card-l)" data-card="recurring" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span>
+              </div><div class="column" data-astro-cid-m3jauqtw>
+                <span class="card" style="height: var(--sonar-layout-card-xl)" data-card="shipments" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span><span class="card" style="height: var(--sonar-layout-card-l)" data-card="deliveries" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span><span class="card" style="height: var(--sonar-layout-card-s)" data-card="inventory" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span>
+              </div>
+        </div>
+      </div>
+      
+      <div class="scrim" data-action="close" data-astro-cid-m3jauqtw></div>
+      <div class="sheet" data-astro-cid-m3jauqtw>
+        
+        <b data-astro-cid-m3jauqtw></b>
+        <i data-astro-cid-m3jauqtw></i>
+        <i data-astro-cid-m3jauqtw></i>
+        <i data-astro-cid-m3jauqtw></i>
+      </div>
+    </div>
+  </div>
+  <figcaption data-astro-cid-m3jauqtw>
+    <span class="label" data-astro-cid-m3jauqtw>Medium, 834 × 1194</span>
+    <span class="controls" data-astro-cid-m3jauqtw>
+      <button type="button" aria-pressed="false" data-control="navigation" aria-controls="specimen-medium" data-astro-cid-m3jauqtw>Expand the rail</button>
+      <button type="button" aria-pressed="false" data-control="details" aria-controls="specimen-medium" data-astro-cid-m3jauqtw>Open details</button>
+    </span>
+    <span class="visually-hidden" id="specimen-medium" aria-live="polite" data-astro-cid-m3jauqtw></span>
+  </figcaption>
+</figure>
+
+
+      <ul class="prose" data-astro-cid-cnhx7swt>
+        <li data-astro-cid-cnhx7swt>
+          <strong data-astro-cid-cnhx7swt>A rail</strong>, 60 px, always in place: icons only, with the destination’s name on touch
+          and hold.
+        </li>
+        <li data-astro-cid-cnhx7swt>
+          <strong data-astro-cid-cnhx7swt>Expanding the rail opens the full sidebar over the content</strong>, with a scrim. The columns do not
+          move. Choosing a destination or touching the scrim folds it back.
+        </li>
+        <li data-astro-cid-cnhx7swt>
+          <strong data-astro-cid-cnhx7swt>Panels are side sheets</strong> from the right, 402 px, under the top bar and with no scrim: the overview
+          stays in view and the row they came from stays marked. They slide in from the right edge, all the way, on the
+          default spatial spring, and slide back out the same way. They fit from 768 px up, so tablets and desktops share
+          them. All six are in <a href="/patterns/panels/" data-astro-cid-cnhx7swt>Patterns › Panels</a>.
+        </li>
+        <li data-astro-cid-cnhx7swt>
+          <strong data-astro-cid-cnhx7swt>The top bar keeps one line.</strong> Search gives up width first, down to 150 px, and its results open
+          toward the left at no less than 320 px.
+        </li>
+      </ul>
+    </div>
+  
+</section>
+
+  <section class="section" aria-labelledby="desktops" data-astro-cid-w6ymvdtg>
+  <h2 id="desktops" data-astro-cid-w6ymvdtg><a href="#desktops" data-astro-cid-w6ymvdtg>Desktops</a></h2>
+  
+    <div class="stacked" data-astro-cid-cnhx7swt>
+      <figure class="specimen" data-kind="sidebar" data-max-zoom="0.62" style="--window-width: 1440px; --window-height: 900px; --zoom: 0.62; --margin: var(--sonar-layout-margin-expanded); --top-bar: var(--sonar-layout-bar-top-medium); --columns: 3" data-astro-cid-m3jauqtw>
+  <div class="viewport" data-astro-cid-m3jauqtw>
+    <div class="window" aria-hidden="true" data-astro-cid-m3jauqtw>
+      <div class="navigation" data-part="navigation" data-astro-cid-m3jauqtw>
+        <span class="brand" data-astro-cid-m3jauqtw></span>
+        <span class="destination active" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span><span class="destination" data-astro-cid-m3jauqtw>
+              <i data-astro-cid-m3jauqtw></i>
+              <b data-astro-cid-m3jauqtw></b>
+            </span>
+        <span class="toggle" data-action="navigation" data-astro-cid-m3jauqtw><i data-astro-cid-m3jauqtw></i></span>
+      </div>
+      <div class="main" data-astro-cid-m3jauqtw>
+        <div class="top-bar" data-astro-cid-m3jauqtw>
+          
+          
+          
+          <span class="search" data-astro-cid-m3jauqtw></span>
+          <span class="icon" data-astro-cid-m3jauqtw></span>
+          <span class="icon" data-astro-cid-m3jauqtw></span>
+          <span class="avatar" data-astro-cid-m3jauqtw></span>
+        </div>
+        <div class="content" data-astro-cid-m3jauqtw>
+          <div class="column" data-astro-cid-m3jauqtw>
+                <span class="card" style="height: var(--sonar-layout-card-m)" data-card="orders" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    <span class="details" data-action="details" data-astro-cid-m3jauqtw></span>
+                  </span><span class="card" style="height: var(--sonar-layout-card-l)" data-card="deliveries" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span>
+              </div><div class="column" data-astro-cid-m3jauqtw>
+                <span class="card" style="height: var(--sonar-layout-card-xl)" data-card="shipments" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span><span class="card" style="height: var(--sonar-layout-card-s)" data-card="inventory" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span>
+              </div><div class="column" data-astro-cid-m3jauqtw>
+                <span class="card" style="height: var(--sonar-layout-card-m)" data-card="balance" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span><span class="card" style="height: var(--sonar-layout-card-l)" data-card="recurring" data-astro-cid-m3jauqtw>
+                    <b data-astro-cid-m3jauqtw></b>
+                    <i data-astro-cid-m3jauqtw></i>
+                    
+                  </span>
+              </div>
+        </div>
+      </div>
+      
+      <div class="scrim" data-action="close" data-astro-cid-m3jauqtw></div>
+      <div class="sheet" data-astro-cid-m3jauqtw>
+        
+        <b data-astro-cid-m3jauqtw></b>
+        <i data-astro-cid-m3jauqtw></i>
+        <i data-astro-cid-m3jauqtw></i>
+        <i data-astro-cid-m3jauqtw></i>
+      </div>
+    </div>
+  </div>
+  <figcaption data-astro-cid-m3jauqtw>
+    <span class="label" data-astro-cid-m3jauqtw>Expanded, 1440 × 900. Large and extra-large work the same way, with more columns.</span>
+    <span class="controls" data-astro-cid-m3jauqtw>
+      <button type="button" aria-pressed="false" data-control="navigation" aria-controls="specimen-expanded" data-astro-cid-m3jauqtw>Collapse the sidebar</button>
+      <button type="button" aria-pressed="false" data-control="details" aria-controls="specimen-expanded" data-astro-cid-m3jauqtw>Open details</button>
+    </span>
+    <span class="visually-hidden" id="specimen-expanded" aria-live="polite" data-astro-cid-m3jauqtw></span>
+  </figcaption>
+</figure>
+
+
+      <ul class="prose" data-astro-cid-cnhx7swt>
+        <li data-astro-cid-cnhx7swt>
+          <strong data-astro-cid-cnhx7swt>The sidebar sits beside the content</strong>, 224 px, with labels and account details.
+        </li>
+        <li data-astro-cid-cnhx7swt>
+          <strong data-astro-cid-cnhx7swt>Collapsing it leaves the rail</strong>, 60 px, and gives its width to the columns: every
+          card widens, and the cards move with the same spring as the sidebar. The choice is remembered.
+        </li>
+        <li data-astro-cid-cnhx7swt><strong data-astro-cid-cnhx7swt>Panels are side sheets</strong> from the right, under the top bar and with no scrim, as on tablets.</li>
+      </ul>
+    </div>
+  
+</section>
+
+  <section class="section" aria-labelledby="changing" data-astro-cid-w6ymvdtg>
+  <h2 id="changing" data-astro-cid-w6ymvdtg><a href="#changing" data-astro-cid-w6ymvdtg>Changing size class</a></h2>
+  
+    <ul class="prose" data-astro-cid-cnhx7swt>
+      <li data-astro-cid-cnhx7swt>
+        <strong data-astro-cid-cnhx7swt>Navigation changes place at once.</strong> When the window crosses a breakpoint, the sidebar becomes a
+        rail or a bottom bar without animating: motion between two layouts that never coexist explains nothing.
+      </li>
+      <li data-astro-cid-cnhx7swt>
+        <strong data-astro-cid-cnhx7swt>Each class starts from its resting state.</strong> The tablet rail is folded, the phone drawer closed, and
+        a layout edit in progress ends without saving.
+      </li>
+      <li data-astro-cid-cnhx7swt>
+        <strong data-astro-cid-cnhx7swt>One mechanism decides the class:</strong> the breakpoints in the tokens, through CSS media queries or 
+        <code data-astro-cid-cnhx7swt>sizeClasses</code> in scripts. Nothing measures the window on its own.
+      </li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="touch" data-astro-cid-w6ymvdtg>
+  <h2 id="touch" data-astro-cid-w6ymvdtg><a href="#touch" data-astro-cid-w6ymvdtg>Touch</a></h2>
+  
+    <ul class="prose" data-astro-cid-cnhx7swt>
+      <li data-astro-cid-cnhx7swt>
+        Every target is at least 48 px on touch screens, even where the visible control is smaller: the hit
+        area grows, the drawing does not.
+      </li>
+      <li data-astro-cid-cnhx7swt>
+        Nothing depends on hover. On screens without it (<code data-astro-cid-cnhx7swt>hover: none</code>), tooltips open on touch and the hover
+        highlight does not stick after a tap.
+      </li>
+      <li data-astro-cid-cnhx7swt>
+        Drag handles get a larger hit area, and the handles of two neighboring cards share the gap between them so they
+        never overlap.
+      </li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="tokens" data-astro-cid-w6ymvdtg>
+  <h2 id="tokens" data-astro-cid-w6ymvdtg><a href="#tokens" data-astro-cid-w6ymvdtg>Tokens</a></h2>
+  
+    <div class="table-wrap" data-scroll-region data-label="Navigation tokens, table" data-astro-cid-gkql7nzv>
+  <table class="compact" data-astro-cid-gkql7nzv>
+    <caption class="visually-hidden" data-astro-cid-gkql7nzv>Navigation tokens</caption>
+    <thead data-astro-cid-gkql7nzv>
+      <tr data-astro-cid-gkql7nzv>
+        <th scope="col" data-astro-cid-gkql7nzv>Token</th>
+        
+        <th scope="col" data-astro-cid-gkql7nzv>Value</th>
+      </tr>
+    </thead>
+    <tbody data-astro-cid-gkql7nzv>
+      <tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-layout-sidebar</code>
+              
+              <p data-astro-cid-gkql7nzv>Full navigation beside the content on desktops. On tablets it opens over the content.</p>
+            </th>
+            
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    
+                    <code data-astro-cid-gkql7nzv>224px</code>
+                    
+                  </div>
+                </td>
+          </tr><tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-layout-rail</code>
+              
+              <p data-astro-cid-gkql7nzv>Navigation as icons only: the rail on tablets and the collapsed sidebar on desktops.</p>
+            </th>
+            
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    
+                    <code data-astro-cid-gkql7nzv>60px</code>
+                    
+                  </div>
+                </td>
+          </tr><tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-layout-drawer</code>
+              
+              <p data-astro-cid-gkql7nzv>The sidebar as a drawer on phones. It never covers more than 84% of the window.</p>
+            </th>
+            
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    
+                    <code data-astro-cid-gkql7nzv>304px</code>
+                    
+                  </div>
+                </td>
+          </tr><tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-layout-bar-top-compact</code>
+              
+              
+            </th>
+            
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    
+                    <code data-astro-cid-gkql7nzv>56px</code>
+                    
+                  </div>
+                </td>
+          </tr><tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-layout-bar-top-medium</code>
+              
+              
+            </th>
+            
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    
+                    <code data-astro-cid-gkql7nzv>68px</code>
+                    
+                  </div>
+                </td>
+          </tr><tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-layout-bar-bottom</code>
+              
+              <p data-astro-cid-gkql7nzv>Bottom app bar on phones: Alerts, Assistant, Edit, Account and Menu.</p>
+            </th>
+            
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    
+                    <code data-astro-cid-gkql7nzv>60px</code>
+                    
+                  </div>
+                </td>
+          </tr><tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-layout-bar-footer</code>
+              
+              <p data-astro-cid-gkql7nzv>Footer and edit bar on tablets and desktops.</p>
+            </th>
+            
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    
+                    <code data-astro-cid-gkql7nzv>46px</code>
+                    
+                  </div>
+                </td>
+          </tr><tr data-astro-cid-gkql7nzv>
+            <th scope="row" data-astro-cid-gkql7nzv>
+              <code data-astro-cid-gkql7nzv>--sonar-layout-touch-target</code>
+              
+              <p data-astro-cid-gkql7nzv>Minimum hit area on touch screens.</p>
+            </th>
+            
+            <td data-astro-cid-gkql7nzv>
+                  <div class="value" data-astro-cid-gkql7nzv>
+                    
+                    <code data-astro-cid-gkql7nzv>48px</code>
+                    
+                  </div>
+                </td>
+          </tr>
+    </tbody>
+  </table>
+</div>
+  
+</section>
+
+        </div>
+        <div class="page-end" data-astro-cid-lpetmyok>
+          <nav class="pager" aria-label="Previous and next pages" data-astro-cid-lpetmyok>
+                <a href="/layout/grid/" rel="prev" class="previous" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Previous</span>
+                    Breakpoints and grid
+                  </a>
+                <a href="/components/" rel="next" class="next" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Next</span>
+                    Components
+                  </a>
+              </nav>
+          <footer class="site-footer" data-astro-cid-nns7i3if>
+  <p data-astro-cid-nns7i3if>
+    Design system by <strong data-astro-cid-nns7i3if>988©STUDIO</strong>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    <a href="/resources/changelog/" data-astro-cid-nns7i3if>v1.1.4</a>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    © 2026
+  </p>
+</footer>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="/assets/Docs.astro_astro_type_script_index_0_lang.CIhC640A.js"></script>
+  </body>
+</html>

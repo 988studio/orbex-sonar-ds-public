@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en" data-astro-cid-lpetmyok>
+  <head>
+    <meta charset="utf-8">
+    <!-- The order of the cascade layers, before any stylesheet: bundling may load the files in any order -->
+    <style>
+      @layer reset, base, sonar;
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <!-- iOS would turn dates and figures into links, changing the elements React hydrates -->
+    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+    <title>Dialog · Orbex Sonar-DB Design System</title>
+    <meta name="description" content="Dialog, a component of the Orbex Sonar-DB Design System: examples, guidance, accessibility and API.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/assets/ibm-plex-sans-latin-400-normal.CDDApCn2.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-500-normal.6ng42L7E.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-600-normal.CuJfVYMP.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-normal.CRd5VyFf.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-italic.CDUi4ehg.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-400-normal.DMJ8VG8y.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-500-normal.DSY6xOcd.woff2" as="font" type="font/woff2" crossorigin>
+    <script>
+      try {
+        const theme = localStorage.getItem('sonar-ds-theme')
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {}
+
+      /* A page opened from a link starts at the top. Browsers do this already; some embedded viewers keep the previous
+         page’s scroll instead. Going back, reloading and links to a section are left to the browser, and the reset
+         stops as soon as the reader scrolls. */
+      try {
+        const navigation = performance.getEntriesByType('navigation')[0]
+        if (!location.hash && (!navigation || navigation.type === 'navigate')) {
+          const toTop = () => scrollTo(0, 0)
+          const stop = () => {
+            removeEventListener('DOMContentLoaded', toTop)
+            removeEventListener('load', toTop)
+          }
+          toTop()
+          addEventListener('DOMContentLoaded', toTop, { once: true })
+          addEventListener('load', toTop, { once: true })
+          for (const type of ['wheel', 'touchstart', 'keydown']) addEventListener(type, stop, { once: true, passive: true })
+        }
+      } catch {}
+    </script>
+  <style>.code-block[data-astro-cid-c6nuo4je]{min-width:0;max-width:var(--site-measure);border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-container-low)}.bar[data-astro-cid-c6nuo4je]{padding:var(--sonar-space-6) var(--sonar-space-8) 0 var(--sonar-space-24);justify-content:space-between;align-items:center;display:flex}.language[data-astro-cid-c6nuo4je]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-sm);letter-spacing:var(--sonar-type-label-sm-tracking);text-transform:uppercase}pre[data-astro-cid-c6nuo4je]{overscroll-behavior-x:contain;padding:var(--sonar-space-8) var(--sonar-space-24) var(--sonar-space-20);color:var(--sonar-color-text-strong);font:400 13px/1.6 var(--sonar-font-family-mono);overflow:auto hidden}pre[data-astro-cid-c6nuo4je]:focus-visible{outline:var(--sonar-focus-width) solid var(--sonar-color-focus);outline-offset:calc(-1 * var(--sonar-focus-width));border-radius:0 0 var(--sonar-shape-corner-medium) var(--sonar-shape-corner-medium)}code[data-astro-cid-c6nuo4je]{font:inherit}.copy[data-astro-cid-c6nuo4je]{min-height:32px;padding:0 var(--sonar-space-12);border-radius:var(--sonar-shape-corner-full);color:var(--sonar-color-text-secondary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);cursor:pointer;transition:background-color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);background:0 0;border:0}.copy[data-astro-cid-c6nuo4je]:hover{background:var(--sonar-color-state-hover);color:var(--sonar-color-text-strong)}.copy[data-astro-cid-c6nuo4je]:focus-visible{outline:2px solid var(--sonar-color-accent);outline-offset:2px}
+</style>
+<link rel="stylesheet" href="/assets/DoDont.DV84UQhT.css">
+<link rel="stylesheet" href="/assets/Docs.pfYhGa-X.css">
+<style>.a11y[data-astro-cid-bxr4t4t4]{gap:var(--sonar-space-28);max-width:880px;display:grid}h3[data-astro-cid-bxr4t4t4]{margin-bottom:var(--sonar-space-8);font:var(--sonar-type-title-md);letter-spacing:var(--sonar-type-title-md-tracking)}table[data-astro-cid-bxr4t4t4]{border-collapse:collapse;border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);width:100%;box-shadow:var(--sonar-elevation-1);font:var(--sonar-type-body-md);letter-spacing:var(--sonar-type-body-md-tracking)}th[data-astro-cid-bxr4t4t4],td[data-astro-cid-bxr4t4t4]{padding:var(--sonar-space-10) var(--sonar-space-16);border-bottom:1px solid var(--sonar-color-divider);text-align:left;vertical-align:top}tbody[data-astro-cid-bxr4t4t4] tr[data-astro-cid-bxr4t4t4]:last-child>[data-astro-cid-bxr4t4t4]{border-bottom:0}thead[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{width:34%;color:var(--sonar-color-text-strong);font-weight:var(--sonar-font-weight-medium)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4] code[data-astro-cid-bxr4t4t4]{font:400 12px/1.5 var(--sonar-font-family-mono);overflow-wrap:anywhere}td[data-astro-cid-bxr4t4t4]{color:var(--sonar-color-text-secondary)}@container page (width<608px){th[data-astro-cid-bxr4t4t4],td[data-astro-cid-bxr4t4t4]{padding:var(--sonar-space-10) var(--sonar-space-12)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{width:40%}}
+.page-header[data-astro-cid-b2i3gsw2]{max-width:var(--site-content-width);margin-bottom:var(--sonar-space-48)}h1[data-astro-cid-b2i3gsw2]{font:var(--site-heading-1);letter-spacing:-.01em}.lead[data-astro-cid-b2i3gsw2]{max-width:var(--site-measure);margin-top:var(--sonar-space-16);color:var(--sonar-color-text-secondary);font:var(--site-lead)}
+.part[data-astro-cid-ogedjwls]+.part[data-astro-cid-ogedjwls]{margin-top:var(--sonar-space-32)}h3[data-astro-cid-ogedjwls]{margin-bottom:var(--sonar-space-4);font:var(--sonar-type-title-md)}h3[data-astro-cid-ogedjwls] code[data-astro-cid-ogedjwls]{font:600 14px/1.4 var(--sonar-font-family-mono)}.description[data-astro-cid-ogedjwls]{max-width:var(--site-measure);margin-bottom:var(--sonar-space-12);color:var(--sonar-color-text-secondary);font:var(--sonar-type-body-lg)}.table-wrap[data-astro-cid-ogedjwls]{overscroll-behavior-x:contain;border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);box-shadow:var(--sonar-elevation-1);overflow:auto hidden}table[data-astro-cid-ogedjwls]{border-collapse:collapse;width:100%;min-width:560px;font:var(--sonar-type-body-md);letter-spacing:var(--sonar-type-body-md-tracking)}th[data-astro-cid-ogedjwls],td[data-astro-cid-ogedjwls]{padding:var(--sonar-space-12) var(--sonar-space-16);border-bottom:1px solid var(--sonar-color-divider);text-align:left;vertical-align:top}tbody[data-astro-cid-ogedjwls] tr[data-astro-cid-ogedjwls]:last-child>[data-astro-cid-ogedjwls]{border-bottom:0}thead[data-astro-cid-ogedjwls] th[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}tbody[data-astro-cid-ogedjwls] th[data-astro-cid-ogedjwls]{width:50%;font-weight:inherit}tbody[data-astro-cid-ogedjwls] th[data-astro-cid-ogedjwls]>code[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-strong);font:500 12px/1.4 var(--sonar-font-family-mono)}tbody[data-astro-cid-ogedjwls] th[data-astro-cid-ogedjwls] p[data-astro-cid-ogedjwls]{margin-top:var(--sonar-space-4);color:var(--sonar-color-text-secondary)}.required[data-astro-cid-ogedjwls]{margin-left:var(--sonar-space-8);color:var(--sonar-color-text-danger);font:var(--sonar-type-label-sm)}td[data-astro-cid-ogedjwls] code[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-default);font:400 12px/1.5 var(--sonar-font-family-mono);overflow-wrap:anywhere}.none[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-tertiary)}.note[data-astro-cid-ogedjwls]{max-width:var(--site-measure);margin-top:var(--sonar-space-12);color:var(--sonar-color-text-secondary);font:var(--sonar-type-body-md)}.note[data-astro-cid-ogedjwls] a[data-astro-cid-ogedjwls]{color:var(--sonar-color-text-accent)}.facts[data-astro-cid-cndiwttc]{gap:var(--sonar-space-8);margin-top:var(--sonar-space-20);flex-wrap:wrap;padding:0;display:flex}.facts[data-astro-cid-cndiwttc] code[data-astro-cid-cndiwttc]{font:500 11px/1 var(--sonar-font-family-mono)}.facts[data-astro-cid-cndiwttc] li[data-astro-cid-cndiwttc]{text-overflow:ellipsis;white-space:nowrap;box-sizing:border-box;max-width:100%;height:28px;padding:0 var(--sonar-space-12);border-radius:var(--sonar-shape-corner-full);background:var(--sonar-color-surface-container);color:var(--sonar-color-text-default);line-height:28px;font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);line-height:28px;display:inline-block;overflow:hidden}.notes[data-astro-cid-cndiwttc]{margin:var(--sonar-space-28) 0 var(--sonar-space-8);font:var(--sonar-type-title-md);letter-spacing:var(--sonar-type-title-md-tracking)}.demos[data-astro-cid-cndiwttc]{gap:var(--sonar-space-20);display:grid}
+</style>
+<link rel="stylesheet" href="/assets/styles.Dexbwagh.css">
+<style>.section[data-astro-cid-w6ymvdtg]{max-width:var(--site-content-width)}.section[data-astro-cid-w6ymvdtg]+.section{margin-top:72px}h2[data-astro-cid-w6ymvdtg]{margin-bottom:var(--sonar-space-16);font:var(--site-heading-2);letter-spacing:-.01em}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]{color:inherit;text-decoration:none}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]:hover{text-decoration:underline}.section[data-astro-cid-w6ymvdtg]>*+*{margin-top:var(--sonar-space-24)}.section[data-astro-cid-w6ymvdtg]>h2+*{margin-top:0}
+</style></head>
+  <body data-astro-cid-lpetmyok>
+    <a class="skip-link" href="#content" data-astro-cid-lpetmyok>Skip to content</a>
+
+    <header class="masthead" data-astro-cid-lpetmyok>
+      <div class="brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  <span class="wordmark-system" data-astro-cid-qisgtjgl>Design system</span>
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a></div>
+      <button class="menu-button" type="button" popovertarget="sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation" data-astro-cid-lpetmyok>
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" data-astro-cid-lpetmyok><path d="M4 7h16M4 12h16M4 17h16" data-astro-cid-lpetmyok></path></svg>
+      </button>
+    </header>
+
+    <div class="shell" data-astro-cid-lpetmyok>
+      <nav class="sidebar" id="sidebar" popover aria-label="Documentation" data-astro-cid-lpetmyok>
+        
+        <div class="sidebar-brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a><span class="sidebar-version" data-astro-cid-lpetmyok><a class="version-chip" href="/resources/changelog/" data-astro-cid-2qsy24n7>v1.1.4<span class="visually-hidden" data-astro-cid-2qsy24n7>, changelog</span></a></span></div>
+        <div class="sidebar-scroll" data-astro-cid-lpetmyok>
+          <p class="outline-title" data-astro-cid-lpetmyok>Design system</p>
+          <div class="navigation" data-astro-cid-yxete6jp>
+  <section aria-labelledby="nav-Get started" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Get started" data-astro-cid-yxete6jp>
+            Get started
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/" data-astro-cid-yxete6jp>
+                  Introduction
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/get-started/installation/" data-astro-cid-yxete6jp>
+                  Installation
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Foundations" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Foundations" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/foundations/" data-astro-cid-yxete6jp>
+                Foundations
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/foundations/principles/" data-astro-cid-yxete6jp>
+                  Principles
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/accessibility/" data-astro-cid-yxete6jp>
+                  Accessibility
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/color/" data-astro-cid-yxete6jp>
+                  Color
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/typography/" data-astro-cid-yxete6jp>
+                  Typography
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/icons/" data-astro-cid-yxete6jp>
+                  Icons
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/spacing/" data-astro-cid-yxete6jp>
+                  Spacing
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/shape/" data-astro-cid-yxete6jp>
+                  Shape
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/elevation/" data-astro-cid-yxete6jp>
+                  Elevation
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/motion/" data-astro-cid-yxete6jp>
+                  Motion
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Layout" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Layout" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/layout/" data-astro-cid-yxete6jp>
+                Layout
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/layout/grid/" data-astro-cid-yxete6jp>
+                  Breakpoints and grid
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/layout/navigation/" data-astro-cid-yxete6jp>
+                  Navigation by device
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Components" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Components" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/components/" data-astro-cid-yxete6jp>
+                Components
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/components/button/" data-astro-cid-yxete6jp>
+                  Button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/icon-button/" data-astro-cid-yxete6jp>
+                  Icon button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/badge/" data-astro-cid-yxete6jp>
+                  Badge
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/status/" data-astro-cid-yxete6jp>
+                  Status
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/switch/" data-astro-cid-yxete6jp>
+                  Switch
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/checkbox/" data-astro-cid-yxete6jp>
+                  Checkbox
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/segmented-control/" data-astro-cid-yxete6jp>
+                  Segmented control
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/field/" data-astro-cid-yxete6jp>
+                  Text field and select
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/notice/" data-astro-cid-yxete6jp>
+                  Notice
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/toast/" data-astro-cid-yxete6jp>
+                  Toast
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/menu/" data-astro-cid-yxete6jp>
+                  Menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tooltip/" data-astro-cid-yxete6jp>
+                  Tooltip
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/dialog/" aria-current="page" data-astro-cid-yxete6jp>
+                  Dialog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/scroll-area/" data-astro-cid-yxete6jp>
+                  Scroll area
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card/" data-astro-cid-yxete6jp>
+                  Card
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-link/" data-astro-cid-yxete6jp>
+                  Card link
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-scroll/" data-astro-cid-yxete6jp>
+                  Card scroll
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/unit-menu/" data-astro-cid-yxete6jp>
+                  Unit menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tick-bar/" data-astro-cid-yxete6jp>
+                  Tick bar
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/ring-chart/" data-astro-cid-yxete6jp>
+                  Ring chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/trend-chart/" data-astro-cid-yxete6jp>
+                  Trend chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/chart-legend/" data-astro-cid-yxete6jp>
+                  Chart legend
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-field/" data-astro-cid-yxete6jp>
+                  Search field
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-result/" data-astro-cid-yxete6jp>
+                  Search result
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Patterns" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Patterns" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/patterns/" data-astro-cid-yxete6jp>
+                Patterns
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/patterns/overview/" data-astro-cid-yxete6jp>
+                  Overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/cards/" data-astro-cid-yxete6jp>
+                  Cards
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/charts/" data-astro-cid-yxete6jp>
+                  Charts
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/search/" data-astro-cid-yxete6jp>
+                  Search
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/editing/" data-astro-cid-yxete6jp>
+                  Editing the overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/panels/" data-astro-cid-yxete6jp>
+                  Panels
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/feedback/" data-astro-cid-yxete6jp>
+                  Feedback
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/app-shell/" data-astro-cid-yxete6jp>
+                  App shell
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/assistant/" data-astro-cid-yxete6jp>
+                  AI assistant
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/customize/" data-astro-cid-yxete6jp>
+                  Customize overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/unbuilt/" data-astro-cid-yxete6jp>
+                  Unbuilt modules
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Resources" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Resources" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/resources/" data-astro-cid-yxete6jp>
+                Resources
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/resources/changelog/" data-astro-cid-yxete6jp>
+                  Changelog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/downloads/" data-astro-cid-yxete6jp>
+                  Downloads
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/llms.txt" data-astro-cid-yxete6jp>
+                  llms.txt
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/contributing/" data-astro-cid-yxete6jp>
+                  Contributing
+                </a>
+            </li>
+        </ul>
+      </section>
+</div>
+        </div>
+        <div class="sidebar-footer" data-astro-cid-lpetmyok><fieldset class="theme-switch" data-astro-cid-hds7qqbe>
+  <legend class="visually-hidden" data-astro-cid-hds7qqbe>Theme</legend>
+  <label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="system" checked data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>System</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="light" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Light</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="dark" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Dark</span>
+      </label>
+</fieldset>
+
+<script type="module" src="/assets/ThemeSwitch.astro_astro_type_script_index_0_lang.BMJDsczV.js"></script></div>
+      </nav>
+
+      <main id="content" tabindex="-1" data-astro-cid-lpetmyok>
+        
+        <div class="page-body" data-astro-cid-lpetmyok>
+          <nav class="breadcrumb" aria-label="Breadcrumb" data-astro-cid-lpetmyok>
+                <a href="/components/" data-astro-cid-lpetmyok>Components</a>
+                <span aria-hidden="true" data-astro-cid-lpetmyok>/</span>
+                <span aria-current="page" data-astro-cid-lpetmyok>Dialog</span>
+              </nav>
+          
+  <header class="page-header" data-astro-cid-b2i3gsw2>
+  <h1 data-astro-cid-b2i3gsw2>Dialog</h1>
+  <p class="lead" data-astro-cid-b2i3gsw2>A dialog on the native dialog element, in three placements: centered for a decision, over a scrim; at the end for a side panel beside the page, with no scrim; at the bottom for a sheet on phones. The browser handles focus.</p>
+  
+    <ul class="facts" role="list" data-astro-cid-cndiwttc>
+      <li data-astro-cid-cndiwttc>Native HTML</li>
+      <li data-astro-cid-cndiwttc>9.0 KB gzipped · script and styles</li>
+      
+      <li data-astro-cid-cndiwttc><code data-astro-cid-cndiwttc>@orbex/sonar-components/dialog</code></li>
+    </ul>
+  
+</header>
+
+  <section class="section" aria-labelledby="examples" data-astro-cid-w6ymvdtg>
+  <h2 id="examples" data-astro-cid-w6ymvdtg><a href="#examples" data-astro-cid-w6ymvdtg>Examples</a></h2>
+  
+    <div class="demos" data-astro-cid-cndiwttc>
+  <figure class="demo" data-astro-cid-trxcs2lc>
+  <figcaption data-astro-cid-trxcs2lc>Confirmation</figcaption>
+  <div class="preview row" data-astro-cid-trxcs2lc>
+    <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(function(){let e=(e,t,n)=>{let r=async()=>{await(await e())()},i=typeof t.value==`object`?t.value:void 0,a={rootMargin:i==null?void 0:i.rootMargin},o=new IntersectionObserver(e=>{for(let t of e)if(t.isIntersecting){o.disconnect(),r();break}},a);for(let e of n.children)o.observe(e)};(self.Astro||(self.Astro={})).visible=e,window.dispatchEvent(new Event(`astro:visible`))})();</script><script>(function(){function e(t){"@babel/helpers - typeof";return e=typeof Symbol==`function`&&typeof Symbol.iterator==`symbol`?function(e){return typeof e}:function(e){return e&&typeof Symbol==`function`&&e.constructor===Symbol&&e!==Symbol.prototype?`symbol`:typeof e},e(t)}function t(t,n){if(e(t)!=`object`||!t)return t;var r=t[Symbol.toPrimitive];if(r!==void 0){var i=r.call(t,n||`default`);if(e(i)!=`object`)return i;throw TypeError(`@@toPrimitive must return a primitive value.`)}return(n===`string`?String:Number)(t)}function n(n){var r=t(n,`string`);return e(r)==`symbol`?r:r+``}function r(e,t,r){return(t=n(t))in e?Object.defineProperty(e,t,{value:r,enumerable:!0,configurable:!0,writable:!0}):e[t]=r,e}let i=/* @__PURE__ */ new Set([`__proto__`,`constructor`,`prototype`]);{let e={0:e=>a(e),1:e=>n(e),2:e=>new RegExp(e),3:e=>new Date(e),4:e=>new Map(n(e)),5:e=>new Set(n(e)),6:e=>BigInt(e),7:e=>new URL(e),8:e=>new Uint8Array(e),9:e=>new Uint16Array(e),10:e=>new Uint32Array(e),11:e=>1/0*e},t=t=>{let[n,r]=t;return n in e?e[n](r):void 0},n=e=>e.map(t),a=e=>typeof e!=`object`||!e?e:Object.fromEntries(Object.entries(e).map(([e,n])=>[e,t(n)]));class o extends HTMLElement{constructor(...e){super(...e),r(this,`Component`,void 0),r(this,`hydrator`,void 0),r(this,`hydrate`,async()=>{var e;if(!this.hydrator||!this.isConnected)return;let t=(e=this.parentElement)==null?void 0:e.closest(`astro-island[ssr]`);if(t){t.addEventListener(`astro:hydrate`,this.hydrate,{once:!0});return}let n=this.querySelectorAll(`astro-slot`),r={},i=this.querySelectorAll(`template[data-astro-template]`);for(let e of i){let t=e.closest(this.tagName);t!=null&&t.isSameNode(this)&&(r[e.getAttribute(`data-astro-template`)||`default`]=e.innerHTML,e.remove())}for(let e of n){let t=e.closest(this.tagName);t!=null&&t.isSameNode(this)&&(r[e.getAttribute(`name`)||`default`]=e.innerHTML)}let o;try{o=this.hasAttribute(`props`)?a(JSON.parse(this.getAttribute(`props`))):{}}catch(e){let t=this.getAttribute(`component-url`)||`<unknown>`,n=this.getAttribute(`component-export`);throw n&&(t+=` (export ${n})`),console.error(`[hydrate] Error parsing props for component ${t}`,this.getAttribute(`props`),e),e}await this.hydrator(this)(this.Component,o,r,{client:this.getAttribute(`client`)}),this.removeAttribute(`ssr`),this.dispatchEvent(new CustomEvent(`astro:hydrate`))}),r(this,`unmount`,()=>{this.isConnected||this.dispatchEvent(new CustomEvent(`astro:unmount`))})}disconnectedCallback(){document.removeEventListener(`astro:after-swap`,this.unmount),document.addEventListener(`astro:after-swap`,this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute(`await-children`)||document.readyState===`interactive`||document.readyState===`complete`)this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener(`DOMContentLoaded`,e),t.disconnect(),this.childrenConnectedCallback()},t=new MutationObserver(()=>{var t;((t=this.lastChild)==null?void 0:t.nodeType)===Node.COMMENT_NODE&&this.lastChild.nodeValue===`astro:end`&&(this.lastChild.remove(),e())});t.observe(this,{childList:!0}),document.addEventListener(`DOMContentLoaded`,e)}}async childrenConnectedCallback(){let e=this.getAttribute(`before-hydration-url`);e&&await import(e),this.start()}getRetryImportUrl(e){let t=new URL(e,document.baseURI);return t.searchParams.set(`astro-retry`,Date.now().toString()),t.toString()}async importWithRetry(e){try{return await import(e)}catch(t){return await new Promise(e=>setTimeout(e,1e3)),import(this.getRetryImportUrl(e))}}handleHydrationError(e){let t=this.getAttribute(`component-url`),n=new CustomEvent(`astro:hydration-error`,{cancelable:!0,bubbles:!0,composed:!0,detail:{error:e,componentUrl:t}});this.dispatchEvent(n)&&console.error(`[astro-island] Error hydrating ${t}`,e)}async start(){let e=JSON.parse(this.getAttribute(`opts`)),t=this.getAttribute(`client`);if(Astro[t]===void 0){window.addEventListener(`astro:${t}`,()=>this.start(),{once:!0});return}try{await Astro[t](async()=>{let e=this.getAttribute(`renderer-url`);try{let[t,{default:n}]=await Promise.all([this.importWithRetry(this.getAttribute(`component-url`)),e?this.importWithRetry(e):Promise.resolve({default:()=>()=>{}})]),r=this.getAttribute(`component-export`)||`default`;if(r.includes(`.`)){this.Component=t;for(let e of r.split(`.`)){if(i.has(e)||!this.Component||typeof this.Component!=`object`&&typeof this.Component!=`function`||!Object.hasOwn(this.Component,e))throw Error(`Invalid component export path: ${r}`);this.Component=this.Component[e]}}else{if(i.has(r))throw Error(`Invalid component export path: ${r}`);this.Component=t[r]}return this.hydrator=n,this.hydrate}catch(e){return this.handleHydrationError(e),()=>{}}},e,this)}catch(e){this.handleHydrationError(e)}}attributeChangedCallback(){this.hydrate()}}r(o,`observedAttributes`,[`props`]),customElements.get(`astro-island`)||customElements.define(`astro-island`,o)}})();</script><astro-island uid="ZgXDcv" prefix="r4" component-url="/assets/Confirm.DWKJmN42.js" component-export="default" renderer-url="/assets/client.y4608tsh.js" props="{}" ssr client="visible" opts="{&quot;name&quot;:&quot;Confirm&quot;,&quot;value&quot;:true}" await-children><button type="button" class="sonar-button" data-variant="outlined" data-size="medium">Reset to default</button><dialog class="sonar-dialog" data-placement="center" aria-labelledby="_r4R_2_-title" aria-describedby="_r4R_2_-description"><header class="sonar-dialog-header"><h2 class="sonar-dialog-title" id="_r4R_2_-title">Reset the overview?</h2><button type="button" class="sonar-dialog-close" aria-label="Close"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m4 4 8 8M12 4l-8 8"></path></svg></button></header><p class="sonar-dialog-description" id="_r4R_2_-description">Your cards go back to the default layout. Cards you added stay available in Customize.</p><footer class="sonar-dialog-actions"><button type="button" class="sonar-button" data-variant="text" data-size="medium">Keep my layout</button><button type="button" class="sonar-button" data-variant="filled" data-size="medium">Reset</button></footer></dialog><!--astro:end--></astro-island>
+  </div>
+  <details class="code" data-astro-cid-trxcs2lc>
+    <summary data-astro-cid-trxcs2lc>Code</summary>
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>tsx</span>
+    <button class="copy" type="button" data-code="import { Button } from '@orbex/sonar-components/button'
+import { Dialog } from '@orbex/sonar-components/dialog'
+import { useState } from 'react'
+
+/* Confirm only what cannot be undone. The main action goes last; the dialog closes on any choice. */
+export default function Confirm() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button variant=&quot;outlined&quot; onClick={() => setOpen(true)}>
+        Reset to default
+      </Button>
+      <Dialog
+        open={open}
+        onOpenChange={setOpen}
+        title=&quot;Reset the overview?&quot;
+        description=&quot;Your cards go back to the default layout. Cards you added stay available in Customize.&quot;
+        actions={
+          <>
+            <Button variant=&quot;text&quot; onClick={() => setOpen(false)}>
+              Keep my layout
+            </Button>
+            <Button onClick={() => setOpen(false)}>Reset</Button>
+          </>
+        }
+      />
+    </>
+  )
+}" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="tsx" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>import { Button } from &#39;@orbex/sonar-components/button&#39;
+import { Dialog } from &#39;@orbex/sonar-components/dialog&#39;
+import { useState } from &#39;react&#39;
+
+/* Confirm only what cannot be undone. The main action goes last; the dialog closes on any choice. */
+export default function Confirm() {
+  const [open, setOpen] = useState(false)
+  return (
+    &lt;&gt;
+      &lt;Button variant=&quot;outlined&quot; onClick={() =&gt; setOpen(true)}&gt;
+        Reset to default
+      &lt;/Button&gt;
+      &lt;Dialog
+        open={open}
+        onOpenChange={setOpen}
+        title=&quot;Reset the overview?&quot;
+        description=&quot;Your cards go back to the default layout. Cards you added stay available in Customize.&quot;
+        actions={
+          &lt;&gt;
+            &lt;Button variant=&quot;text&quot; onClick={() =&gt; setOpen(false)}&gt;
+              Keep my layout
+            &lt;/Button&gt;
+            &lt;Button onClick={() =&gt; setOpen(false)}&gt;Reset&lt;/Button&gt;
+          &lt;/&gt;
+        }
+      /&gt;
+    &lt;/&gt;
+  )
+}</code></pre>
+</div>
+
+<script type="module">function e(e){let t=document.createElement(`textarea`);t.value=e,t.setAttribute(`readonly`,``),t.style.cssText=`position:fixed;inset:0 auto auto 0;width:1px;height:1px;opacity:0`,document.body.append(t),t.select();let n=document.execCommand(`copy`);return t.remove(),n}for(let t of document.querySelectorAll(`.code-block .copy`))t.addEventListener(`click`,async()=>{let n=t.dataset.code??``,r=!1;try{await navigator.clipboard.writeText(n),r=!0}catch{r=e(n)}t.textContent=r?`Copied`:`Copy failed`,setTimeout(()=>t.textContent=`Copy`,1600)});</script>
+  </details>
+</figure>
+  <figure class="demo" data-astro-cid-trxcs2lc>
+  <figcaption data-astro-cid-trxcs2lc>Side panel</figcaption>
+  <div class="preview row" data-astro-cid-trxcs2lc>
+    <astro-island uid="1P3r49" prefix="r5" component-url="/assets/SidePanel.llM4tJ6x.js" component-export="default" renderer-url="/assets/client.y4608tsh.js" props="{}" ssr client="visible" opts="{&quot;name&quot;:&quot;SidePanel&quot;,&quot;value&quot;:true}" await-children><button type="button" class="sonar-button" data-variant="tonal" data-size="medium">Delivery details</button><dialog class="sonar-dialog" data-placement="end" data-modal="false" tabindex="-1" aria-labelledby="_r5R_2_-title"><span class="sonar-dialog-handle" aria-hidden="true"></span><header class="sonar-dialog-header"><h2 class="sonar-dialog-title" id="_r5R_2_-title">Delivery 04-127C</h2><button type="button" class="sonar-dialog-close" aria-label="Close"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m4 4 8 8M12 4l-8 8"></path></svg></button></header><div class="sonar-dialog-body" data-labelledby="_r5R_2_-title"><span class="sonar-status" data-tone="warning" data-appearance="chip"><span class="sonar-status-dot" aria-hidden="true"></span>Due today</span><dl style="display:grid;grid-template-columns:auto 1fr;gap:10px 24px;margin:0;font:var(--sonar-type-label-md)"><div style="display:contents"><dt style="color:var(--sonar-color-text-tertiary)">Carrier</dt><dd style="margin:0;color:var(--sonar-color-text-strong)">Iberia Freight</dd></div><div style="display:contents"><dt style="color:var(--sonar-color-text-tertiary)">Window</dt><dd style="margin:0;color:var(--sonar-color-text-strong)">May 12, 08:00–10:00</dd></div><div style="display:contents"><dt style="color:var(--sonar-color-text-tertiary)">Pallets</dt><dd style="margin:0;color:var(--sonar-color-text-strong)">24 plt</dd></div><div style="display:contents"><dt style="color:var(--sonar-color-text-tertiary)">Dock</dt><dd style="margin:0;color:var(--sonar-color-text-strong)">North · Gate 3</dd></div></dl></div><span class="sonar-dialog-thumb" aria-hidden="true" hidden=""></span><footer class="sonar-dialog-actions"><button type="button" class="sonar-button" data-variant="filled" data-size="medium">Track delivery</button></footer></dialog><span class="sonar-dialog-anchor" hidden=""></span><!--astro:end--></astro-island>
+  </div>
+  <details class="code" data-astro-cid-trxcs2lc>
+    <summary data-astro-cid-trxcs2lc>Code</summary>
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>tsx</span>
+    <button class="copy" type="button" data-code="import { Button } from '@orbex/sonar-components/button'
+import { Dialog } from '@orbex/sonar-components/dialog'
+import { Status } from '@orbex/sonar-components/status'
+import { useState } from 'react'
+
+const rows = [
+  ['Carrier', 'Iberia Freight'],
+  ['Window', 'May 12, 08:00–10:00'],
+  ['Pallets', '24 plt'],
+  ['Dock', 'North · Gate 3'],
+]
+
+export default function SidePanel() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button variant=&quot;tonal&quot; onClick={() => setOpen(true)}>
+        Delivery details
+      </Button>
+      <Dialog
+        open={open}
+        onOpenChange={setOpen}
+        placement=&quot;end&quot;
+        modal={false}
+        title=&quot;Delivery 04-127C&quot;
+        actions={<Button onClick={() => setOpen(false)}>Track delivery</Button>}
+      >
+        <Status tone=&quot;warning&quot; appearance=&quot;chip&quot;>
+          Due today
+        </Status>
+        <dl style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '10px 24px', margin: 0, font: 'var(--sonar-type-label-md)' }}>
+          {rows.map(([term, value]) => (
+            <div key={term} style={{ display: 'contents' }}>
+              <dt style={{ color: 'var(--sonar-color-text-tertiary)' }}>{term}</dt>
+              <dd style={{ margin: 0, color: 'var(--sonar-color-text-strong)' }}>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </Dialog>
+    </>
+  )
+}" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="tsx" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>import { Button } from &#39;@orbex/sonar-components/button&#39;
+import { Dialog } from &#39;@orbex/sonar-components/dialog&#39;
+import { Status } from &#39;@orbex/sonar-components/status&#39;
+import { useState } from &#39;react&#39;
+
+const rows = [
+  [&#39;Carrier&#39;, &#39;Iberia Freight&#39;],
+  [&#39;Window&#39;, &#39;May 12, 08:00–10:00&#39;],
+  [&#39;Pallets&#39;, &#39;24 plt&#39;],
+  [&#39;Dock&#39;, &#39;North · Gate 3&#39;],
+]
+
+export default function SidePanel() {
+  const [open, setOpen] = useState(false)
+  return (
+    &lt;&gt;
+      &lt;Button variant=&quot;tonal&quot; onClick={() =&gt; setOpen(true)}&gt;
+        Delivery details
+      &lt;/Button&gt;
+      &lt;Dialog
+        open={open}
+        onOpenChange={setOpen}
+        placement=&quot;end&quot;
+        modal={false}
+        title=&quot;Delivery 04-127C&quot;
+        actions={&lt;Button onClick={() =&gt; setOpen(false)}&gt;Track delivery&lt;/Button&gt;}
+      &gt;
+        &lt;Status tone=&quot;warning&quot; appearance=&quot;chip&quot;&gt;
+          Due today
+        &lt;/Status&gt;
+        &lt;dl style={{ display: &#39;grid&#39;, gridTemplateColumns: &#39;auto 1fr&#39;, gap: &#39;10px 24px&#39;, margin: 0, font: &#39;var(--sonar-type-label-md)&#39; }}&gt;
+          {rows.map(([term, value]) =&gt; (
+            &lt;div key={term} style={{ display: &#39;contents&#39; }}&gt;
+              &lt;dt style={{ color: &#39;var(--sonar-color-text-tertiary)&#39; }}&gt;{term}&lt;/dt&gt;
+              &lt;dd style={{ margin: 0, color: &#39;var(--sonar-color-text-strong)&#39; }}&gt;{value}&lt;/dd&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/dl&gt;
+      &lt;/Dialog&gt;
+    &lt;/&gt;
+  )
+}</code></pre>
+</div>
+
+
+  </details>
+</figure>
+  <figure class="demo" data-astro-cid-trxcs2lc>
+  <figcaption data-astro-cid-trxcs2lc>Bottom sheet</figcaption>
+  <div class="preview row" data-astro-cid-trxcs2lc>
+    <astro-island uid="SQLu6" prefix="r6" component-url="/assets/Sheet.DGoxdobz.js" component-export="default" renderer-url="/assets/client.y4608tsh.js" props="{}" ssr client="visible" opts="{&quot;name&quot;:&quot;Sheet&quot;,&quot;value&quot;:true}" await-children><button type="button" class="sonar-button" data-variant="tonal" data-size="medium">New order on a phone</button><dialog class="sonar-dialog" data-placement="bottom" aria-labelledby="_r6R_2_-title"><span class="sonar-dialog-handle" aria-hidden="true"></span><header class="sonar-dialog-header"><h2 class="sonar-dialog-title" id="_r6R_2_-title">New order</h2><button type="button" class="sonar-dialog-close" aria-label="Close"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m4 4 8 8M12 4l-8 8"></path></svg></button></header><div class="sonar-dialog-body" data-labelledby="_r6R_2_-title"><div class="sonar-field" data-size="medium"><label class="sonar-field-label" for="_r6R_36_">Product</label><div class="sonar-field-control"><input id="_r6R_36_" class="sonar-field-input" placeholder="Name or code"/></div></div><div class="sonar-field" data-size="medium"><label class="sonar-field-label" for="_r6R_56_">Quantity</label><div class="sonar-field-control"><input id="_r6R_56_" class="sonar-field-input" aria-describedby="_r6R_56_-description" type="number" inputMode="numeric" placeholder="0"/></div><p class="sonar-field-description" id="_r6R_56_-description">In pallets.</p></div></div><span class="sonar-dialog-thumb" aria-hidden="true" hidden=""></span><footer class="sonar-dialog-actions"><button type="button" class="sonar-button" data-variant="filled" data-size="medium">Place order</button></footer></dialog><!--astro:end--></astro-island>
+  </div>
+  <details class="code" data-astro-cid-trxcs2lc>
+    <summary data-astro-cid-trxcs2lc>Code</summary>
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>tsx</span>
+    <button class="copy" type="button" data-code="import { Button } from '@orbex/sonar-components/button'
+import { Dialog } from '@orbex/sonar-components/dialog'
+import { TextField } from '@orbex/sonar-components/field'
+import { useState } from 'react'
+
+/* On phones, panels rise from the bottom, with no scrim. Typing would be lost, so a tap outside does not close this one. */
+export default function Sheet() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button variant=&quot;tonal&quot; onClick={() => setOpen(true)}>
+        New order on a phone
+      </Button>
+      <Dialog
+        open={open}
+        onOpenChange={setOpen}
+        placement=&quot;bottom&quot;
+        dismissible={false}
+        title=&quot;New order&quot;
+        actions={<Button onClick={() => setOpen(false)}>Place order</Button>}
+      >
+        <TextField label=&quot;Product&quot; placeholder=&quot;Name or code&quot; />
+        <TextField label=&quot;Quantity&quot; type=&quot;number&quot; inputMode=&quot;numeric&quot; placeholder=&quot;0&quot; description=&quot;In pallets.&quot; />
+      </Dialog>
+    </>
+  )
+}" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="tsx" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>import { Button } from &#39;@orbex/sonar-components/button&#39;
+import { Dialog } from &#39;@orbex/sonar-components/dialog&#39;
+import { TextField } from &#39;@orbex/sonar-components/field&#39;
+import { useState } from &#39;react&#39;
+
+/* On phones, panels rise from the bottom, with no scrim. Typing would be lost, so a tap outside does not close this one. */
+export default function Sheet() {
+  const [open, setOpen] = useState(false)
+  return (
+    &lt;&gt;
+      &lt;Button variant=&quot;tonal&quot; onClick={() =&gt; setOpen(true)}&gt;
+        New order on a phone
+      &lt;/Button&gt;
+      &lt;Dialog
+        open={open}
+        onOpenChange={setOpen}
+        placement=&quot;bottom&quot;
+        dismissible={false}
+        title=&quot;New order&quot;
+        actions={&lt;Button onClick={() =&gt; setOpen(false)}&gt;Place order&lt;/Button&gt;}
+      &gt;
+        &lt;TextField label=&quot;Product&quot; placeholder=&quot;Name or code&quot; /&gt;
+        &lt;TextField label=&quot;Quantity&quot; type=&quot;number&quot; inputMode=&quot;numeric&quot; placeholder=&quot;0&quot; description=&quot;In pallets.&quot; /&gt;
+      &lt;/Dialog&gt;
+    &lt;/&gt;
+  )
+}</code></pre>
+</div>
+
+
+  </details>
+</figure>
+
+  
+
+  
+</div>
+  
+</section>
+
+  <section class="section" aria-labelledby="usage" data-astro-cid-w6ymvdtg>
+  <h2 id="usage" data-astro-cid-w6ymvdtg><a href="#usage" data-astro-cid-w6ymvdtg>Usage</a></h2>
+  
+    <ul class="prose">
+      <li>Confirm only what cannot be undone, such as resetting a layout. Everything else gets an undo in a toast.</li>
+      <li>The title asks the question; the main action answers it with a verb, last in the row.</li>
+      <li>Panels open at the end on tablets and desktops, from 600 px wide (an iPad mini in portrait keeps them at the side), and from the bottom on phones, 44 px from the top of the window. On a tablet this departs from the product’s 768 px size class, on purpose: the side panel keeps the overview in view. On desktops a side panel slides in 48 px with a fade, as in the product; on tablets it slides all the way in from the right edge, as <a href="/layout/navigation/#tablets">Navigation by device</a> defines.</li>
+      <li>Nothing in a panel or sheet shows the system’s scrollbar: its body scrolls with the product’s thin indicator, 4 px from the edge.</li>
+      <li>A side panel is not modal (<code>modal={false}</code>): it starts under the top bar, has no scrim, and the overview stays in view with the row it came from marked. Only decisions, such as a confirmation, take a scrim.</li>
+      <li>The six panels the overview opens are gathered, live, in <a href="/patterns/panels/">Patterns › Panels</a>.</li>
+      <li>Turn <code>dismissible</code> off when a stray click outside would lose what someone typed.</li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="do-dont" data-astro-cid-w6ymvdtg>
+  <h2 id="do-dont" data-astro-cid-w6ymvdtg><a href="#do-dont" data-astro-cid-w6ymvdtg>Do and don’t</a></h2>
+  
+      <div class="guidance"><div class="guidance-pair"><figure class="guidance-example" data-verdict="do"><div class="guidance-stage" inert="" aria-hidden="true"><div class="g-panel g-dialog"><h5 aria-level="3">Discard this order?</h5><p>The products and quantities you entered will be lost.</p><div class="g-actions"><button type="button" class="sonar-button" data-variant="text" data-size="small">Keep editing</button><button type="button" class="sonar-button" data-variant="tonal" data-size="small">Discard</button></div></div></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</span><span class="guidance-text">A title that asks the question, and buttons that answer it with verbs.</span></figcaption></figure><figure class="guidance-example" data-verdict="dont"><div class="guidance-stage" inert="" aria-hidden="true"><div class="g-panel g-dialog"><h5 aria-level="3">Are you sure?</h5><p>This action cannot be undone.</p><div class="g-actions"><button type="button" class="sonar-button" data-variant="text" data-size="small">Cancel</button><button type="button" class="sonar-button" data-variant="filled" data-size="small">OK</button></div></div></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don’t</span><span class="guidance-text">“Are you sure?” with OK and Cancel: people must read the text to know what OK does.</span></figcaption></figure></div><div class="guidance-pair"><figure class="guidance-example" data-verdict="do"><div class="guidance-stage" inert="" aria-hidden="true"><div class="sonar-toast g-toast"><p class="sonar-toast-message">Card hidden.</p><span class="sonar-toast-action">Undo</span><span class="sonar-toast-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</span><span class="guidance-text">Ask only when the step cannot be undone. Otherwise act, and offer Undo.</span></figcaption></figure><figure class="guidance-example" data-verdict="dont"><div class="guidance-stage" inert="" aria-hidden="true"><div class="g-panel g-dialog"><h5 aria-level="3">Hide this card?</h5><p>You can show it again from Edit layout.</p><div class="g-actions"><button type="button" class="sonar-button" data-variant="text" data-size="small">Cancel</button><button type="button" class="sonar-button" data-variant="filled" data-size="small">Hide</button></div></div></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don’t</span><span class="guidance-text">A dialog for every small step: people learn to press OK without reading.</span></figcaption></figure></div></div>
+    
+</section>
+
+  <section class="section" aria-labelledby="accessibility" data-astro-cid-w6ymvdtg>
+  <h2 id="accessibility" data-astro-cid-w6ymvdtg><a href="#accessibility" data-astro-cid-w6ymvdtg>Accessibility</a></h2>
+  
+    <div class="a11y" data-astro-cid-bxr4t4t4>
+  <div class="block" data-astro-cid-bxr4t4t4>
+        <h3 data-astro-cid-bxr4t4t4>Keyboard</h3>
+        <table data-astro-cid-bxr4t4t4>
+          <thead data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+              <th scope="col" data-astro-cid-bxr4t4t4>Key</th>
+              <th scope="col" data-astro-cid-bxr4t4t4>What it does</th>
+            </tr>
+          </thead>
+          <tbody data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Tab and Shift Tab</th>
+                <td data-astro-cid-bxr4t4t4>Move among the dialog’s controls only; the page behind is inert.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Escape</th>
+                <td data-astro-cid-bxr4t4t4>Closes the dialog and returns focus to what opened it.</td>
+              </tr>
+          </tbody>
+        </table>
+      </div><div class="block" data-astro-cid-bxr4t4t4>
+        <h3 data-astro-cid-bxr4t4t4>Roles and attributes</h3>
+        <table data-astro-cid-bxr4t4t4>
+          <thead data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+              <th scope="col" data-astro-cid-bxr4t4t4>Element or attribute</th>
+              <th scope="col" data-astro-cid-bxr4t4t4>What it gives</th>
+            </tr>
+          </thead>
+          <tbody data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>&lt;dialog&gt; opened with showModal()</code></th>
+                <td data-astro-cid-bxr4t4t4>The browser moves focus in, keeps it inside and makes the rest of the page inert.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>aria-labelledby, aria-describedby</code></th>
+                <td data-astro-cid-bxr4t4t4>The title names the dialog; the description is read after it.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Close button</th>
+                <td data-astro-cid-bxr4t4t4>Named by closeLabel, “Close” by default.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Body that scrolls (side panels and sheets)</th>
+                <td data-astro-cid-bxr4t4t4>A group named by the title while it scrolls, so the keyboard can scroll it; the indicator beside it is drawn and hidden.</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+</div>
+    <h3 class="notes" data-astro-cid-cndiwttc>Notes</h3>
+    <ul class="prose">
+    <li>Modal: <code>showModal()</code> moves focus into the dialog, keeps it there, makes the rest of the page inert and returns focus to the trigger on close.</li>
+    <li>Side panel: focus moves into the panel when it opens and back to the trigger when it closes. Tab and Shift+Tab go round inside it, so focus never lands on the page behind; the page stays in view and a click on it still works. On phones, where it is a sheet over the page, the rest of the page is inert while it is open. Escape or a click outside closes it.</li>
+    <li>The title names the dialog and the description is read with it.</li>
+    <li>Escape and the close button always close it, whatever <code>dismissible</code> says.</li>
+    <li>With reduced motion, the dialog fades without moving.</li>
+  </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="use" data-astro-cid-w6ymvdtg>
+  <h2 id="use" data-astro-cid-w6ymvdtg><a href="#use" data-astro-cid-w6ymvdtg>Use it</a></h2>
+  
+    <p class="prose" data-astro-cid-cndiwttc>
+      Each component is its own entry point with its own stylesheet, so an app loads only what it uses.
+       The tokens and the cascade layers are set once for the app: see <a href="/get-started/installation/" data-astro-cid-cndiwttc>Installation</a>.
+    </p>
+    
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>tsx</span>
+    <button class="copy" type="button" data-code="import { DialogHost, Dialog } from '@orbex/sonar-components/dialog'
+import '@orbex/sonar-components/dialog.css'" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="tsx" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>import { DialogHost, Dialog } from &#39;@orbex/sonar-components/dialog&#39;
+import &#39;@orbex/sonar-components/dialog.css&#39;</code></pre>
+</div>
+
+
+  
+</section>
+
+  <section class="section" aria-labelledby="api" data-astro-cid-w6ymvdtg>
+  <h2 id="api" data-astro-cid-w6ymvdtg><a href="#api" data-astro-cid-w6ymvdtg>API</a></h2>
+  <div class="part" data-astro-cid-ogedjwls>
+  <h3 data-astro-cid-ogedjwls><code data-astro-cid-ogedjwls>DialogHost</code></h3>
+  <p class="description" data-astro-cid-ogedjwls>Holds the side panels and sheets written inside it, as a drawn app frame does, instead of placing them against the window.</p>
+  
+  
+  
+</div><div class="part" data-astro-cid-ogedjwls>
+  <h3 data-astro-cid-ogedjwls><code data-astro-cid-ogedjwls>Dialog</code></h3>
+  
+  <div class="table-wrap" data-scroll-region data-label="Props of Dialog" data-astro-cid-ogedjwls>
+        <table data-astro-cid-ogedjwls>
+          <caption class="visually-hidden" data-astro-cid-ogedjwls>Props of Dialog</caption>
+          <thead data-astro-cid-ogedjwls>
+            <tr data-astro-cid-ogedjwls>
+              <th scope="col" data-astro-cid-ogedjwls>Prop</th>
+              <th scope="col" data-astro-cid-ogedjwls>Type</th>
+              <th scope="col" data-astro-cid-ogedjwls>Default</th>
+            </tr>
+          </thead>
+          <tbody data-astro-cid-ogedjwls>
+            <tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>open</code>
+                  <span class="required" data-astro-cid-ogedjwls>Required</span>
+                  <p data-astro-cid-ogedjwls>Whether the dialog is shown. The dialog is always controlled.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>boolean</code>
+                </td>
+                <td data-astro-cid-ogedjwls><span class="none" data-astro-cid-ogedjwls>—</span></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>onOpenChange</code>
+                  <span class="required" data-astro-cid-ogedjwls>Required</span>
+                  <p data-astro-cid-ogedjwls>Called with <code>false</code> when the person closes it: the close button, Escape, a click outside, or a swipe down.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>(open: boolean) =&gt; void</code>
+                </td>
+                <td data-astro-cid-ogedjwls><span class="none" data-astro-cid-ogedjwls>—</span></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>title</code>
+                  <span class="required" data-astro-cid-ogedjwls>Required</span>
+                  <p data-astro-cid-ogedjwls>The heading, which also names the dialog for assistive technology.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>ReactNode</code>
+                </td>
+                <td data-astro-cid-ogedjwls><span class="none" data-astro-cid-ogedjwls>—</span></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>description</code>
+                  
+                  <p data-astro-cid-ogedjwls>One paragraph under the title, read when the dialog opens.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>ReactNode</code>
+                </td>
+                <td data-astro-cid-ogedjwls><span class="none" data-astro-cid-ogedjwls>—</span></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>placement</code>
+                  
+                  <p data-astro-cid-ogedjwls>Center for a decision; end for a side panel, such as the details of a delivery; bottom for a sheet on phones. On phones (under 600 px) a side panel becomes a sheet from the bottom, with a handle to swipe it down; tablets and desktops keep it at the side.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>&#39;center&#39; | &#39;end&#39; | &#39;bottom&#39;</code>
+                </td>
+                <td data-astro-cid-ogedjwls><code data-astro-cid-ogedjwls>&#39;center&#39;</code></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>modal</code>
+                  
+                  <p data-astro-cid-ogedjwls>Whether the rest of the page waits behind a scrim. A side panel that sits beside the overview, such as the details of a delivery or a new order, is not modal: no scrim, the page stays in view and the row it came from stays marked. It starts under the top bar (--sonar-dialog-top) and closes on Escape or a click outside.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>boolean</code>
+                </td>
+                <td data-astro-cid-ogedjwls><code data-astro-cid-ogedjwls>true</code></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>actions</code>
+                  
+                  <p data-astro-cid-ogedjwls>Buttons at the foot of the dialog, the main action last.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>ReactNode</code>
+                </td>
+                <td data-astro-cid-ogedjwls><span class="none" data-astro-cid-ogedjwls>—</span></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>closeLabel</code>
+                  
+                  <p data-astro-cid-ogedjwls>Name of the close button.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>string</code>
+                </td>
+                <td data-astro-cid-ogedjwls><code data-astro-cid-ogedjwls>&#39;Close&#39;</code></td>
+              </tr><tr data-astro-cid-ogedjwls>
+                <th scope="row" data-astro-cid-ogedjwls>
+                  <code data-astro-cid-ogedjwls>dismissible</code>
+                  
+                  <p data-astro-cid-ogedjwls>Whether a click on the scrim, or outside a panel that is not modal, closes it. Turn it off when closing would lose what the person typed.</p>
+                </th>
+                <td data-astro-cid-ogedjwls>
+                  <code class="type" data-astro-cid-ogedjwls>boolean</code>
+                </td>
+                <td data-astro-cid-ogedjwls><code data-astro-cid-ogedjwls>true</code></td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+  <p class="note" data-astro-cid-ogedjwls>
+        Also takes every attribute of the native <code data-astro-cid-ogedjwls>&lt;dialog&gt;</code>
+        <span data-astro-cid-ogedjwls>, except open | title | onClose | onCancel</span>, and a <code data-astro-cid-ogedjwls>ref</code> to it.
+      </p>
+  
+</div>
+  
+</section>
+
+        </div>
+        <div class="page-end" data-astro-cid-lpetmyok>
+          <nav class="pager" aria-label="Previous and next pages" data-astro-cid-lpetmyok>
+                <a href="/components/tooltip/" rel="prev" class="previous" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Previous</span>
+                    Tooltip
+                  </a>
+                <a href="/components/scroll-area/" rel="next" class="next" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Next</span>
+                    Scroll area
+                  </a>
+              </nav>
+          <footer class="site-footer" data-astro-cid-nns7i3if>
+  <p data-astro-cid-nns7i3if>
+    Design system by <strong data-astro-cid-nns7i3if>988©STUDIO</strong>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    <a href="/resources/changelog/" data-astro-cid-nns7i3if>v1.1.4</a>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    © 2026
+  </p>
+</footer>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="/assets/Docs.astro_astro_type_script_index_0_lang.CIhC640A.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1 @@
+export{t as default}from"./OrdersCard.D2Wr5KRn.js";

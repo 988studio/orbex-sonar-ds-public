@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en" data-astro-cid-lpetmyok>
+  <head>
+    <meta charset="utf-8">
+    <!-- The order of the cascade layers, before any stylesheet: bundling may load the files in any order -->
+    <style>
+      @layer reset, base, sonar;
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <!-- iOS would turn dates and figures into links, changing the elements React hydrates -->
+    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+    <title>Search · Orbex Sonar-DB Design System</title>
+    <meta name="description" content="Searching Sonar-DB in plain words: how a query is read, what the results show and how to reach them, with the search field it is built on.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="/assets/ibm-plex-sans-latin-400-normal.CDDApCn2.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-500-normal.6ng42L7E.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-600-normal.CuJfVYMP.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-normal.CRd5VyFf.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-italic.CDUi4ehg.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-400-normal.DMJ8VG8y.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-500-normal.DSY6xOcd.woff2" as="font" type="font/woff2" crossorigin>
+    <script>
+      try {
+        const theme = localStorage.getItem('sonar-ds-theme')
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {}
+
+      /* A page opened from a link starts at the top. Browsers do this already; some embedded viewers keep the previous
+         page’s scroll instead. Going back, reloading and links to a section are left to the browser, and the reset
+         stops as soon as the reader scrolls. */
+      try {
+        const navigation = performance.getEntriesByType('navigation')[0]
+        if (!location.hash && (!navigation || navigation.type === 'navigate')) {
+          const toTop = () => scrollTo(0, 0)
+          const stop = () => {
+            removeEventListener('DOMContentLoaded', toTop)
+            removeEventListener('load', toTop)
+          }
+          toTop()
+          addEventListener('DOMContentLoaded', toTop, { once: true })
+          addEventListener('load', toTop, { once: true })
+          for (const type of ['wheel', 'touchstart', 'keydown']) addEventListener(type, stop, { once: true, passive: true })
+        }
+      } catch {}
+    </script>
+  <style>.a11y[data-astro-cid-bxr4t4t4]{gap:var(--sonar-space-28);max-width:880px;display:grid}h3[data-astro-cid-bxr4t4t4]{margin-bottom:var(--sonar-space-8);font:var(--sonar-type-title-md);letter-spacing:var(--sonar-type-title-md-tracking)}table[data-astro-cid-bxr4t4t4]{border-collapse:collapse;border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);width:100%;box-shadow:var(--sonar-elevation-1);font:var(--sonar-type-body-md);letter-spacing:var(--sonar-type-body-md-tracking)}th[data-astro-cid-bxr4t4t4],td[data-astro-cid-bxr4t4t4]{padding:var(--sonar-space-10) var(--sonar-space-16);border-bottom:1px solid var(--sonar-color-divider);text-align:left;vertical-align:top}tbody[data-astro-cid-bxr4t4t4] tr[data-astro-cid-bxr4t4t4]:last-child>[data-astro-cid-bxr4t4t4]{border-bottom:0}thead[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{width:34%;color:var(--sonar-color-text-strong);font-weight:var(--sonar-font-weight-medium)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4] code[data-astro-cid-bxr4t4t4]{font:400 12px/1.5 var(--sonar-font-family-mono);overflow-wrap:anywhere}td[data-astro-cid-bxr4t4t4]{color:var(--sonar-color-text-secondary)}@container page (width<608px){th[data-astro-cid-bxr4t4t4],td[data-astro-cid-bxr4t4t4]{padding:var(--sonar-space-10) var(--sonar-space-12)}tbody[data-astro-cid-bxr4t4t4] th[data-astro-cid-bxr4t4t4]{width:40%}}
+</style>
+<link rel="stylesheet" href="/assets/styles.Dexbwagh.css">
+<style>.code-block[data-astro-cid-c6nuo4je]{min-width:0;max-width:var(--site-measure);border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-container-low)}.bar[data-astro-cid-c6nuo4je]{padding:var(--sonar-space-6) var(--sonar-space-8) 0 var(--sonar-space-24);justify-content:space-between;align-items:center;display:flex}.language[data-astro-cid-c6nuo4je]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-sm);letter-spacing:var(--sonar-type-label-sm-tracking);text-transform:uppercase}pre[data-astro-cid-c6nuo4je]{overscroll-behavior-x:contain;padding:var(--sonar-space-8) var(--sonar-space-24) var(--sonar-space-20);color:var(--sonar-color-text-strong);font:400 13px/1.6 var(--sonar-font-family-mono);overflow:auto hidden}pre[data-astro-cid-c6nuo4je]:focus-visible{outline:var(--sonar-focus-width) solid var(--sonar-color-focus);outline-offset:calc(-1 * var(--sonar-focus-width));border-radius:0 0 var(--sonar-shape-corner-medium) var(--sonar-shape-corner-medium)}code[data-astro-cid-c6nuo4je]{font:inherit}.copy[data-astro-cid-c6nuo4je]{min-height:32px;padding:0 var(--sonar-space-12);border-radius:var(--sonar-shape-corner-full);color:var(--sonar-color-text-secondary);font:var(--sonar-type-label-md);letter-spacing:var(--sonar-type-label-md-tracking);cursor:pointer;transition:background-color var(--sonar-motion-effects-fast-duration) var(--sonar-motion-effects-fast-easing);background:0 0;border:0}.copy[data-astro-cid-c6nuo4je]:hover{background:var(--sonar-color-state-hover);color:var(--sonar-color-text-strong)}.copy[data-astro-cid-c6nuo4je]:focus-visible{outline:2px solid var(--sonar-color-accent);outline-offset:2px}
+</style>
+<link rel="stylesheet" href="/assets/DoDont.DV84UQhT.css">
+<style>.page-header[data-astro-cid-b2i3gsw2]{max-width:var(--site-content-width);margin-bottom:var(--sonar-space-48)}h1[data-astro-cid-b2i3gsw2]{font:var(--site-heading-1);letter-spacing:-.01em}.lead[data-astro-cid-b2i3gsw2]{max-width:var(--site-measure);margin-top:var(--sonar-space-16);color:var(--sonar-color-text-secondary);font:var(--site-lead)}
+.section[data-astro-cid-w6ymvdtg]{max-width:var(--site-content-width)}.section[data-astro-cid-w6ymvdtg]+.section{margin-top:72px}h2[data-astro-cid-w6ymvdtg]{margin-bottom:var(--sonar-space-16);font:var(--site-heading-2);letter-spacing:-.01em}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]{color:inherit;text-decoration:none}h2[data-astro-cid-w6ymvdtg] a[data-astro-cid-w6ymvdtg]:hover{text-decoration:underline}.section[data-astro-cid-w6ymvdtg]>*+*{margin-top:var(--sonar-space-24)}.section[data-astro-cid-w6ymvdtg]>h2+*{margin-top:0}
+</style>
+<link rel="stylesheet" href="/assets/Docs.pfYhGa-X.css">
+<style>.table-wrap[data-astro-cid-iereszge]{overscroll-behavior-x:contain;border-radius:var(--sonar-shape-corner-medium);background:var(--sonar-color-surface-card);max-width:760px;box-shadow:var(--sonar-elevation-1);overflow:auto hidden}table[data-astro-cid-iereszge]{border-collapse:collapse;width:100%;font:var(--sonar-type-body-md)}th[data-astro-cid-iereszge],td[data-astro-cid-iereszge]{padding:var(--sonar-space-10) var(--sonar-space-16);border-bottom:1px solid var(--sonar-color-divider);text-align:left;vertical-align:top}tbody[data-astro-cid-iereszge] tr[data-astro-cid-iereszge]:last-child>[data-astro-cid-iereszge]{border-bottom:0}thead[data-astro-cid-iereszge] th[data-astro-cid-iereszge]{color:var(--sonar-color-text-tertiary);font:var(--sonar-type-label-md)}tbody[data-astro-cid-iereszge] th[data-astro-cid-iereszge]{color:var(--sonar-color-text-strong);font-weight:var(--sonar-font-weight-medium);white-space:nowrap}.smart-search{gap:var(--sonar-space-8);min-height:120px;display:grid}.smart-search-bar{padding:var(--sonar-space-10) var(--sonar-space-12);border-radius:var(--sonar-shape-corner-large);background:var(--sonar-color-surface-card);box-shadow:var(--sonar-elevation-1);align-items:center;display:flex}.smart-search-bar .sonar-search{flex:1;max-width:480px}
+</style>
+<link rel="stylesheet" href="/assets/OrderPanels.9YuJa5MF.css"></head>
+  <body data-astro-cid-lpetmyok>
+    <a class="skip-link" href="#content" data-astro-cid-lpetmyok>Skip to content</a>
+
+    <header class="masthead" data-astro-cid-lpetmyok>
+      <div class="brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  <span class="wordmark-system" data-astro-cid-qisgtjgl>Design system</span>
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a></div>
+      <button class="menu-button" type="button" popovertarget="sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation" data-astro-cid-lpetmyok>
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" data-astro-cid-lpetmyok><path d="M4 7h16M4 12h16M4 17h16" data-astro-cid-lpetmyok></path></svg>
+      </button>
+    </header>
+
+    <div class="shell" data-astro-cid-lpetmyok>
+      <nav class="sidebar" id="sidebar" popover aria-label="Documentation" data-astro-cid-lpetmyok>
+        
+        <div class="sidebar-brand" data-astro-cid-lpetmyok><!-- The link is named by the words it shows, so voice control can reach it by them; “home” is added for screen readers -->
+<a class="wordmark" href="/" data-astro-cid-qisgtjgl>
+  <svg class="mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" data-astro-cid-3a7wqkii>
+  <line x1="15.00" y1="12.00" x2="23.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="13.16" x2="22.63" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="13.50" x2="21.53" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="15.18" x2="19.78" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="14.60" x2="17.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="16.35" x2="14.85" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="15.00" x2="12.00" y2="23.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="16.35" x2="9.15" y2="22.63" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="14.60" x2="6.50" y2="21.53" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="15.18" x2="4.22" y2="19.78" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="13.50" x2="2.47" y2="17.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="13.16" x2="1.37" y2="14.85" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.00" y1="12.00" x2="1.00" y2="12.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="7.65" y1="10.84" x2="1.37" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="9.40" y1="10.50" x2="2.47" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="8.82" y1="8.82" x2="4.22" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.50" y1="9.40" x2="6.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="10.84" y1="7.65" x2="9.15" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="12.00" y1="9.00" x2="12.00" y2="1.00" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.16" y1="7.65" x2="14.85" y2="1.37" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="13.50" y1="9.40" x2="17.50" y2="2.47" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="15.18" y1="8.82" x2="19.78" y2="4.22" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="14.60" y1="10.50" x2="21.53" y2="6.50" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line><line x1="16.35" y1="10.84" x2="22.63" y2="9.15" class="astro-3a7wqkii" data-astro-cid-3a7wqkii></line>
+</svg>
+  <span class="wordmark-product" data-astro-cid-qisgtjgl>
+    <b data-astro-cid-qisgtjgl>Orbex</b>
+    <small data-astro-cid-qisgtjgl>Sonar-DB</small>
+  </span>
+  
+  <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
+</a><span class="sidebar-version" data-astro-cid-lpetmyok><a class="version-chip" href="/resources/changelog/" data-astro-cid-2qsy24n7>v1.1.4<span class="visually-hidden" data-astro-cid-2qsy24n7>, changelog</span></a></span></div>
+        <div class="sidebar-scroll" data-astro-cid-lpetmyok>
+          <p class="outline-title" data-astro-cid-lpetmyok>Design system</p>
+          <div class="navigation" data-astro-cid-yxete6jp>
+  <section aria-labelledby="nav-Get started" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Get started" data-astro-cid-yxete6jp>
+            Get started
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/" data-astro-cid-yxete6jp>
+                  Introduction
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/get-started/installation/" data-astro-cid-yxete6jp>
+                  Installation
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Foundations" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Foundations" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/foundations/" data-astro-cid-yxete6jp>
+                Foundations
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/foundations/principles/" data-astro-cid-yxete6jp>
+                  Principles
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/accessibility/" data-astro-cid-yxete6jp>
+                  Accessibility
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/color/" data-astro-cid-yxete6jp>
+                  Color
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/typography/" data-astro-cid-yxete6jp>
+                  Typography
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/icons/" data-astro-cid-yxete6jp>
+                  Icons
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/spacing/" data-astro-cid-yxete6jp>
+                  Spacing
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/shape/" data-astro-cid-yxete6jp>
+                  Shape
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/elevation/" data-astro-cid-yxete6jp>
+                  Elevation
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/foundations/motion/" data-astro-cid-yxete6jp>
+                  Motion
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Layout" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Layout" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/layout/" data-astro-cid-yxete6jp>
+                Layout
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/layout/grid/" data-astro-cid-yxete6jp>
+                  Breakpoints and grid
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/layout/navigation/" data-astro-cid-yxete6jp>
+                  Navigation by device
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Components" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Components" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/components/" data-astro-cid-yxete6jp>
+                Components
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/components/button/" data-astro-cid-yxete6jp>
+                  Button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/icon-button/" data-astro-cid-yxete6jp>
+                  Icon button
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/badge/" data-astro-cid-yxete6jp>
+                  Badge
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/status/" data-astro-cid-yxete6jp>
+                  Status
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/switch/" data-astro-cid-yxete6jp>
+                  Switch
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/checkbox/" data-astro-cid-yxete6jp>
+                  Checkbox
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/segmented-control/" data-astro-cid-yxete6jp>
+                  Segmented control
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/field/" data-astro-cid-yxete6jp>
+                  Text field and select
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/notice/" data-astro-cid-yxete6jp>
+                  Notice
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/toast/" data-astro-cid-yxete6jp>
+                  Toast
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/menu/" data-astro-cid-yxete6jp>
+                  Menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tooltip/" data-astro-cid-yxete6jp>
+                  Tooltip
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/dialog/" data-astro-cid-yxete6jp>
+                  Dialog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/scroll-area/" data-astro-cid-yxete6jp>
+                  Scroll area
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card/" data-astro-cid-yxete6jp>
+                  Card
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-link/" data-astro-cid-yxete6jp>
+                  Card link
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/card-scroll/" data-astro-cid-yxete6jp>
+                  Card scroll
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/unit-menu/" data-astro-cid-yxete6jp>
+                  Unit menu
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/tick-bar/" data-astro-cid-yxete6jp>
+                  Tick bar
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/ring-chart/" data-astro-cid-yxete6jp>
+                  Ring chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/trend-chart/" data-astro-cid-yxete6jp>
+                  Trend chart
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/chart-legend/" data-astro-cid-yxete6jp>
+                  Chart legend
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-field/" data-astro-cid-yxete6jp>
+                  Search field
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/components/search-result/" data-astro-cid-yxete6jp>
+                  Search result
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Patterns" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Patterns" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/patterns/" data-astro-cid-yxete6jp>
+                Patterns
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/patterns/overview/" data-astro-cid-yxete6jp>
+                  Overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/cards/" data-astro-cid-yxete6jp>
+                  Cards
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/charts/" data-astro-cid-yxete6jp>
+                  Charts
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/search/" aria-current="page" data-astro-cid-yxete6jp>
+                  Search
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/editing/" data-astro-cid-yxete6jp>
+                  Editing the overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/panels/" data-astro-cid-yxete6jp>
+                  Panels
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/feedback/" data-astro-cid-yxete6jp>
+                  Feedback
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/app-shell/" data-astro-cid-yxete6jp>
+                  App shell
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/assistant/" data-astro-cid-yxete6jp>
+                  AI assistant
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/customize/" data-astro-cid-yxete6jp>
+                  Customize overview
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/patterns/unbuilt/" data-astro-cid-yxete6jp>
+                  Unbuilt modules
+                </a>
+            </li>
+        </ul>
+      </section><section aria-labelledby="nav-Resources" data-astro-cid-yxete6jp>
+        <p class="section-label" id="nav-Resources" data-astro-cid-yxete6jp>
+            <a class="section-link" href="/resources/" data-astro-cid-yxete6jp>
+                Resources
+              </a>
+          </p>
+        <ul role="list" data-astro-cid-yxete6jp>
+          <li data-astro-cid-yxete6jp>
+              <a href="/resources/changelog/" data-astro-cid-yxete6jp>
+                  Changelog
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/downloads/" data-astro-cid-yxete6jp>
+                  Downloads
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/llms.txt" data-astro-cid-yxete6jp>
+                  llms.txt
+                </a>
+            </li><li data-astro-cid-yxete6jp>
+              <a href="/resources/contributing/" data-astro-cid-yxete6jp>
+                  Contributing
+                </a>
+            </li>
+        </ul>
+      </section>
+</div>
+        </div>
+        <div class="sidebar-footer" data-astro-cid-lpetmyok><fieldset class="theme-switch" data-astro-cid-hds7qqbe>
+  <legend class="visually-hidden" data-astro-cid-hds7qqbe>Theme</legend>
+  <label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="system" checked data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>System</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="light" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Light</span>
+      </label><label data-astro-cid-hds7qqbe>
+        <input type="radio" name="theme" value="dark" data-astro-cid-hds7qqbe>
+        <span data-astro-cid-hds7qqbe>Dark</span>
+      </label>
+</fieldset>
+
+<script type="module" src="/assets/ThemeSwitch.astro_astro_type_script_index_0_lang.BMJDsczV.js"></script></div>
+      </nav>
+
+      <main id="content" tabindex="-1" data-astro-cid-lpetmyok>
+        
+        <div class="page-body" data-astro-cid-lpetmyok>
+          <nav class="breadcrumb" aria-label="Breadcrumb" data-astro-cid-lpetmyok>
+                <a href="/patterns/" data-astro-cid-lpetmyok>Patterns</a>
+                <span aria-hidden="true" data-astro-cid-lpetmyok>/</span>
+                <span aria-current="page" data-astro-cid-lpetmyok>Search</span>
+              </nav>
+          
+  <header class="page-header" data-astro-cid-b2i3gsw2>
+  <h1 data-astro-cid-b2i3gsw2>Search</h1>
+  <p class="lead" data-astro-cid-b2i3gsw2>One field in the top bar finds deliveries, invoices and actions. People type in plain words, “delayed deliveries this week” or “INV-77”, and the results open under the field as they type, with a line that says how the words were read.</p>
+  
+</header>
+
+  <section class="section" aria-labelledby="demo" data-astro-cid-w6ymvdtg>
+  <h2 id="demo" data-astro-cid-w6ymvdtg><a href="#demo" data-astro-cid-w6ymvdtg>Try it</a></h2>
+  
+    <p class="prose" data-astro-cid-iereszge>
+      The data is the overview’s: every card reads Tuesday, May 12, 2026. Choose a delivery or an invoice to open its
+      details, New order to open its panel, or a page to go to its card on the Overview. With the field empty, the list suggests a few questions.
+    </p>
+    <figure class="demo" data-astro-cid-trxcs2lc>
+  <figcaption data-astro-cid-trxcs2lc>Smart search in the top bar</figcaption>
+  <div class="preview card" data-astro-cid-trxcs2lc>
+    <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(function(){let e=(e,t,n)=>{let r=async()=>{await(await e())()},i=typeof t.value==`object`?t.value:void 0,a={rootMargin:i==null?void 0:i.rootMargin},o=new IntersectionObserver(e=>{for(let t of e)if(t.isIntersecting){o.disconnect(),r();break}},a);for(let e of n.children)o.observe(e)};(self.Astro||(self.Astro={})).visible=e,window.dispatchEvent(new Event(`astro:visible`))})();</script><script>(function(){function e(t){"@babel/helpers - typeof";return e=typeof Symbol==`function`&&typeof Symbol.iterator==`symbol`?function(e){return typeof e}:function(e){return e&&typeof Symbol==`function`&&e.constructor===Symbol&&e!==Symbol.prototype?`symbol`:typeof e},e(t)}function t(t,n){if(e(t)!=`object`||!t)return t;var r=t[Symbol.toPrimitive];if(r!==void 0){var i=r.call(t,n||`default`);if(e(i)!=`object`)return i;throw TypeError(`@@toPrimitive must return a primitive value.`)}return(n===`string`?String:Number)(t)}function n(n){var r=t(n,`string`);return e(r)==`symbol`?r:r+``}function r(e,t,r){return(t=n(t))in e?Object.defineProperty(e,t,{value:r,enumerable:!0,configurable:!0,writable:!0}):e[t]=r,e}let i=/* @__PURE__ */ new Set([`__proto__`,`constructor`,`prototype`]);{let e={0:e=>a(e),1:e=>n(e),2:e=>new RegExp(e),3:e=>new Date(e),4:e=>new Map(n(e)),5:e=>new Set(n(e)),6:e=>BigInt(e),7:e=>new URL(e),8:e=>new Uint8Array(e),9:e=>new Uint16Array(e),10:e=>new Uint32Array(e),11:e=>1/0*e},t=t=>{let[n,r]=t;return n in e?e[n](r):void 0},n=e=>e.map(t),a=e=>typeof e!=`object`||!e?e:Object.fromEntries(Object.entries(e).map(([e,n])=>[e,t(n)]));class o extends HTMLElement{constructor(...e){super(...e),r(this,`Component`,void 0),r(this,`hydrator`,void 0),r(this,`hydrate`,async()=>{var e;if(!this.hydrator||!this.isConnected)return;let t=(e=this.parentElement)==null?void 0:e.closest(`astro-island[ssr]`);if(t){t.addEventListener(`astro:hydrate`,this.hydrate,{once:!0});return}let n=this.querySelectorAll(`astro-slot`),r={},i=this.querySelectorAll(`template[data-astro-template]`);for(let e of i){let t=e.closest(this.tagName);t!=null&&t.isSameNode(this)&&(r[e.getAttribute(`data-astro-template`)||`default`]=e.innerHTML,e.remove())}for(let e of n){let t=e.closest(this.tagName);t!=null&&t.isSameNode(this)&&(r[e.getAttribute(`name`)||`default`]=e.innerHTML)}let o;try{o=this.hasAttribute(`props`)?a(JSON.parse(this.getAttribute(`props`))):{}}catch(e){let t=this.getAttribute(`component-url`)||`<unknown>`,n=this.getAttribute(`component-export`);throw n&&(t+=` (export ${n})`),console.error(`[hydrate] Error parsing props for component ${t}`,this.getAttribute(`props`),e),e}await this.hydrator(this)(this.Component,o,r,{client:this.getAttribute(`client`)}),this.removeAttribute(`ssr`),this.dispatchEvent(new CustomEvent(`astro:hydrate`))}),r(this,`unmount`,()=>{this.isConnected||this.dispatchEvent(new CustomEvent(`astro:unmount`))})}disconnectedCallback(){document.removeEventListener(`astro:after-swap`,this.unmount),document.addEventListener(`astro:after-swap`,this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute(`await-children`)||document.readyState===`interactive`||document.readyState===`complete`)this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener(`DOMContentLoaded`,e),t.disconnect(),this.childrenConnectedCallback()},t=new MutationObserver(()=>{var t;((t=this.lastChild)==null?void 0:t.nodeType)===Node.COMMENT_NODE&&this.lastChild.nodeValue===`astro:end`&&(this.lastChild.remove(),e())});t.observe(this,{childList:!0}),document.addEventListener(`DOMContentLoaded`,e)}}async childrenConnectedCallback(){let e=this.getAttribute(`before-hydration-url`);e&&await import(e),this.start()}getRetryImportUrl(e){let t=new URL(e,document.baseURI);return t.searchParams.set(`astro-retry`,Date.now().toString()),t.toString()}async importWithRetry(e){try{return await import(e)}catch(t){return await new Promise(e=>setTimeout(e,1e3)),import(this.getRetryImportUrl(e))}}handleHydrationError(e){let t=this.getAttribute(`component-url`),n=new CustomEvent(`astro:hydration-error`,{cancelable:!0,bubbles:!0,composed:!0,detail:{error:e,componentUrl:t}});this.dispatchEvent(n)&&console.error(`[astro-island] Error hydrating ${t}`,e)}async start(){let e=JSON.parse(this.getAttribute(`opts`)),t=this.getAttribute(`client`);if(Astro[t]===void 0){window.addEventListener(`astro:${t}`,()=>this.start(),{once:!0});return}try{await Astro[t](async()=>{let e=this.getAttribute(`renderer-url`);try{let[t,{default:n}]=await Promise.all([this.importWithRetry(this.getAttribute(`component-url`)),e?this.importWithRetry(e):Promise.resolve({default:()=>()=>{}})]),r=this.getAttribute(`component-export`)||`default`;if(r.includes(`.`)){this.Component=t;for(let e of r.split(`.`)){if(i.has(e)||!this.Component||typeof this.Component!=`object`&&typeof this.Component!=`function`||!Object.hasOwn(this.Component,e))throw Error(`Invalid component export path: ${r}`);this.Component=this.Component[e]}}else{if(i.has(r))throw Error(`Invalid component export path: ${r}`);this.Component=t[r]}return this.hydrator=n,this.hydrate}catch(e){return this.handleHydrationError(e),()=>{}}},e,this)}catch(e){this.handleHydrationError(e)}}attributeChangedCallback(){this.hydrate()}}r(o,`observedAttributes`,[`props`]),customElements.get(`astro-island`)||customElements.define(`astro-island`,o)}})();</script><astro-island uid="Z1dBMOx" prefix="r2" component-url="/assets/SmartSearch.BEsAT9-_.js" component-export="default" renderer-url="/assets/client.y4608tsh.js" props="{&quot;data-astro-cid-iereszge&quot;:[0,true]}" ssr client="visible" opts="{&quot;name&quot;:&quot;SmartSearch&quot;,&quot;value&quot;:true}" await-children><div class="smart-search"><div class="smart-search-bar"><div class="sonar-search" data-size="medium"><div role="group" class="sonar-search-control"><span class="sonar-search-icon" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="4.5"></circle><path d="m10.5 10.5 3 3"></path></svg></span><input autoComplete="off" spellCheck="false" autoCorrect="off" autoCapitalize="none" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-autocomplete="list" id="_r2R_1_" placeholder="Search…" aria-label="Search orders, deliveries and invoices" class="sonar-search-input" value=""/></div></div><input id="base-ui-_r2R_5_-hidden-input" style="clip-path:inset(50%);overflow:hidden;white-space:nowrap;border:0;padding:0;width:1px;height:1px;margin:-1px;position:fixed;top:0;left:0" tabindex="-1" aria-hidden="true" value=""/></div></div><!--astro:end--></astro-island>
+  </div>
+  <details class="code" data-astro-cid-trxcs2lc>
+    <summary data-astro-cid-trxcs2lc>Code: a self-contained version</summary>
+    <div class="code-block" data-astro-cid-c6nuo4je>
+  <div class="bar" data-astro-cid-c6nuo4je>
+    <span class="language" data-astro-cid-c6nuo4je>tsx</span>
+    <button class="copy" type="button" data-code="/* Search in plain words: the app reads the text and passes the results; SearchField shows them as people type */
+import { SearchField, SearchResult } from '@orbex/sonar-components/search'
+import { Status } from '@orbex/sonar-components/status'
+import '@orbex/sonar-components/search.css'
+import '@orbex/sonar-components/status.css'
+import { useEffect, useState } from 'react'
+
+type Tone = 'neutral' | 'positive' | 'warning' | 'danger'
+interface Item {
+  id: string
+  kind: 'Delivery' | 'Invoice'
+  day: string
+  text: string
+  status: string
+  tone: Tone
+}
+
+const items: Item[] = [
+  { id: '04-127C', kind: 'Delivery', day: 'Tue May 12', text: '04-127C 1 item · 15 plt', status: 'Delayed', tone: 'warning' },
+  { id: '04-121A', kind: 'Delivery', day: 'Tue May 12', text: '04-121A 7 items · 150 plt', status: 'Delayed', tone: 'warning' },
+  { id: '04-133B', kind: 'Delivery', day: 'Wed May 13', text: '04-133B 3 items · 60 plt', status: 'Scheduled', tone: 'neutral' },
+  { id: 'INV-7712', kind: 'Invoice', day: 'Tue May 12', text: 'INV-7712 · 30,000 USD', status: 'Due today', tone: 'warning' },
+  { id: 'INV-7716', kind: 'Invoice', day: 'Tue May 12', text: 'INV-7716 · 16,800 USD', status: 'Paid', tone: 'positive' },
+]
+
+/* The app’s own reading of the text: here, a kind, a state and a code */
+function search(text: string) {
+  const query = text.toLowerCase()
+  const kind = /deliver/.test(query) ? 'Delivery' : /invoice/.test(query) ? 'Invoice' : null
+  const late = /late|delay|overdue/.test(query)
+  const words = query.split(/\s+/).filter((word) => /\d/.test(word))
+  return items.filter(
+    (item) =>
+      (!kind || item.kind === kind) &amp;&amp;
+      (!late || ['Delayed', 'Overdue'].includes(item.status)) &amp;&amp;
+      words.every((word) => item.id.toLowerCase().includes(word)),
+  )
+}
+
+export function SmartSearch({ onOpen }: { onOpen: (item: Item) => void }) {
+  const [value, setValue] = useState('')
+  const [results, setResults] = useState<Item[]>([])
+  const [busy, setBusy] = useState(false)
+
+  /* Search after a short pause in typing, not on every key */
+  useEffect(() => {
+    if (!value.trim()) return setResults([])
+    setBusy(true)
+    const timer = setTimeout(() => {
+      setResults(search(value))
+      setBusy(false)
+    }, 380)
+    return () => clearTimeout(timer)
+  }, [value])
+
+  return (
+    <SearchField
+      label=&quot;Search orders, deliveries and invoices&quot;
+      placeholder=&quot;Search…&quot;
+      value={value}
+      onValueChange={setValue}
+      items={results}
+      itemToString={(item) => item.id}
+      renderItem={(item) => (
+        <SearchResult title={item.text} description={`${item.kind} · ${item.day}`} trailing={<Status tone={item.tone}>{item.status}</Status>} />
+      )}
+      onItemChoose={(item) => {
+        setValue('')
+        onOpen(item)
+      }}
+      status={busy ? `Understanding “${value}”…` : `${results.length} results for “${value}”`}
+      busy={busy}
+      empty=&quot;No results. Try “late deliveries” or “INV-77”.&quot;
+    />
+  )
+}" data-astro-cid-c6nuo4je>Copy</button>
+  </div>
+  <!-- Long lines scroll inside the block, never the page; while they do, the block takes focus so the keyboard can scroll it -->
+  <pre data-language="tsx" data-scroll-region data-astro-cid-c6nuo4je><code data-astro-cid-c6nuo4je>/* Search in plain words: the app reads the text and passes the results; SearchField shows them as people type */
+import { SearchField, SearchResult } from &#39;@orbex/sonar-components/search&#39;
+import { Status } from &#39;@orbex/sonar-components/status&#39;
+import &#39;@orbex/sonar-components/search.css&#39;
+import &#39;@orbex/sonar-components/status.css&#39;
+import { useEffect, useState } from &#39;react&#39;
+
+type Tone = &#39;neutral&#39; | &#39;positive&#39; | &#39;warning&#39; | &#39;danger&#39;
+interface Item {
+  id: string
+  kind: &#39;Delivery&#39; | &#39;Invoice&#39;
+  day: string
+  text: string
+  status: string
+  tone: Tone
+}
+
+const items: Item[] = [
+  { id: &#39;04-127C&#39;, kind: &#39;Delivery&#39;, day: &#39;Tue May 12&#39;, text: &#39;04-127C 1 item · 15 plt&#39;, status: &#39;Delayed&#39;, tone: &#39;warning&#39; },
+  { id: &#39;04-121A&#39;, kind: &#39;Delivery&#39;, day: &#39;Tue May 12&#39;, text: &#39;04-121A 7 items · 150 plt&#39;, status: &#39;Delayed&#39;, tone: &#39;warning&#39; },
+  { id: &#39;04-133B&#39;, kind: &#39;Delivery&#39;, day: &#39;Wed May 13&#39;, text: &#39;04-133B 3 items · 60 plt&#39;, status: &#39;Scheduled&#39;, tone: &#39;neutral&#39; },
+  { id: &#39;INV-7712&#39;, kind: &#39;Invoice&#39;, day: &#39;Tue May 12&#39;, text: &#39;INV-7712 · 30,000 USD&#39;, status: &#39;Due today&#39;, tone: &#39;warning&#39; },
+  { id: &#39;INV-7716&#39;, kind: &#39;Invoice&#39;, day: &#39;Tue May 12&#39;, text: &#39;INV-7716 · 16,800 USD&#39;, status: &#39;Paid&#39;, tone: &#39;positive&#39; },
+]
+
+/* The app’s own reading of the text: here, a kind, a state and a code */
+function search(text: string) {
+  const query = text.toLowerCase()
+  const kind = /deliver/.test(query) ? &#39;Delivery&#39; : /invoice/.test(query) ? &#39;Invoice&#39; : null
+  const late = /late|delay|overdue/.test(query)
+  const words = query.split(/\s+/).filter((word) =&gt; /\d/.test(word))
+  return items.filter(
+    (item) =&gt;
+      (!kind || item.kind === kind) &amp;&amp;
+      (!late || [&#39;Delayed&#39;, &#39;Overdue&#39;].includes(item.status)) &amp;&amp;
+      words.every((word) =&gt; item.id.toLowerCase().includes(word)),
+  )
+}
+
+export function SmartSearch({ onOpen }: { onOpen: (item: Item) =&gt; void }) {
+  const [value, setValue] = useState(&#39;&#39;)
+  const [results, setResults] = useState&lt;Item[]&gt;([])
+  const [busy, setBusy] = useState(false)
+
+  /* Search after a short pause in typing, not on every key */
+  useEffect(() =&gt; {
+    if (!value.trim()) return setResults([])
+    setBusy(true)
+    const timer = setTimeout(() =&gt; {
+      setResults(search(value))
+      setBusy(false)
+    }, 380)
+    return () =&gt; clearTimeout(timer)
+  }, [value])
+
+  return (
+    &lt;SearchField
+      label=&quot;Search orders, deliveries and invoices&quot;
+      placeholder=&quot;Search…&quot;
+      value={value}
+      onValueChange={setValue}
+      items={results}
+      itemToString={(item) =&gt; item.id}
+      renderItem={(item) =&gt; (
+        &lt;SearchResult title={item.text} description={`${item.kind} · ${item.day}`} trailing={&lt;Status tone={item.tone}&gt;{item.status}&lt;/Status&gt;} /&gt;
+      )}
+      onItemChoose={(item) =&gt; {
+        setValue(&#39;&#39;)
+        onOpen(item)
+      }}
+      status={busy ? `Understanding “${value}”…` : `${results.length} results for “${value}”`}
+      busy={busy}
+      empty=&quot;No results. Try “late deliveries” or “INV-77”.&quot;
+    /&gt;
+  )
+}</code></pre>
+</div>
+
+<script type="module">function e(e){let t=document.createElement(`textarea`);t.value=e,t.setAttribute(`readonly`,``),t.style.cssText=`position:fixed;inset:0 auto auto 0;width:1px;height:1px;opacity:0`,document.body.append(t),t.select();let n=document.execCommand(`copy`);return t.remove(),n}for(let t of document.querySelectorAll(`.code-block .copy`))t.addEventListener(`click`,async()=>{let n=t.dataset.code??``,r=!1;try{await navigator.clipboard.writeText(n),r=!0}catch{r=e(n)}t.textContent=r?`Copied`:`Copy failed`,setTimeout(()=>t.textContent=`Copy`,1600)});</script>
+  </details>
+</figure>
+  
+</section>
+
+  <section class="section" aria-labelledby="reading" data-astro-cid-w6ymvdtg>
+  <h2 id="reading" data-astro-cid-w6ymvdtg><a href="#reading" data-astro-cid-w6ymvdtg>How a query is read</a></h2>
+  
+    <p class="prose" data-astro-cid-iereszge>
+      The search listens for five things and ignores the rest of the sentence. What it understood goes in the status line
+      above the results, so a wrong reading is visible at once: “Smart search · delayed deliveries · May 9 – May 15”.
+    </p>
+    <div class="table-wrap" data-scroll-region data-label="How a query is read, table" data-astro-cid-iereszge>
+      <table data-astro-cid-iereszge>
+        <thead data-astro-cid-iereszge>
+          <tr data-astro-cid-iereszge>
+            <th scope="col" data-astro-cid-iereszge>What</th>
+            <th scope="col" data-astro-cid-iereszge>Words</th>
+            <th scope="col" data-astro-cid-iereszge>Becomes</th>
+          </tr>
+        </thead>
+        <tbody data-astro-cid-iereszge>
+          <tr data-astro-cid-iereszge>
+              <th scope="row" data-astro-cid-iereszge>A kind</th>
+              <td data-astro-cid-iereszge>deliveries, shipment, pallets, truck · invoices, payment, bill, owe</td>
+              <td data-astro-cid-iereszge>Only deliveries, or only invoices</td>
+            </tr><tr data-astro-cid-iereszge>
+              <th scope="row" data-astro-cid-iereszge>A state</th>
+              <td data-astro-cid-iereszge>late, delayed, overdue, unpaid, due · paid, delivered, done · upcoming, scheduled, soon</td>
+              <td data-astro-cid-iereszge>Needs attention, done, or still to come</td>
+            </tr><tr data-astro-cid-iereszge>
+              <th scope="row" data-astro-cid-iereszge>A day or a week</th>
+              <td data-astro-cid-iereszge>today, tomorrow, yesterday, this week, last week, next week</td>
+              <td data-astro-cid-iereszge>A range of days around May 12</td>
+            </tr><tr data-astro-cid-iereszge>
+              <th scope="row" data-astro-cid-iereszge>A month</th>
+              <td data-astro-cid-iereszge>March, April, May, June</td>
+              <td data-astro-cid-iereszge>That month</td>
+            </tr><tr data-astro-cid-iereszge>
+              <th scope="row" data-astro-cid-iereszge>A code</th>
+              <td data-astro-cid-iereszge>Any other word: 04-127, INV-77</td>
+              <td data-astro-cid-iereszge>Codes that contain it</td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+  
+</section>
+
+  <section class="section" aria-labelledby="anatomy" data-astro-cid-w6ymvdtg>
+  <h2 id="anatomy" data-astro-cid-w6ymvdtg><a href="#anatomy" data-astro-cid-w6ymvdtg>Anatomy</a></h2>
+  
+    <ol class="prose" data-astro-cid-iereszge>
+      <li data-astro-cid-iereszge><strong data-astro-cid-iereszge>Field</strong>, in the top bar: a magnifier, the text and a button to clear it. While the search runs, the magnifier gives way to a pulsing spark.</li>
+      <li data-astro-cid-iereszge><strong data-astro-cid-iereszge>Status line</strong>, at the top of the list: “Understanding …” while it runs, then how the text was read and, when there are more results than shown, how many.</li>
+      <li data-astro-cid-iereszge><strong data-astro-cid-iereszge>Results</strong>: at most six deliveries and invoices, each with its kind, its day and its state in words.</li>
+      <li data-astro-cid-iereszge><strong data-astro-cid-iereszge>Actions</strong> whose name matches, after the results: New order, Release stock, a page.</li>
+      <li data-astro-cid-iereszge><strong data-astro-cid-iereszge>Suggestions</strong>, while the field is empty: questions to start from. Choosing one fills the field and searches.</li>
+    </ol>
+  
+</section>
+
+  <section class="section" aria-labelledby="rules" data-astro-cid-w6ymvdtg>
+  <h2 id="rules" data-astro-cid-w6ymvdtg><a href="#rules" data-astro-cid-w6ymvdtg>Rules</a></h2>
+  
+    <ul class="prose" data-astro-cid-iereszge>
+      <li data-astro-cid-iereszge><strong data-astro-cid-iereszge>Nearest to today first.</strong> Results run by their distance from today; at the same distance, what needs attention comes first.</li>
+      <li data-astro-cid-iereszge><strong data-astro-cid-iereszge>Say what was understood.</strong> The status line always shows the reading, so people can rephrase instead of guessing why a result is missing.</li>
+      <li data-astro-cid-iereszge><strong data-astro-cid-iereszge>Wait for a pause.</strong> The search runs after a short pause in typing (380 ms here), not on every key.</li>
+      <li data-astro-cid-iereszge><strong data-astro-cid-iereszge>A result opens where the work is.</strong> A delivery or an invoice opens its details panel; an action opens its panel or page. The field clears behind it.</li>
+      <li data-astro-cid-iereszge><strong data-astro-cid-iereszge>No result is never a dead end.</strong> The empty list says so and suggests a query that works.</li>
+      <li data-astro-cid-iereszge><strong data-astro-cid-iereszge>State in words.</strong> Results show their state with Status, as the cards do.</li>
+    </ul>
+  
+</section>
+
+  <section class="section" aria-labelledby="do-dont" data-astro-cid-w6ymvdtg>
+  <h2 id="do-dont" data-astro-cid-w6ymvdtg><a href="#do-dont" data-astro-cid-w6ymvdtg>Do and don’t</a></h2>
+  
+      <div class="guidance"><div class="guidance-pair"><figure class="guidance-example" data-verdict="do"><div class="guidance-stage" inert="" aria-hidden="true"><div class="g-search"><div class="sonar-search-popup"><div class="sonar-search-status"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M788.5-362q12.5 0 21.5 9l63 64q9 9 9 21t-9 21q-9 9-21 9t-21-9l-64-63q-9-9-9-21.5t9-21.5q9-9 21.5-9ZM802-811.5q0 12.5-9 21.5l-63 63q-9 9-21.5 9t-21.5-9q-9-9-9-21.5t9-21.5l64-63q9-9 21-9t21 9q9 9 9 21.5ZM188.5-842q12.5 0 21.5 9l63 64q9 9 9 21t-9 21q-9 9-21 9t-21-9l-64-63q-9-9-9-21.5t9-21.5q9-9 21.5-9ZM202-331.5q0 12.5-9 21.5l-63 63q-9 9-21.5 9T87-247q-9-9-9-21t9-21l64-64q9-9 21-9t21 9q9 9 9 21.5ZM323-245l157-94 157 95-42-178 138-120-182-16-71-168-71 167-182 16 138 120-42 178Zm157-240Zm0 216L294-157q-8 5-17 4.5t-16-5.5q-7-5-10.5-13t-1.5-18l49-212-164-143q-8-7-9.5-15.5t.5-16.5q2-8 9-13.5t17-6.5l217-19 84-200q4-9 12-13.5t16-4.5q8 0 16 4.5t12 13.5l84 200 217 19q10 1 17 6.5t9 13.5q2 8 .5 16.5T826-544L662-401l49 212q2 10-1.5 18T699-158q-7 5-16 5.5t-17-4.5L480-269Z"></path></svg> Smart search · delayed deliveries · May 9 – May 15</div><div class="sonar-search-list"><div class="sonar-search-item"><span class="sonar-search-result-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M140.5-195.42Q106-229.83 106-279H70q-12.75 0-21.37-8.63Q40-296.25 40-309v-431q0-24 18-42t42-18h519q24.75 0 42.38 17.62Q679-764.75 679-740v107h75q14.25 0 27 6.37 12.75 6.38 21 17.63l112 149q3 3.75 4.5 8.25T920-442v133q0 12.75-8.62 21.37Q902.75-279 890-279h-41q0 49-34.38 83.5t-83.5 34.5q-49.12 0-83.62-34.42Q613-229.83 613-279H342q0 49-34.38 83.5t-83.5 34.5q-49.12 0-83.62-34.42ZM265-238q17-17 17-41t-17-41q-17-17-41-17t-41 17q-17 17-17 41t17 41q17 17 41 17t41-17ZM100-339h22q17-27 43.04-43t58-16q31.96 0 58.46 16.5T325-339h294v-401H100v401Zm672 101q17-17 17-41t-17-41q-17-17-41-17t-41 17q-17 17-17 41t17 41q17 17 41 17t41-17Zm-93-187h186L754-573h-75v148ZM360-540Z"></path></svg></span><span class="sonar-search-result-text"><span class="sonar-search-result-title">04-127C 1 item · 15 plt</span><span class="sonar-search-result-description">Delivery · Tue May 12</span></span><span class="sonar-search-result-trailing"><span class="sonar-status" data-tone="warning" data-appearance="dot"><span class="sonar-status-dot" aria-hidden="true"></span>Delayed</span></span></div></div></div></div></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</span><span class="guidance-text">Say how the text was read, so a wrong reading can be fixed at once.</span></figcaption></figure><figure class="guidance-example" data-verdict="dont"><div class="guidance-stage" inert="" aria-hidden="true"><div class="g-search"><div class="sonar-search-popup"><div class="sonar-search-list"><div class="sonar-search-item"><span class="sonar-search-result-icon" aria-hidden="true"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true" focusable="false"><path d="M140.5-195.42Q106-229.83 106-279H70q-12.75 0-21.37-8.63Q40-296.25 40-309v-431q0-24 18-42t42-18h519q24.75 0 42.38 17.62Q679-764.75 679-740v107h75q14.25 0 27 6.37 12.75 6.38 21 17.63l112 149q3 3.75 4.5 8.25T920-442v133q0 12.75-8.62 21.37Q902.75-279 890-279h-41q0 49-34.38 83.5t-83.5 34.5q-49.12 0-83.62-34.42Q613-229.83 613-279H342q0 49-34.38 83.5t-83.5 34.5q-49.12 0-83.62-34.42ZM265-238q17-17 17-41t-17-41q-17-17-41-17t-41 17q-17 17-17 41t17 41q17 17 41 17t41-17ZM100-339h22q17-27 43.04-43t58-16q31.96 0 58.46 16.5T325-339h294v-401H100v401Zm672 101q17-17 17-41t-17-41q-17-17-41-17t-41 17q-17 17-17 41t17 41q17 17 41 17t41-17Zm-93-187h186L754-573h-75v148ZM360-540Z"></path></svg></span><span class="sonar-search-result-text"><span class="sonar-search-result-title">04-127C 1 item · 15 plt</span><span class="sonar-search-result-description">Delivery · Tue May 12</span></span><span class="sonar-search-result-trailing"><span class="sonar-status" data-tone="warning" data-appearance="dot"><span class="sonar-status-dot" aria-hidden="true"></span>Delayed</span></span></div></div></div></div></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don’t</span><span class="guidance-text">Results with no reading: people guess why one is missing.</span></figcaption></figure></div><div class="guidance-pair"><figure class="guidance-example" data-verdict="do"><div class="guidance-stage" data-align="stretch" inert="" aria-hidden="true"><ul class="g-list"><li>Delivery 04-127C <span class="g-meta">Tue May 12</span></li><li>Invoice INV-7712 <span class="g-meta">Tue May 12</span></li><li>Delivery 04-133B <span class="g-meta">Wed May 13</span></li></ul></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</span><span class="guidance-text">Nearest to today first.</span></figcaption></figure><figure class="guidance-example" data-verdict="dont"><div class="guidance-stage" data-align="stretch" inert="" aria-hidden="true"><ul class="g-list"><li>Invoice <span class="g-meta">Mon Mar 2</span></li><li>Delivery <span class="g-meta">Tue Mar 3</span></li><li>Delivery <span class="g-meta">Wed Mar 4</span></li></ul></div><figcaption class="guidance-verdict"><span class="guidance-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don’t</span><span class="guidance-text">Oldest first: today’s results sink under months of past ones.</span></figcaption></figure></div></div>
+    
+</section>
+
+  <section class="section" aria-labelledby="accessibility" data-astro-cid-w6ymvdtg>
+  <h2 id="accessibility" data-astro-cid-w6ymvdtg><a href="#accessibility" data-astro-cid-w6ymvdtg>Accessibility</a></h2>
+  
+    <div class="a11y" data-astro-cid-bxr4t4t4>
+  <div class="block" data-astro-cid-bxr4t4t4>
+        <h3 data-astro-cid-bxr4t4t4>Keyboard</h3>
+        <table data-astro-cid-bxr4t4t4>
+          <thead data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+              <th scope="col" data-astro-cid-bxr4t4t4>Key</th>
+              <th scope="col" data-astro-cid-bxr4t4t4>What it does</th>
+            </tr>
+          </thead>
+          <tbody data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Typing</th>
+                <td data-astro-cid-bxr4t4t4>Searches; the list opens under the field with the results, the first one highlighted.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Down and Up arrows</th>
+                <td data-astro-cid-bxr4t4t4>Move through the results while focus stays in the field.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Enter</th>
+                <td data-astro-cid-bxr4t4t4>Chooses the highlighted result.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Escape</th>
+                <td data-astro-cid-bxr4t4t4>Closes the list; again, clears the field.</td>
+              </tr>
+          </tbody>
+        </table>
+      </div><div class="block" data-astro-cid-bxr4t4t4>
+        <h3 data-astro-cid-bxr4t4t4>Roles and attributes</h3>
+        <table data-astro-cid-bxr4t4t4>
+          <thead data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+              <th scope="col" data-astro-cid-bxr4t4t4>Element or attribute</th>
+              <th scope="col" data-astro-cid-bxr4t4t4>What it gives</th>
+            </tr>
+          </thead>
+          <tbody data-astro-cid-bxr4t4t4>
+            <tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>role=&quot;combobox&quot; on the input</code></th>
+                <td data-astro-cid-bxr4t4t4>With aria-expanded and aria-activedescendant: the highlighted result is read as focus moves, without leaving the field.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>role=&quot;listbox&quot; and role=&quot;option&quot;</code></th>
+                <td data-astro-cid-bxr4t4t4>The results; each is read by its text, its icon hidden.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>role=&quot;status&quot;</code></th>
+                <td data-astro-cid-bxr4t4t4>The status line is announced politely: that the search is running, then how the text was read and how many results there are.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4><code data-astro-cid-bxr4t4t4>aria-busy</code></th>
+                <td data-astro-cid-bxr4t4t4>On the field and the list while results are on their way.</td>
+              </tr><tr data-astro-cid-bxr4t4t4>
+                <th scope="row" data-astro-cid-bxr4t4t4>Label</th>
+                <td data-astro-cid-bxr4t4t4>Always present for assistive technology, drawn only with showLabel.</td>
+              </tr>
+          </tbody>
+        </table>
+      </div>
+</div>
+  
+</section>
+
+  <section class="section" aria-labelledby="built-with" data-astro-cid-w6ymvdtg>
+  <h2 id="built-with" data-astro-cid-w6ymvdtg><a href="#built-with" data-astro-cid-w6ymvdtg>Built with</a></h2>
+  
+    <p class="prose" data-astro-cid-iereszge>
+      The field is <a href="/components/search-field/" data-astro-cid-iereszge>Search field</a>, built on Base UI’s Autocomplete, and each row
+      is a <a href="/components/search-result/" data-astro-cid-iereszge>Search result</a> with a <a href="/components/status/" data-astro-cid-iereszge>Status</a>. The
+      app does the searching: it passes the results for the current text and the status line.
+    </p>
+  
+</section>
+
+        </div>
+        <div class="page-end" data-astro-cid-lpetmyok>
+          <nav class="pager" aria-label="Previous and next pages" data-astro-cid-lpetmyok>
+                <a href="/patterns/charts/" rel="prev" class="previous" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Previous</span>
+                    Charts
+                  </a>
+                <a href="/patterns/editing/" rel="next" class="next" data-astro-cid-lpetmyok>
+                    <span class="direction" data-astro-cid-lpetmyok>Next</span>
+                    Editing the overview
+                  </a>
+              </nav>
+          <footer class="site-footer" data-astro-cid-nns7i3if>
+  <p data-astro-cid-nns7i3if>
+    Design system by <strong data-astro-cid-nns7i3if>988©STUDIO</strong>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    <a href="/resources/changelog/" data-astro-cid-nns7i3if>v1.1.4</a>
+    <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
+    © 2026
+  </p>
+</footer>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="/assets/Docs.astro_astro_type_script_index_0_lang.CIhC640A.js"></script>
+  </body>
+</html>
