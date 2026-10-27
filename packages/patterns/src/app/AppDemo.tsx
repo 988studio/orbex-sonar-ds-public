@@ -8,7 +8,7 @@ import '../patterns/cards.css'
 import '../patterns/edit.css'
 import '../patterns/edit-list.css'
 import SystemPanel, { useSystemNotices } from '../patterns/SystemPanel.tsx'
-import { StockReleased } from '../patterns/InventoryCard.tsx'
+import { ReleaseStock, StockReleased } from '../patterns/InventoryCard.tsx'
 import { Assistant } from './Assistant.tsx'
 import { Customize, Unbuilt } from './Panels.tsx'
 import { PhoneNav, PhoneTop, Sidebar, ThemeScope, TopBar } from './Shell.tsx'
@@ -152,14 +152,17 @@ export default function AppDemo({ device = 'desktop', open = null, page: firstPa
     setPanel(null)
     if (device !== 'desktop' && !collapsed) setCollapsed(true)
     if (label === 'Overview') return setPage(null)
-    if (label === 'Release stock') {
-      setPage(null)
-      setShown(['inventory'], true)
-      setReleased(true)
-      toast.current?.({ message: 'Stock released', action: { label: 'Undo', onClick: () => setReleased(false) } })
-      return
-    }
+    if (label === 'Release stock') return releaseStock()
     setPage(label)
+  }
+  /* 1.1.5 (usage rule 9): Release stock is no longer in the sidebar; it is the Inventory card's own action (its footer)
+     and search still offers it. It acts at once and the toast offers Undo */
+  const releaseStock = () => {
+    setPanel(null)
+    setPage(null)
+    setShown(['inventory'], true)
+    setReleased(true)
+    toast.current?.({ message: 'Stock released', action: { label: 'Undo', onClick: () => setReleased(false) } })
   }
 
   /* ---------- Edit layout: the top bar's button (desktop, tablet) or Edit in the bottom app bar (phone) ---------- */
@@ -283,7 +286,7 @@ export default function AppDemo({ device = 'desktop', open = null, page: firstPa
           {!page && (phone && editing ? <EditListPanel initial={listFrom(layout)} onDone={listDone} zoom={k} /> : cards)}
         </div>
         {editBar}
-        {phone && <div className={'m-veil' + (chat || system ? ' on' : '')} aria-hidden="true" onClick={() => { setChat(false); setSystem(false) }} />}
+        {/* 1.1.5: no scrim on phones under What’s new or the assistant, as the Panels guide says (bottom sheet, no scrim) */}
         <SystemPanel open={system} onClose={() => setSystem(false)} notices={notices} setNotices={setNotices} />
         <div className="footer t12r">
           <a href="#" onClick={(event) => event.preventDefault()}>Support services</a>
@@ -337,6 +340,7 @@ export default function AppDemo({ device = 'desktop', open = null, page: firstPa
   return (
     <ThemeScope.Provider value={scoped ? { dark, setDark } : null}>
     <StockReleased.Provider value={released}>
+    <ReleaseStock.Provider value={releaseStock}>
     <ToastProvider label={`App notifications, ${device} demo`}>
     <ToastHook to={toast} />
     <div className="app-demo" data-device={device}>
@@ -401,6 +405,7 @@ export default function AppDemo({ device = 'desktop', open = null, page: firstPa
       </div>
     </div>
     </ToastProvider>
+    </ReleaseStock.Provider>
     </StockReleased.Provider>
     </ThemeScope.Provider>
   )

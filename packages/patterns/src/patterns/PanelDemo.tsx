@@ -17,7 +17,7 @@ const LABELS: Record<PanelName, string> = {
   invoice: 'Invoice details',
   order: 'Order details',
   delivery: 'Delivery details',
-  system: 'System notifications',
+  system: 'What’s new',
 }
 
 /* Two favorites chosen in Recurring orders, as the card hands them over */

@@ -257,7 +257,7 @@ export interface EditCardsProps {
   onAnnounce: (text: string) => void
   className?: string
   style?: CSSProperties
-  /** Where New element's Customize overview link goes */
+  /** Where New element's All modules link goes (the module sheet; 1.1.5, was Customize overview) */
   customizeHref?: string
   /** The cards' own buttons work while the layout is not edited (the app shell); the editing demo draws them still */
   interactive?: boolean
@@ -644,7 +644,7 @@ export function EditCards({ layout, setLayout, editing, zoom = 1, mode = '', onA
                     actions={<IconButton size="small" label="Close" icon={<CloseIcon />} onClick={() => (setAdding(false), setChosen([]))} />}
                     footer={
                       <div className="new-element-foot">
-                        <CardLink href={customizeHref}>Customize overview</CardLink>
+                        <CardLink href={customizeHref}>All modules</CardLink>
                         {chosen.length > 0 && (
                           <Button size="small" iconEnd={<AddIcon />} onClick={addChosen}>
                             {chosen.length === 1 ? 'Add module' : `Add ${chosen.length} modules`}

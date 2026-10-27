@@ -1,3 +1,4 @@
+import { Button } from '@orbex/sonar-components/button'
 import { Card, UnitMenu } from '@orbex/sonar-components/card'
 import { RingChart } from '@orbex/sonar-components/ring-chart'
 import { createContext, useContext, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
@@ -10,6 +11,12 @@ import './cards.css'
  * of what is on hold is released: 840 → 420 plt on hold, 1,960 → 2,380 available; the ring and the figures move to it.
  */
 export const StockReleased = createContext(false)
+/**
+ * 1.1.5 (usage rule 9: the sidebar only navigates): Release stock is the Inventory card's own action, in its header beside the unit.
+ * An app that can release stock provides the handler; without one (a card drawn on its own) there is no button.
+ * It acts at once and the app offers Undo in a toast (rule 3); once released the button rests until Undo.
+ */
+export const ReleaseStock = createContext<(() => void) | null>(null)
 const RELEASED = { onHold: 420, available: 2380 }
 
 /**
@@ -29,7 +36,9 @@ export default function InventoryCard({ size = 's', label }: { size?: 's' | 'm';
     observer.observe(element)
     return () => observer.disconnect()
   }, [unit])
-  const stock = useContext(StockReleased) ? RELEASED : inventory
+  const released = useContext(StockReleased)
+  const release = useContext(ReleaseStock)
+  const stock = released ? RELEASED : inventory
   const total = stock.available + stock.onHold
   const parts = [
     { key: 'onHold', label: 'On hold', tone: 'danger', value: stock.onHold },
@@ -41,7 +50,16 @@ export default function InventoryCard({ size = 's', label }: { size?: 's' | 'm';
       label={label}
       size={size}
       title="Inventory"
-      actions={<UnitMenu label="Unit" value={unit} options={units} onValueChange={(value) => setUnit(value as Unit)} />}
+      actions={
+        <>
+          {release && (
+            <Button size="small" variant="text" className="inventory-release" disabled={released} onClick={release}>
+              Release stock
+            </Button>
+          )}
+          <UnitMenu label="Unit" value={unit} options={units} onValueChange={(value) => setUnit(value as Unit)} />
+        </>
+      }
       summary={{ label: 'Total', value: <Count value={inUnit(total, unit)} id="total" format={(value) => withUnit(value, unit)} /> }}
     >
       {/* The ring keeps its size and only shrinks, to 72 px, when the widest figure would not fit beside it */}

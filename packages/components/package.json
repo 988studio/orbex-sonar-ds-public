@@ -1,6 +1,6 @@
 {
   "name": "@orbex/sonar-components",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "React components of the Orbex Sonar-DB Design System: native HTML first, Base UI for complex behavior, styled only with the design tokens.",
   "author": "988©STUDIO",
   "license": "MIT",
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@base-ui/react": "1.8.0",
-    "@orbex/sonar-tokens": "1.1.4"
+    "@orbex/sonar-tokens": "1.1.5"
   },
   "devDependencies": {
     "@testing-library/react": "16.3.3",

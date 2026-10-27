@@ -24,7 +24,6 @@ export function Sun({ className }: { className?: string }) {
 const NAV: { group?: string; label: string; icon: string; badge?: number }[] = [
   { label: 'Overview', icon: 'home' },
   { group: 'Operations', label: 'New order', icon: 'post_add' },
-  { label: 'Release stock', icon: 'outbox' },
   { label: 'Credit', icon: 'account_balance_wallet' },
   { label: 'Product requests', icon: 'settings_suggest' },
   { group: 'Tracking', label: 'Orders', icon: 'receipt_long' },
@@ -43,19 +42,14 @@ const BOOK = (
     <path d="M7 19.3H19V21.5H7a1.1 1.1 0 0 1 0-2.2z" />
   </svg>
 )
-const GEAR = (
-  <svg className="sico" viewBox="0 0 24 24" aria-hidden="true">
-    <polygon points="12.00,4.40 13.99,2.00 15.90,2.58 16.22,5.68 17.37,6.63 20.48,6.33 21.42,8.10 19.45,10.52 19.60,12.00 22.00,13.99 21.42,15.90 18.32,16.22 17.37,17.37 17.67,20.48 15.90,21.42 13.48,19.45 12.00,19.60 10.01,22.00 8.10,21.42 7.78,18.32 6.63,17.37 3.52,17.67 2.58,15.90 4.55,13.48 4.40,12.00 2.00,10.01 2.58,8.10 5.68,7.78 6.63,6.63 6.33,3.52 8.10,2.58 10.52,4.55" strokeLinejoin="round" />
-    <circle cx="12" cy="12" r="8" />
-  </svg>
-)
 const SUPPORT: [string, ReactNode][] = [
   ['Help', <span className="ms qm" aria-hidden="true">question_mark</span>],
   ['User manual', BOOK],
   ['Video tutorials', <span className="ms f" aria-hidden="true">videocam</span>],
   ['FAQs', <span className="ms f" aria-hidden="true">folder</span>],
-  ['Customize overview', GEAR],
 ]
+/* 1.1.5 (usage rules 9 and 10): the sidebar only navigates. Release stock moved to the Inventory card, and Customize
+   overview left the Support group: the overview is edited in one place, Edit layout (top bar; Edit on phones). */
 
 /**
  * 1.1.1: an app frame can carry its own theme, apart from the page (the documentation's app demos open dark, the
@@ -264,7 +258,7 @@ export interface TopBarProps {
   onChat?: () => void
   editing?: boolean
   onEdit?: () => void
-  /** The bell's panel, System notifications, is open (1.0.0-alpha.18) */
+  /** The bell's panel, What’s new (product news; 1.1.5, was System notifications), is open (1.0.0-alpha.18) */
   systemOn?: boolean
   onSystem?: () => void
 }
@@ -291,7 +285,7 @@ export function TopBar({ tablet, unread = 3, chatOn, onChat, editing, onEdit, sy
     <button
       type="button"
       className={'circ' + (systemOn ? ' on' : '')}
-      aria-label={`System notifications${unread ? `, ${unread} unread` : ''}`}
+      aria-label={`What’s new${unread ? `, ${unread} unread` : ''}`}
       aria-expanded={!!systemOn}
       aria-haspopup="dialog"
       data-panel=""
@@ -396,7 +390,7 @@ export function PhoneTop() {
  */
 export function PhoneNav({ on, onPick, unread = 3, theme = 'dark' }: { on?: string | null; onPick?: (id: string) => void; unread?: number; theme?: 'dark' | 'light' | 'page' }) {
   const items: [string, string, string, number | 'dot' | null][] = [
-    ['alerts', 'notifications', 'Alerts', unread > 0 ? unread : null],
+    ['alerts', 'notifications', 'What’s new', unread > 0 ? unread : null],
     ['chat', 'chat_bubble', 'Assistant', null],
     ['edit', 'dashboard_customize', 'Edit', null],
     ['account', 'account_circle', 'Account', null],

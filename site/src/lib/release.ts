@@ -5,6 +5,6 @@
 import components from '../../../packages/components/package.json'
 
 export const version = components.version
-export const releaseDate = 'October 26, 2026'
+export const releaseDate = 'October 28, 2026'
 export const studio = '988©STUDIO'
 export const year = 2026

@@ -41,7 +41,7 @@ const ACTIONS: Extract<Item, { type: 'action' }>[] = [
   { type: 'action', label: 'New order', detail: 'Action · Orders', icon: <AddCircleIcon />, words: 'new order create purchase add buy' },
   /* In this documentation, a page of the product is its card on the Overview page; customizing is Editing the overview */
   { type: 'action', label: 'Release stock', detail: 'Action · Inventory', icon: <InventoryIcon />, words: 'release stock inventory warehouse', to: 'overview/#card-inventory' },
-  { type: 'action', label: 'Customize overview', detail: 'Action · Overview', icon: <TuneIcon />, words: 'customize overview layout widgets cards personalize', to: 'editing/' },
+  { type: 'action', label: 'Edit layout', detail: 'Action · Overview', icon: <TuneIcon />, words: 'edit layout customize overview widgets cards modules personalize', to: 'editing/' },
   { type: 'action', label: 'Deliveries', detail: 'Page', icon: <ShippingIcon />, words: 'deliveries delivery shipments shipping', to: 'overview/#card-deliveries' },
   { type: 'action', label: 'Balance', detail: 'Page', icon: <BankIcon />, words: 'balance payments invoices billing finance', to: 'overview/#card-balance' },
   { type: 'action', label: 'Orders', detail: 'Page', icon: <ReceiptIcon />, words: 'orders order history', to: 'overview/#card-orders' },

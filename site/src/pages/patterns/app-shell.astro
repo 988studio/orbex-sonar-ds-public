@@ -20,7 +20,7 @@ import Docs from '../../layouts/Docs.astro'
       the cards widen with it on the same spring. Every section name in the rail has a tooltip. The frames on these pages
       open in dark, the dashboard’s native mode; View mode switches the frame between dark and light (in an app, where
       the shell is the page, it switches the whole page). Sections that have no screen yet open the
-      <a href="/patterns/unbuilt/">unbuilt module</a> page; Customize overview opens its <a href="/patterns/customize/">sheet</a>, and the chat button the <a href="/patterns/assistant/">AI assistant</a>.
+      <a href="/patterns/unbuilt/">unbuilt module</a> page. The sidebar only navigates: the overview is edited with Edit layout in the top bar (its <a href="/patterns/customize/">module sheet</a> opens from All modules), stock is released from the Inventory card, and the chat button the <a href="/patterns/assistant/">AI assistant</a>.
     </p>
     <SpecimenFigure title="The app at 1440 × 980"><AppDemo client:visible /></SpecimenFigure>
   </Section>
@@ -45,7 +45,7 @@ import Docs from '../../layouts/Docs.astro'
   <Section title="Phone" id="phone">
     <p class="prose">
       On phones the top bar carries the sun, the account and a search button; search takes the whole bar when it opens.
-      The bottom app bar holds actions, not destinations: Alerts with its count, Assistant, Edit, Account and Menu, which
+      The bottom app bar holds actions, not destinations: What’s new with its count, Assistant, Edit, Account and Menu, which
       carries a dot when something inside needs attention and opens the whole sidebar as a drawer from the left. Each button is marked while its sheet is open.
     </p>
     <SpecimenFigure title="The app at 390 × 844"><AppDemo client:visible device="phone" /></SpecimenFigure>
@@ -80,7 +80,7 @@ import Docs from '../../layouts/Docs.astro'
           <tr><td>Top bar</td><td>69 px: name and role, account, alerts, chat, Edit layout, search</td><td>Account, search, Edit layout, alerts, chat, avatar</td><td>Sun, account, search</td></tr>
           <tr><td>Content margins</td><td>32 px</td><td>24 px after the rail</td><td>16 px</td></tr>
           <tr><td>Columns</td><td>3 × 370 px, gap 20</td><td>2 × 346 px, gap 20</td><td>1 column</td></tr>
-          <tr><td>Bottom app bar</td><td>—</td><td>—</td><td>Floating capsule, 12 px from the sides and above the safe area, 64 px: Alerts, Assistant, Edit, Account, Menu</td></tr>
+          <tr><td>Bottom app bar</td><td>—</td><td>—</td><td>Floating capsule, 12 px from the sides and above the safe area, 64 px: What’s new, Assistant, Edit, Account, Menu</td></tr>
         </tbody>
       </table>
     </div>
@@ -92,7 +92,7 @@ import Docs from '../../layouts/Docs.astro'
       <li>The collapse button says what it will do, “Collapse sidebar” or “Expand sidebar”, and reports <code>aria-expanded</code>.</li>
       <li>View mode is a switch named “Light mode”, operable with Space and Enter.</li>
       <li>The floating bottom bar keeps every button’s name and state; it is the same landmark (“Actions”) as before, and its colors pass AA in both themes (see Floating bottom bar).</li>
-      <li>The phone’s Alerts button reads its count (“Alerts, 2 unread”), and Menu reads “items need attention” when it carries the dot.</li>
+      <li>The phone’s What’s new button reads its count (“What’s new, 2 unread”), and Menu reads “items need attention” when it carries the dot.</li>
       <li>With reduced motion requested, the sidebar folds and opens at once.</li>
       <li>Each frame is an example inside this page: its overview is a named region, not a second main landmark, its titles sit under this page’s section headings, and its icons are hidden from screen readers.</li>
       <li>Edit layout works in every frame, as on the overview: with a pointer or a finger by the top handle, or by focusing the handle, pressing Space and moving the card with the arrow keys.</li>

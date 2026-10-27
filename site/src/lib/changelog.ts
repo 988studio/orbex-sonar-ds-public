@@ -14,6 +14,21 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.1.5',
+    date: 'October 28, 2026',
+    summary: "Four fixes from the usage rules (the system’s grammar of nouns, verbs and surfaces), and the documentation made readable by search engines and agents. Nothing else changes on screen. 1.1.4 and earlier are unchanged; their zips stay as they were.",
+    added: [
+      "For search engines and agents (nothing visible): `robots.txt` (everything allowed), `sitemap.xml` and `llms-full.txt` (every documentation page as Markdown, in reading order), both written from the built pages (`site/build/agent-files.mjs`); a canonical link and JSON-LD on every page (`SoftwareSourceCode` for the system: version, MIT, 988©STUDIO; each page a `TechArticle` under CC BY 4.0).",
+      "`llms.txt`: version, licence and source, links to the machine-readable files (`tokens.json`, `api.json`, `sizes.json`, `llms-full.txt`, `sitemap.xml`), and “Usage rules for agents”, the 37-line grammar for composing screens with the system (`site/src/lib/usage-rules.ts`).",
+    ],
+    fixed: [
+      "Sidebar only navigates (usage rule 9). Release stock left the sidebar’s Operations group: it is now the Inventory card’s own action, a text button in the card’s header beside the unit menu (24 px tall, so the card’s content keeps its place). It still acts at once, the toast still says “Stock released” with Undo, and the button rests until Undo. An app provides the action through `ReleaseStock` (`InventoryCard.tsx`); a card drawn without it has no button. Search still offers Release stock.",
+      "One name per object: “notifications” now names only the operational alerts (the Notifications card). The bell’s panel, the product’s own news, is “What’s new” (was System notifications), and so is its button in the phone’s bottom app bar (was Alerts) and its accessible name (“What’s new, 2 unread”).",
+      "One place to edit the overview (usage rule 10): Edit layout. Customize overview left the sidebar’s Support group, and the module sheet it opened is now “All modules”, reached from the New element card while editing the layout (the link read Customize overview). In search the action reads Edit layout and starts it. On phones the modules are switched in Edit, as before.",
+      "Phones: no scrim under What’s new or the AI assistant, as the Panels guide says (bottom sheet, no scrim). The 32 % veil (`m-veil`) is gone from the app shell and the prototype; the sheets close with ×, a swipe down or Escape, as before.",
+    ],
+  },
+  {
     version: '1.1.4',
     date: 'October 26, 2026',
     summary: 'One fix after a 988©STUDIO iPhone recording of 1.1.3: the Deliveries alert triangle looked frozen and dim on iOS Safari. 1.1.3, 1.1.2, 1.1.1, 1.1.0 and 1.0.0 are unchanged; their zips stay as they were.',

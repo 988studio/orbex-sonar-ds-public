@@ -91,7 +91,7 @@ export function Customize({ open, onClose, shown, setShown, onSave, onReset, res
         <div className="sh-h">
           <div>
             <h2 id="cus-title" className="t18sb">
-              Customize overview
+              All modules
             </h2>
             <p id="cus-desc" className="t12r grey" style={{ letterSpacing: 0, marginTop: 6 }}>
               Show or hide modules with the switches. To move or resize cards, use Edit layout.
@@ -180,8 +180,9 @@ export interface UnbuiltProps {
 export function Unbuilt({ label, onHome, onTry }: UnbuiltProps) {
   /* Each frame on a page draws its own page, so the title's id is its own */
   const titleId = useId()
-  const nav: [string, string][] = [['New order', 'post_add'], ['Release stock', 'outbox'], ['Customize overview', 'tune']]
-  const other: [string, string][] = [['Edit layout', 'dashboard_customize'], ['Notifications', 'notifications'], ['AI assistant chat', 'chat'], ['Light / dark mode', 'contrast'], ['Collapse sidebar', 'keyboard_double_arrow_left']]
+  /* 1.1.5: only what the sidebar still holds; Release stock is on the Inventory card and the overview is edited with Edit layout */
+  const nav: [string, string][] = [['New order', 'post_add']]
+  const other: [string, string][] = [['Edit layout', 'dashboard_customize'], ['Release stock (Inventory card)', 'outbox'], ['What’s new', 'notifications'], ['AI assistant chat', 'chat'], ['Light / dark mode', 'contrast'], ['Collapse sidebar', 'keyboard_double_arrow_left']]
   return (
     <div className="stage notice" role="region" aria-labelledby={titleId}>
       <section className="nt-card">

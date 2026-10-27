@@ -1423,3 +1423,11 @@ span.cal-date {
     animation: none;
   }
 }
+
+/* 1.1.5: Release stock, the Inventory card's own action (usage rule 9), sits in the header beside the unit menu at the
+   header's 24 px height, so the card's content keeps its place (24 px is the WCAG 2.2 minimum target size) */
+.sonar-card .inventory-release {
+  block-size: 24px;
+  min-block-size: 24px;
+  padding-block: 0;
+}

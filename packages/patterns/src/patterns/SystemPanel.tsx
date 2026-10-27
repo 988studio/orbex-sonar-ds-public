@@ -5,7 +5,8 @@ import { Sep } from './Calendar.tsx'
 import { useHydrated } from './hydrated.ts'
 import './panels.css'
 
-/* System notifications: the panel the bell in the top bar opens (Alerts on phones), as in the product
+/* What’s new (1.1.5; was System notifications, renamed so “notifications” names one thing only): the panel the bell
+   in the top bar opens (What’s new on phones too), as in the product
    (1.0.0-alpha.18). The product's own notes on what changed in it, newest first; the unread ones have a ring and a red
    dot, and each can be marked as read, or all at once. */
 export interface SystemNotice {
@@ -38,7 +39,7 @@ export interface SystemPanelProps {
   setNotices: Dispatch<SetStateAction<SystemNotice[]>>
 }
 
-/** System notifications: a side panel that is not modal, so the top bar stays usable; a sheet from the bottom on phones */
+/** What’s new: a side panel that is not modal, so the top bar stays usable; a sheet from the bottom on phones */
 export default function SystemPanel({ open, onClose, notices, setNotices }: SystemPanelProps) {
   const hydrated = useHydrated()
   if (!hydrated) return null
@@ -51,7 +52,7 @@ export default function SystemPanel({ open, onClose, notices, setNotices }: Syst
       onOpenChange={(next) => !next && onClose()}
       placement="end"
       modal={false}
-      title="System notifications"
+      title="What’s new"
       description={
         <>
           {unread ? `${unread} unread` : 'All read'}

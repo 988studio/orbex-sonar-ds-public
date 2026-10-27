@@ -29,6 +29,7 @@ import ThemeSwitch from '../components/ThemeSwitch.astro'
 import VersionChip from '../components/VersionChip.astro'
 import Wordmark from '../components/Wordmark.astro'
 import { readingOrder, sectionOf } from '../lib/navigation.ts'
+import { releaseDate, studio, version, year } from '../lib/release.ts'
 
 interface Props {
   title: string
@@ -43,6 +44,47 @@ const previous = position > 0 ? readingOrder[position - 1] : undefined
 const next = position >= 0 ? readingOrder[position + 1] : undefined
 /* The home page carries the system’s name alone; every other page leads with its own */
 const pageTitle = path === '/' ? 'Orbex Sonar-DB Design System' : `${title} · Orbex Sonar-DB Design System`
+/* 1.1.5, for search engines and agents (nothing visible): the canonical address and JSON-LD. The system is
+   SoftwareSourceCode (MIT); each page is a TechArticle, a CreativeWork under CC BY 4.0; author 988©STUDIO */
+const origin = (Astro.site?.href ?? 'https://orbex-ds.sites.tab.bot/').replace(/\/$/, '')
+const canonical = origin + path
+const author = { '@type': 'Organization', '@id': `${origin}/#studio`, name: studio, url: 'https://988.gal' }
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'SoftwareSourceCode',
+      '@id': `${origin}/#software`,
+      name: 'Orbex Sonar-DB Design System',
+      description: 'Design tokens and React components for Sonar-DB, a logistics dashboard: Material 3 Expressive, dense, AA contrast on every surface.',
+      url: `${origin}/`,
+      version,
+      dateModified: new Date(`${releaseDate} 12:00 UTC`).toISOString().slice(0, 10),
+      codeRepository: 'https://github.com/988studio/orbex-sonar-ds-public',
+      programmingLanguage: ['TypeScript', 'CSS'],
+      runtimePlatform: 'React',
+      license: 'https://opensource.org/licenses/MIT',
+      author,
+      copyrightHolder: author,
+      copyrightYear: year,
+    },
+    {
+      '@type': path === '/' ? 'WebSite' : 'TechArticle',
+      '@id': `${canonical}#page`,
+      ...(path === '/' ? { name: 'Orbex Sonar-DB Design System' } : { headline: title, isPartOf: { '@id': `${origin}/#site` } }),
+      ...(path === '/' ? { '@id': `${origin}/#site` } : {}),
+      description,
+      url: canonical,
+      inLanguage: 'en-US',
+      version,
+      license: 'https://creativecommons.org/licenses/by/4.0/',
+      author,
+      copyrightHolder: author,
+      copyrightYear: year,
+      about: { '@id': `${origin}/#software` },
+    },
+  ],
+}).replace(/</g, '\\u003c')
 ---
 
 <!doctype html>
@@ -58,6 +100,10 @@ const pageTitle = path === '/' ? 'Orbex Sonar-DB Design System' : `${title} · O
     <meta name="format-detection" content="telephone=no, date=no, email=no, address=no" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="text/plain" title="For language models and agents" href="/llms.txt" />
+    <meta name="author" content={studio} />
+    <script type="application/ld+json" set:html={jsonLd} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     {[plexSans400, plexSans500, plexSans600, plexCondensed600, plexCondensed600Italic, plexMono400, plexMono500].map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
     <script is:inline>

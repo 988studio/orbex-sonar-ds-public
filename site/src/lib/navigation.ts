@@ -71,7 +71,7 @@ export const navigation: NavSection[] = [
       { label: 'Feedback', href: '/patterns/feedback/', description: 'Toasts, confirmations, notices and loading states, and when to use each.' },
       { label: 'App shell', href: '/patterns/app-shell/', description: 'The sidebar and its rail, the top bar, the phone bars and how the 1440 canvas fits a window, live.' },
       { label: 'AI assistant', href: '/patterns/assistant/', description: 'The chat with the Orbex assistant: a floating window on desktops, a bottom sheet on phones.' },
-      { label: 'Customize overview', href: '/patterns/customize/', description: 'The sheet that shows or hides modules, with the basic set and layouts for a role.' },
+      { label: 'All modules', href: '/patterns/customize/', description: 'The Edit layout sheet that shows or hides modules, with the basic set and layouts for a role.' },
       { label: 'Unbuilt modules', href: '/patterns/unbuilt/', description: 'The page for a section with no screen yet: what works and the way back.' },
     ],
   },
