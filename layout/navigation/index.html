@@ -11,7 +11,10 @@
     <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
     <title>Navigation by device · Orbex Sonar-DB Design System</title>
     <meta name="description" content="Where Sonar-DB navigation and panels live on phones, tablets and desktops, and how they behave.">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="canonical" href="https://ds-sonardb.988.gal/layout/navigation/">
+    <link rel="alternate" type="text/plain" title="For language models and agents" href="/llms.txt">
+    <meta name="author" content="988©STUDIO">
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"SoftwareSourceCode","@id":"https://ds-sonardb.988.gal/#software","name":"Orbex Sonar-DB Design System","description":"Design tokens and React components for Sonar-DB, a logistics dashboard: Material 3 Expressive, dense, AA contrast on every surface.","url":"https://ds-sonardb.988.gal/","version":"1.1.5","dateModified":"2026-10-28","codeRepository":"https://github.com/988studio/orbex-sonar-ds-public","programmingLanguage":["TypeScript","CSS"],"runtimePlatform":"React","license":"https://opensource.org/licenses/MIT","author":{"@type":"Organization","@id":"https://ds-sonardb.988.gal/#studio","name":"988©STUDIO","url":"https://988.gal"},"copyrightHolder":{"@type":"Organization","@id":"https://ds-sonardb.988.gal/#studio","name":"988©STUDIO","url":"https://988.gal"},"copyrightYear":2026},{"@type":"TechArticle","@id":"https://ds-sonardb.988.gal/layout/navigation/#page","headline":"Navigation by device","isPartOf":{"@id":"https://ds-sonardb.988.gal/#site"},"description":"Where Sonar-DB navigation and panels live on phones, tablets and desktops, and how they behave.","url":"https://ds-sonardb.988.gal/layout/navigation/","inLanguage":"en-US","version":"1.1.5","license":"https://creativecommons.org/licenses/by/4.0/","author":{"@type":"Organization","@id":"https://ds-sonardb.988.gal/#studio","name":"988©STUDIO","url":"https://988.gal"},"copyrightHolder":{"@type":"Organization","@id":"https://ds-sonardb.988.gal/#studio","name":"988©STUDIO","url":"https://988.gal"},"copyrightYear":2026,"about":{"@id":"https://ds-sonardb.988.gal/#software"}}]}</script><link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="preload" href="/assets/ibm-plex-sans-latin-400-normal.CDDApCn2.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-500-normal.6ng42L7E.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-latin-600-normal.CuJfVYMP.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-normal.CRd5VyFf.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-sans-condensed-latin-600-italic.CDUi4ehg.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-400-normal.DMJ8VG8y.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/assets/ibm-plex-mono-latin-500-normal.DSY6xOcd.woff2" as="font" type="font/woff2" crossorigin>
     <script>
       try {
@@ -79,7 +82,7 @@
   </span>
   
   <span class="visually-hidden" data-astro-cid-qisgtjgl>, home</span>
-</a><span class="sidebar-version" data-astro-cid-lpetmyok><a class="version-chip" href="/resources/changelog/" data-astro-cid-2qsy24n7>v1.1.4<span class="visually-hidden" data-astro-cid-2qsy24n7>, changelog</span></a></span></div>
+</a><span class="sidebar-version" data-astro-cid-lpetmyok><a class="version-chip" href="/resources/changelog/" data-astro-cid-2qsy24n7>v1.1.5<span class="visually-hidden" data-astro-cid-2qsy24n7>, changelog</span></a></span></div>
         <div class="sidebar-scroll" data-astro-cid-lpetmyok>
           <p class="outline-title" data-astro-cid-lpetmyok>Design system</p>
           <div class="navigation" data-astro-cid-yxete6jp>
@@ -310,7 +313,7 @@
                 </a>
             </li><li data-astro-cid-yxete6jp>
               <a href="/patterns/customize/" data-astro-cid-yxete6jp>
-                  Customize overview
+                  All modules
                 </a>
             </li><li data-astro-cid-yxete6jp>
               <a href="/patterns/unbuilt/" data-astro-cid-yxete6jp>
@@ -506,8 +509,8 @@
 <script type="module">for(let e of document.querySelectorAll(`.specimen`)){let t=Number(e.dataset.maxZoom),n=e.querySelector(`[aria-live]`),r={navigation:e.querySelector(`[data-control="navigation"]`),details:e.querySelector(`[data-control="details"]`)},i=e.dataset.kind,a=i===`sidebar`,o={navigation:{bar:[`Open the menu`,`Close the menu`],rail:[`Expand the rail`,`Fold the rail`],sidebar:[`Collapse the sidebar`,`Expand the sidebar`]}[i],details:[`Open details`,`Close details`]};function s(t,i){e.toggleAttribute(`data-${t}`,i),r[t].setAttribute(`aria-pressed`,String(i)),r[t].textContent=o[t][+!!i],i&&t===`details`&&!a&&s(`navigation`,!1),i&&t===`navigation`&&!a&&s(`details`,!1),n.textContent=i?t===`details`?`Details panel open`:a?`Sidebar collapsed to the rail`:`Navigation open`:``}let c=t=>s(t,!e.hasAttribute(`data-${t}`));r.navigation.addEventListener(`click`,()=>c(`navigation`)),r.details.addEventListener(`click`,()=>c(`details`)),e.querySelector(`.window`).addEventListener(`click`,e=>{let t=e.target.closest(`[data-action]`)?.dataset.action;(t===`navigation`||t===`details`)&&c(t),t===`close`&&(s(`details`,!1),a||s(`navigation`,!1))}),e.addEventListener(`keydown`,e=>{e.key===`Escape`&&(s(`details`,!1),a||s(`navigation`,!1))});let l=parseFloat(getComputedStyle(e).getPropertyValue(`--window-width`));new ResizeObserver(([n])=>{e.style.setProperty(`--zoom`,String(Math.min(t,n.contentRect.width/l)))}).observe(e)}</script>
       <ul class="prose" data-astro-cid-cnhx7swt>
         <li data-astro-cid-cnhx7swt>
-          <strong data-astro-cid-cnhx7swt>Bottom app bar</strong>, 60 px plus the safe area: Alerts, Assistant, Edit, Account and
-          Menu, at the end. Alerts carries the count of new notices; a red dot on Menu says something inside it needs a
+          <strong data-astro-cid-cnhx7swt>Bottom app bar</strong>, 60 px plus the safe area: What’s new, Assistant, Edit, Account and
+          Menu, at the end. What’s new carries the count of new notices; a red dot on Menu says something inside it needs a
           look.
         </li>
         <li data-astro-cid-cnhx7swt>
@@ -957,7 +960,7 @@
   <p data-astro-cid-nns7i3if>
     Design system by <strong data-astro-cid-nns7i3if>988©STUDIO</strong>
     <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
-    <a href="/resources/changelog/" data-astro-cid-nns7i3if>v1.1.4</a>
+    <a href="/resources/changelog/" data-astro-cid-nns7i3if>v1.1.5</a>
     <span aria-hidden="true" data-astro-cid-nns7i3if>·</span>
     © 2026
   </p>

@@ -1,0 +1,6 @@
+# Orbex Sonar-DB Design System · public documentation. Agents and crawlers welcome.
+User-agent: *
+Allow: /
+
+Sitemap: https://ds-sonardb.988.gal/sitemap.xml
+# For language models and coding agents: https://ds-sonardb.988.gal/llms.txt (summary, usage rules) and https://ds-sonardb.988.gal/llms-full.txt (every page)

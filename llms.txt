@@ -4,47 +4,101 @@
 
 Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design Tokens JSON) and `@orbex/sonar-components` (one entry point and one stylesheet per component; full API data in `@orbex/sonar-components/api.json`, also published at /api.json). Set the layer order once: `@layer reset, sonar, app;`, then import `@orbex/sonar-tokens/tokens.css`. Style with role tokens (`--sonar-color-text-default`, `--sonar-color-surface-card`), never palette tokens.
 
+Version 1.1.5 (October 28, 2026). © 2026 988©STUDIO. Code under the MIT licence; documentation (this site's text and images) under CC BY 4.0. Source: https://github.com/988studio/orbex-sonar-ds-public. Orbex and Sonar-DB are a fictional product made to show the system.
+
+## Machine-readable files
+
+- [llms-full.txt](https://ds-sonardb.988.gal/llms-full.txt): every documentation page as clean Markdown, in reading order
+- [tokens.json](https://ds-sonardb.988.gal/downloads/tokens.json): every design token resolved per theme (light, dark), with its CSS variable, description and reference (W3C Design Tokens)
+- [api.json](https://ds-sonardb.988.gal/api.json): the API of every component: parts, props, types and defaults
+- [sizes.json](https://ds-sonardb.988.gal/sizes.json): component and layout sizes in px
+- [sitemap.xml](https://ds-sonardb.988.gal/sitemap.xml): every page of this site
+
+## Usage rules for agents
+
+How to compose screens with the system: nouns (objects), the surface each one uses, verbs and the pattern for each, and the rules. Paste it as is into an agent’s instructions.
+
+```text
+You design screens for Sonar-DB (logistics dashboard) with @orbex/sonar-components
+and --sonar-* tokens only. Think in nouns and verbs before layout.
+
+NOUNS: Order, Recurring order, Product line, Delivery (+route), Invoice/Payment,
+Inventory, Daily shipments, Document, Operational alert, What’s new notice,
+Overview module (card), Assistant conversation. Customer is an attribute.
+
+SURFACES (low -> high):
+- Page/shell: no shadow. Overview and module pages only.
+- Card: elevation-1, corner-medium 12. Summarises one noun; footer CardLink "Go to X".
+- Side panel: Dialog placement="end" modal={false}, elevation-panel, 28 radius,
+  enter 420ms spring, exit 150ms accelerate. No scrim; source row stays marked.
+  Phone: bottom sheet, elevation-sheet-up.
+- Menu/popover: elevation-2, corner-large 16. Choices only.
+- Dialog (centered, modal): elevation-3, corner-extra-large 28. Irreversible only.
+- Toast: elevation-3, corner-medium 12. Just happened; Undo when reversible.
+- Notice: in page, corner-large 16. Lasting state.
+
+VERBS -> PATTERN:
+view summary=Card | view detail=side panel | create=side panel with steps
+(form > Confirm > Done) | edit overview=Edit layout in place | remove=act + toast Undo
+| filter=in-card controls (SegmentedControl, UnitMenu), never a new surface
+| search=top-bar SearchField; picking a result opens that noun's panel
+| confirm irreversible=centered Dialog | notify=Toast / Notice / error under field.
+
+RULES:
+1 One noun, one panel. Never show detail in a centered modal or a new page.
+2 Centered dialogs only for irreversible actions (Reset, Discard).
+3 Act first, offer Undo. Don't ask before reversible actions.
+4 Lasting problems = Notice in page, never a toast.
+5 Shadow, radius and motion come from the layer's tokens; no ad-hoc values.
+6 Enter decelerating, exit accelerating and faster; bounce only on card drop/success.
+7 One filled (primary) button per view.
+8 Copy: past tense + period for done ("Layout saved."), a question for decisions;
+  buttons repeat the verb, never Yes/OK; no exclamation marks, no apologies.
+9 Sidebar items navigate; they never perform actions.
+10 One surface per verb per noun; never two places to do the same thing.
+```
+
 ## Documentation
 
-- [Introduction](/): What Orbex Sonar-DB is, what it is built on and what this release contains.
-- [Installation](/get-started/installation/): Install the packages, set the cascade layers, import the tokens and use a component.
-- [Foundations](/foundations/): The principles and the accessibility commitments, and the tokens every component is drawn with.
-- [Principles](/foundations/principles/): What the system optimizes for, and how tokens are named, versioned and tested.
-- [Accessibility](/foundations/accessibility/): WCAG 2.2 AA: contrast, focus, target sizes, motion, keyboard and screen readers.
-- [Color](/foundations/color/): The palette, the roles for text, surfaces and states in both themes, and the contrast of every pair.
-- [Typography](/foundations/typography/): Three families and the type roles of the product, from figures in a chart to page titles.
-- [Icons](/foundations/icons/): The marks the components draw, the Material Symbols the product uses, their sizes, weight and how to import them.
-- [Spacing](/foundations/spacing/): The spacing scale, and how cards and their content line up.
-- [Shape](/foundations/shape/): Corner radii, from the tightest to fully round, and what each is for.
-- [Elevation](/foundations/elevation/): Shadows for cards, menus, panels and dragged cards, in both themes.
-- [Motion](/foundations/motion/): Springs and fades: durations, easing, and what changes with reduced motion.
-- [Layout](/layout/): Window size classes, the grid of the overview, and how navigation changes from phone to desktop.
-- [Breakpoints and grid](/layout/grid/): Five size classes, their columns, gaps and margins, with a simulator for any width.
-- [Navigation by device](/layout/navigation/): A bottom bar on phones, a rail on tablets and a sidebar that collapses on desktops.
-- [Components](/components/): React components, native HTML first: how they are built and tested, and each one live with its API.
-- [Patterns](/patterns/): The overview of Sonar-DB and what it is made of: its cards, charts, search, editing and feedback, live.
-- [Overview](/patterns/overview/): The six cards of the default overview on the grid, live.
-- [Cards](/patterns/cards/): Anatomy, the six cards in every size, their states while the overview is edited, and their rules.
-- [Charts](/patterns/charts/): Tick bars, rings and the trend chart in the cards, with the legend they share.
-- [Search](/patterns/search/): Searching orders, deliveries and invoices in plain words, with results as people type.
-- [Editing the overview](/patterns/editing/): Showing, ordering and sizing cards, on phones and on desktops.
-- [Panels](/patterns/panels/): The six panels the overview opens, side by side and live: what opens each, its parts, and how it opens on each device.
-- [Feedback](/patterns/feedback/): Toasts, confirmations, notices and loading states, and when to use each.
-- [App shell](/patterns/app-shell/): The sidebar and its rail, the top bar, the phone bars and how the 1440 canvas fits a window, live.
-- [AI assistant](/patterns/assistant/): The chat with the Orbex assistant: a floating window on desktops, a bottom sheet on phones.
-- [Customize overview](/patterns/customize/): The sheet that shows or hides modules, with the basic set and layouts for a role.
-- [Unbuilt modules](/patterns/unbuilt/): The page for a section with no screen yet: what works and the way back.
-- [Resources](/resources/): What changed in each release, files to download, the system for coding agents, and how to contribute.
-- [Changelog](/resources/changelog/): Every release, newest first: what was added, changed, fixed and deprecated.
-- [Downloads](/resources/downloads/): The tokens as CSS and JSON, and the API and sizes of every component as data.
-- [llms.txt](/llms.txt): The whole system in one text file, for language models and coding agents.
-- [Contributing](/resources/contributing/): How tokens and components are proposed, built, tested and released.
+- [Introduction](https://ds-sonardb.988.gal/): What Orbex Sonar-DB is, what it is built on and what this release contains.
+- [Installation](https://ds-sonardb.988.gal/get-started/installation/): Install the packages, set the cascade layers, import the tokens and use a component.
+- [Foundations](https://ds-sonardb.988.gal/foundations/): The principles and the accessibility commitments, and the tokens every component is drawn with.
+- [Principles](https://ds-sonardb.988.gal/foundations/principles/): What the system optimizes for, and how tokens are named, versioned and tested.
+- [Accessibility](https://ds-sonardb.988.gal/foundations/accessibility/): WCAG 2.2 AA: contrast, focus, target sizes, motion, keyboard and screen readers.
+- [Color](https://ds-sonardb.988.gal/foundations/color/): The palette, the roles for text, surfaces and states in both themes, and the contrast of every pair.
+- [Typography](https://ds-sonardb.988.gal/foundations/typography/): Three families and the type roles of the product, from figures in a chart to page titles.
+- [Icons](https://ds-sonardb.988.gal/foundations/icons/): The marks the components draw, the Material Symbols the product uses, their sizes, weight and how to import them.
+- [Spacing](https://ds-sonardb.988.gal/foundations/spacing/): The spacing scale, and how cards and their content line up.
+- [Shape](https://ds-sonardb.988.gal/foundations/shape/): Corner radii, from the tightest to fully round, and what each is for.
+- [Elevation](https://ds-sonardb.988.gal/foundations/elevation/): Shadows for cards, menus, panels and dragged cards, in both themes.
+- [Motion](https://ds-sonardb.988.gal/foundations/motion/): Springs and fades: durations, easing, and what changes with reduced motion.
+- [Layout](https://ds-sonardb.988.gal/layout/): Window size classes, the grid of the overview, and how navigation changes from phone to desktop.
+- [Breakpoints and grid](https://ds-sonardb.988.gal/layout/grid/): Five size classes, their columns, gaps and margins, with a simulator for any width.
+- [Navigation by device](https://ds-sonardb.988.gal/layout/navigation/): A bottom bar on phones, a rail on tablets and a sidebar that collapses on desktops.
+- [Components](https://ds-sonardb.988.gal/components/): React components, native HTML first: how they are built and tested, and each one live with its API.
+- [Patterns](https://ds-sonardb.988.gal/patterns/): The overview of Sonar-DB and what it is made of: its cards, charts, search, editing and feedback, live.
+- [Overview](https://ds-sonardb.988.gal/patterns/overview/): The six cards of the default overview on the grid, live.
+- [Cards](https://ds-sonardb.988.gal/patterns/cards/): Anatomy, the six cards in every size, their states while the overview is edited, and their rules.
+- [Charts](https://ds-sonardb.988.gal/patterns/charts/): Tick bars, rings and the trend chart in the cards, with the legend they share.
+- [Search](https://ds-sonardb.988.gal/patterns/search/): Searching orders, deliveries and invoices in plain words, with results as people type.
+- [Editing the overview](https://ds-sonardb.988.gal/patterns/editing/): Showing, ordering and sizing cards, on phones and on desktops.
+- [Panels](https://ds-sonardb.988.gal/patterns/panels/): The six panels the overview opens, side by side and live: what opens each, its parts, and how it opens on each device.
+- [Feedback](https://ds-sonardb.988.gal/patterns/feedback/): Toasts, confirmations, notices and loading states, and when to use each.
+- [App shell](https://ds-sonardb.988.gal/patterns/app-shell/): The sidebar and its rail, the top bar, the phone bars and how the 1440 canvas fits a window, live.
+- [AI assistant](https://ds-sonardb.988.gal/patterns/assistant/): The chat with the Orbex assistant: a floating window on desktops, a bottom sheet on phones.
+- [All modules](https://ds-sonardb.988.gal/patterns/customize/): The Edit layout sheet that shows or hides modules, with the basic set and layouts for a role.
+- [Unbuilt modules](https://ds-sonardb.988.gal/patterns/unbuilt/): The page for a section with no screen yet: what works and the way back.
+- [Resources](https://ds-sonardb.988.gal/resources/): What changed in each release, files to download, the system for coding agents, and how to contribute.
+- [Changelog](https://ds-sonardb.988.gal/resources/changelog/): Every release, newest first: what was added, changed, fixed and deprecated.
+- [Downloads](https://ds-sonardb.988.gal/resources/downloads/): The tokens as CSS and JSON, and the API and sizes of every component as data.
+- [llms.txt](https://ds-sonardb.988.gal/llms.txt): The whole system in one text file, for language models and coding agents.
+- [Contributing](https://ds-sonardb.988.gal/resources/contributing/): How tokens and components are proposed, built, tested and released.
 
 ## Components
 
 ### Button
 
-[Documentation](/components/button/) · native HTML · `import { Button } from '@orbex/sonar-components/button'` and `import '@orbex/sonar-components/button.css'`
+[Documentation](https://ds-sonardb.988.gal/components/button/) · native HTML · `import { Button } from '@orbex/sonar-components/button'` and `import '@orbex/sonar-components/button.css'`
 
 - `Button`: A native button. For navigation, use a link with the same class and data attributes instead: `<a class="sonar-button" data-variant="tonal" data-size="medium" href="…">`. Extends `ComponentProps<'button'>`.
   - `variant?: 'filled' | 'tonal' | 'outlined' | 'text'` (default 'filled') Visual weight. Filled for the one main action of a view, tonal for secondary actions, outlined and text for the rest.
@@ -54,7 +108,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Icon button
 
-[Documentation](/components/icon-button/) · native HTML · `import { IconButton } from '@orbex/sonar-components/icon-button'` and `import '@orbex/sonar-components/icon-button.css'`
+[Documentation](https://ds-sonardb.988.gal/components/icon-button/) · native HTML · `import { IconButton } from '@orbex/sonar-components/icon-button'` and `import '@orbex/sonar-components/icon-button.css'`
 
 - `IconButton`: A round button that shows only an icon. Extends `Omit<ComponentProps<'button'>, 'children'>`.
   - `label: string` What the button does, read by assistive technology. Pair the button with a Tooltip to show it on hover.
@@ -64,7 +118,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Badge
 
-[Documentation](/components/badge/) · native HTML · `import { Badge } from '@orbex/sonar-components/badge'` and `import '@orbex/sonar-components/badge.css'`
+[Documentation](https://ds-sonardb.988.gal/components/badge/) · native HTML · `import { Badge } from '@orbex/sonar-components/badge'` and `import '@orbex/sonar-components/badge.css'`
 
 - `Badge`: A small count or dot on a navigation item, an icon button or a tab. Extends `Omit<ComponentProps<'span'>, 'children'>`.
   - `count?: number` The number to show. Without it, the badge is a dot that only signals something new.
@@ -74,7 +128,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Status
 
-[Documentation](/components/status/) · native HTML · `import { Status } from '@orbex/sonar-components/status'` and `import '@orbex/sonar-components/status.css'`
+[Documentation](https://ds-sonardb.988.gal/components/status/) · native HTML · `import { Status } from '@orbex/sonar-components/status'` and `import '@orbex/sonar-components/status.css'`
 
 - `Status`: The state of an order, a delivery or an invoice. Extends `ComponentProps<'span'>`.
   - `tone?: 'neutral' | 'positive' | 'warning' | 'danger'` (default 'neutral') What the state means. Color never carries it alone: the text always names it.
@@ -84,7 +138,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Switch
 
-[Documentation](/components/switch/) · native HTML · `import { Switch } from '@orbex/sonar-components/switch'` and `import '@orbex/sonar-components/switch.css'`
+[Documentation](https://ds-sonardb.988.gal/components/switch/) · native HTML · `import { Switch } from '@orbex/sonar-components/switch'` and `import '@orbex/sonar-components/switch.css'`
 
 - `Switch`: A native checkbox with the switch role: it works without JavaScript, in forms and with every assistive technology. Use it for settings that apply at once; for a choice that is submitted later, use Checkbox. Extends `Omit<ComponentProps<'input'>, 'type' | 'role'>`.
   - `label: ReactNode` What the switch turns on.
@@ -92,7 +146,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Checkbox
 
-[Documentation](/components/checkbox/) · native HTML · `import { Checkbox } from '@orbex/sonar-components/checkbox'` and `import '@orbex/sonar-components/checkbox.css'`
+[Documentation](https://ds-sonardb.988.gal/components/checkbox/) · native HTML · `import { Checkbox } from '@orbex/sonar-components/checkbox'` and `import '@orbex/sonar-components/checkbox.css'`
 
 - `Checkbox`: A native checkbox, for choices that are submitted with a form or confirmed later. Extends `Omit<ComponentProps<'input'>, 'type'>`.
   - `label: ReactNode` What is being chosen.
@@ -101,7 +155,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Segmented control
 
-[Documentation](/components/segmented-control/) · native HTML · `import { SegmentedControl } from '@orbex/sonar-components/segmented-control'` and `import '@orbex/sonar-components/segmented-control.css'`
+[Documentation](https://ds-sonardb.988.gal/components/segmented-control/) · native HTML · `import { SegmentedControl } from '@orbex/sonar-components/segmented-control'` and `import '@orbex/sonar-components/segmented-control.css'`
 
 - `SegmentedControl`: A choice of one among a few, drawn as a row of segments. Native radios underneath: arrow keys move the choice, and the control works in forms without JavaScript. Extends `Omit<ComponentProps<'fieldset'>, 'onChange' | 'defaultValue'>`.
   - `legend: string` What is being chosen, such as “Unit”. Always present for assistive technology; drawn unless `hideLegend`.
@@ -116,7 +170,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Text field and select
 
-[Documentation](/components/field/) · native HTML · `import { TextField, SelectField } from '@orbex/sonar-components/field'` and `import '@orbex/sonar-components/field.css'`
+[Documentation](https://ds-sonardb.988.gal/components/field/) · native HTML · `import { TextField, SelectField } from '@orbex/sonar-components/field'` and `import '@orbex/sonar-components/field.css'`
 
 - `TextField`: A native text input with its label, help and error. Any input type that takes text: text, search, email, number… Extends `Omit<ComponentProps<'input'>, 'size'>`.
   - `label: ReactNode` The field’s name, always visible above it. Placeholders are examples, never labels.
@@ -135,7 +189,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Notice
 
-[Documentation](/components/notice/) · native HTML · `import { Notice } from '@orbex/sonar-components/notice'` and `import '@orbex/sonar-components/notice.css'`
+[Documentation](https://ds-sonardb.988.gal/components/notice/) · native HTML · `import { Notice } from '@orbex/sonar-components/notice'` and `import '@orbex/sonar-components/notice.css'`
 
 - `Notice`: A message inside the page, next to what it is about. It stays until the situation changes; for feedback on an action that just happened, use a toast. Add `role="status"` or `role="alert"` when the notice appears while the person is working, so it is announced. Extends `Omit<ComponentProps<'div'>, 'title'>`.
   - `tone?: 'info' | 'success' | 'warning' | 'danger'` (default 'info') Info for news and tips, success for a finished task, warning for something to check, danger for a problem.
@@ -145,7 +199,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Toast
 
-[Documentation](/components/toast/) · behavior from Base UI · `import { ToastProvider } from '@orbex/sonar-components/toast'` and `import '@orbex/sonar-components/toast.css'`
+[Documentation](https://ds-sonardb.988.gal/components/toast/) · behavior from Base UI · `import { ToastProvider } from '@orbex/sonar-components/toast'` and `import '@orbex/sonar-components/toast.css'`
 
 - `ToastProvider`: Feedback on something that just happened, on the inverse surface at the bottom of the window, with at most one action. One toast at a time: a new one replaces the last. Base UI announces it, pauses it while hovered or focused, and lets it be swiped away.
   - `children: ReactNode` The part of the app that can show toasts, usually all of it. useToast works anywhere inside.
@@ -157,7 +211,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Menu
 
-[Documentation](/components/menu/) · behavior from Base UI · `import { Menu } from '@orbex/sonar-components/menu'` and `import '@orbex/sonar-components/menu.css'`
+[Documentation](https://ds-sonardb.988.gal/components/menu/) · behavior from Base UI · `import { Menu } from '@orbex/sonar-components/menu'` and `import '@orbex/sonar-components/menu.css'`
 
 - `Menu.Root`: Holds the menu’s open state. Extends `BaseMenu.Root.Props`.
 - `Menu.Trigger`: The element that opens the menu. Pass a Button or an IconButton with `render`, so the trigger keeps its look. Extends `BaseMenu.Trigger.Props`.
@@ -182,7 +236,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Tooltip
 
-[Documentation](/components/tooltip/) · behavior from Base UI · `import { Tooltip, TooltipProvider } from '@orbex/sonar-components/tooltip'` and `import '@orbex/sonar-components/tooltip.css'`
+[Documentation](https://ds-sonardb.988.gal/components/tooltip/) · behavior from Base UI · `import { Tooltip, TooltipProvider } from '@orbex/sonar-components/tooltip'` and `import '@orbex/sonar-components/tooltip.css'`
 
 - `Tooltip`: A short label on the inverse surface, shown on hover and focus. Wrap groups of triggers in TooltipProvider so that, once one tooltip is open, moving to the next shows it without the delay.
   - `content: ReactNode` The text shown. Short: a name or a hint, never something the person must read to continue.
@@ -193,7 +247,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Dialog
 
-[Documentation](/components/dialog/) · native HTML · `import { DialogHost, Dialog } from '@orbex/sonar-components/dialog'` and `import '@orbex/sonar-components/dialog.css'`
+[Documentation](https://ds-sonardb.988.gal/components/dialog/) · native HTML · `import { DialogHost, Dialog } from '@orbex/sonar-components/dialog'` and `import '@orbex/sonar-components/dialog.css'`
 
 - `DialogHost`: Holds the side panels and sheets written inside it, as a drawn app frame does, instead of placing them against the window. Extends `{ children: ReactNode }`.
 - `Dialog` Extends `Omit<ComponentProps<'dialog'>, 'open' | 'title' | 'onClose' | 'onCancel'>`.
@@ -209,7 +263,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Scroll area
 
-[Documentation](/components/scroll-area/) · native HTML · `import { ScrollArea } from '@orbex/sonar-components/scroll-area'` and `import '@orbex/sonar-components/scroll-area.css'`
+[Documentation](https://ds-sonardb.988.gal/components/scroll-area/) · native HTML · `import { ScrollArea } from '@orbex/sonar-components/scroll-area'` and `import '@orbex/sonar-components/scroll-area.css'`
 
 - `ScrollArea`: Content that scrolls inside a fixed height, as the product’s lists do: no scrollbar of the system, a fade at each edge that has more, and a thin indicator that shows while it scrolls and fades out a second after. The indicator never covers the content or its buttons. While it scrolls the area is a named group that takes focus, so the keyboard scrolls it; when everything fits it is plain content and adds no tab stop. Extends `ComponentProps<'div'>`.
   - `label: string` What the content is, read when the area takes focus to scroll: “Invoices”, “System notifications”.
@@ -217,7 +271,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Card
 
-[Documentation](/components/card/) · native HTML · `import { Card } from '@orbex/sonar-components/card'` and `import '@orbex/sonar-components/card.css'`
+[Documentation](https://ds-sonardb.988.gal/components/card/) · native HTML · `import { Card } from '@orbex/sonar-components/card'` and `import '@orbex/sonar-components/card.css'`
 
 - `Card`: A card of the overview: a titled region with an optional summary figure, content and a way to the full page. The card is a section named by its title, so the overview reads as a list of landmarks. Extends `Omit<ComponentProps<'section'>, 'title'>`.
   - `title: ReactNode` The card’s name, which also names the region for assistive technology.
@@ -230,21 +284,21 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Card link
 
-[Documentation](/components/card-link/) · native HTML · `import { CardLink } from '@orbex/sonar-components/card'` and `import '@orbex/sonar-components/card.css'`
+[Documentation](https://ds-sonardb.988.gal/components/card-link/) · native HTML · `import { CardLink } from '@orbex/sonar-components/card'` and `import '@orbex/sonar-components/card.css'`
 
 - `CardLink`: The link at the foot of a card to the page it summarizes, with the arrow in a filled circle. Extends `ComponentProps<'a'>`.
   - `children: ReactNode` Where it goes, as a verb phrase: Go to Orders.
 
 ### Card scroll
 
-[Documentation](/components/card-scroll/) · native HTML · `import { CardScroll } from '@orbex/sonar-components/card'` and `import '@orbex/sonar-components/card.css'`
+[Documentation](https://ds-sonardb.988.gal/components/card-scroll/) · native HTML · `import { CardScroll } from '@orbex/sonar-components/card'` and `import '@orbex/sonar-components/card.css'`
 
 - `CardScroll`: The part of a card’s content that gives way first when the card’s size leaves no room, such as a list of deliveries: it keeps its full height while it fits, and scrolls when it does not. The rest of the content stays in place. Extends `ComponentProps<'div'>`.
   - `label: string` What the list is, read when it takes focus to scroll: “Deliveries of May 12”.
 
 ### Unit menu
 
-[Documentation](/components/unit-menu/) · native HTML · `import { UnitMenu } from '@orbex/sonar-components/card'` and `import '@orbex/sonar-components/card.css'`
+[Documentation](https://ds-sonardb.988.gal/components/unit-menu/) · native HTML · `import { UnitMenu } from '@orbex/sonar-components/card'` and `import '@orbex/sonar-components/card.css'`
 
 - `UnitMenu`: The unit a card’s figures are shown in, as a small pill that opens a menu. Changing it converts every figure in the card; it is the card’s only setting.
   - `label: string` What the unit measures, read with the current value: “Unit: plt, Pallets”.
@@ -254,7 +308,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Tick bar
 
-[Documentation](/components/tick-bar/) · native HTML · `import { TickBar } from '@orbex/sonar-components/tick-bar'` and `import '@orbex/sonar-components/tick-bar.css'`
+[Documentation](https://ds-sonardb.988.gal/components/tick-bar/) · native HTML · `import { TickBar } from '@orbex/sonar-components/tick-bar'` and `import '@orbex/sonar-components/tick-bar.css'`
 
 - `TickBar`: A proportion as a row of fine ticks. Extends `Omit<ComponentProps<'div'>, 'children'>`.
   - `segments: ChartSegment[]` The parts of a whole, in order. Each takes its share of the width.
@@ -263,7 +317,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Ring chart
 
-[Documentation](/components/ring-chart/) · native HTML · `import { RingChart } from '@orbex/sonar-components/ring-chart'` and `import '@orbex/sonar-components/ring-chart.css'`
+[Documentation](https://ds-sonardb.988.gal/components/ring-chart/) · native HTML · `import { RingChart } from '@orbex/sonar-components/ring-chart'` and `import '@orbex/sonar-components/ring-chart.css'`
 
 - `RingChart`: Parts of a whole as a ring of ticks: the donut of the Inventory card. Extends `Omit<ComponentProps<'figure'>, 'children'>`.
   - `segments: ChartSegment[]` The parts of the whole, in order around the ring: each with a label, a value and a chart tone.
@@ -275,7 +329,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Trend chart
 
-[Documentation](/components/trend-chart/) · native HTML · `import { TrendChart } from '@orbex/sonar-components/trend-chart'` and `import '@orbex/sonar-components/trend-chart.css'`
+[Documentation](https://ds-sonardb.988.gal/components/trend-chart/) · native HTML · `import { TrendChart } from '@orbex/sonar-components/trend-chart'` and `import '@orbex/sonar-components/trend-chart.css'`
 
 - `TrendChart`: A daily series as a line, with its running total dotted against a second axis. The legend turns each series off and on; the pointer, a finger or the arrow keys show the values of a day.
   - `label: string` One sentence that sums the chart up, read first: “Daily shipments in May, 11,940 pallets in total”.
@@ -289,14 +343,14 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Chart legend
 
-[Documentation](/components/chart-legend/) · native HTML · `import { ChartLegend } from '@orbex/sonar-components/chart-legend'` and `import '@orbex/sonar-components/chart-legend.css'`
+[Documentation](https://ds-sonardb.988.gal/components/chart-legend/) · native HTML · `import { ChartLegend } from '@orbex/sonar-components/chart-legend'` and `import '@orbex/sonar-components/chart-legend.css'`
 
 - `ChartLegend`: The key to a chart’s colors: a dot in each part’s tone, then its name. Extends `Omit<ComponentProps<'ul'>, 'children'>`.
   - `items: ChartLegendItem[]` One entry per color, in the order of the chart’s parts.
 
 ### Search field
 
-[Documentation](/components/search-field/) · behavior from Base UI · `import { SearchField } from '@orbex/sonar-components/search'` and `import '@orbex/sonar-components/search.css'`
+[Documentation](https://ds-sonardb.988.gal/components/search-field/) · behavior from Base UI · `import { SearchField } from '@orbex/sonar-components/search'` and `import '@orbex/sonar-components/search.css'`
 
 - `SearchField`: A search field with its results in a list under it.
   - `label: string` What is searched, read by assistive technology: “Search orders, deliveries and invoices”.
@@ -324,7 +378,7 @@ Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design T
 
 ### Search result
 
-[Documentation](/components/search-result/) · behavior from Base UI · `import { SearchResult } from '@orbex/sonar-components/search'` and `import '@orbex/sonar-components/search.css'`
+[Documentation](https://ds-sonardb.988.gal/components/search-result/) · behavior from Base UI · `import { SearchResult } from '@orbex/sonar-components/search'` and `import '@orbex/sonar-components/search.css'`
 
 - `SearchResult`: One row of results: an icon, a title, a line under it and something at the end.
   - `icon?: ReactNode` What kind of thing it is, as an icon: a truck for a delivery, a receipt for an invoice.
