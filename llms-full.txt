@@ -1,6 +1,6 @@
 # Orbex Sonar-DB Design System · full documentation
 
-> Every page of https://ds-sonardb.988.gal/ as Markdown, in reading order (56 pages, 2026-10-28). The summary, the machine-readable files and the usage rules for agents are in https://ds-sonardb.988.gal/llms.txt. Interactive demos are left out. © 2026 988©STUDIO; code MIT, documentation CC BY 4.0.
+> Every page of https://ds-sonardb.988.gal/ as Markdown, in reading order (56 pages, 2026-10-29). The summary, the machine-readable files and the usage rules for agents are in https://ds-sonardb.988.gal/llms.txt. Interactive demos are left out. © 2026 988©STUDIO; code MIT, documentation CC BY 4.0.
 
 # Orbex Sonar-DB Design System
 
@@ -8,7 +8,7 @@ URL: https://ds-sonardb.988.gal/
 
 > The design system behind Sonar-DB, the Orbex dashboard for orders, deliveries and stock: tokens, foundations and live components.
 
-[v1.1.5, changelog](https://ds-sonardb.988.gal/resources/changelog/)
+[v1.1.6, changelog](https://ds-sonardb.988.gal/resources/changelog/)
 
 ## Orbex Sonar‑DB Design System
 
@@ -98,7 +98,7 @@ What changed in each release, files to download, the system for coding agents, a
 
 ### This release
 
-**1.1.5**, October 28, 2026. 272 tokens, 9 foundation pages, the layout, 24 components with their sizes, variants and states, and the patterns of the overview. Four fixes from the usage rules (the system’s grammar of nouns, verbs and surfaces), and the documentation made readable by search engines and agents. Nothing else changes on screen. 1.1.4 and earlier are unchanged; their zips stay as they were. Every change is in the [changelog](https://ds-sonardb.988.gal/resources/changelog/).
+**1.1.6**, October 29, 2026. 272 tokens, 9 foundation pages, the layout, 24 components with their sizes, variants and states, and the patterns of the overview. Restaurado estado de clic cuadrado en botones: the press shape of the approved videos (v38) is back on the two pills that had lost it. Nothing else changes; 1.1.5 and earlier are unchanged and their zips stay as they were. Every change is in the [changelog](https://ds-sonardb.988.gal/resources/changelog/).
 
 ---
 
@@ -113,6 +113,13 @@ URL: https://ds-sonardb.988.gal/resources/changelog/
 Tokens and components are released together, so one version names the whole system. Versions follow semantic versioning; until 1.0.0, a minor release may rename or remove what an earlier alpha added, and says so here.
 
 ### Releases
+
+    1.1.6 October 29, 2026  Restaurado estado de clic cuadrado en botones: the press shape of the approved videos (v38) is back on the two pills that had lost it. Nothing else changes; 1.1.5 and earlier are unchanged and their zips stay as they were.
+
+#### Fixed
+
+- Unit menu: squarer while pressed again, 10 → 6 px on the 200 ms spatial spring, as v38’s pill and the videos; open, it is a pill again. The menu opens on press, which takes `:active` away from the trigger, so `UnitMenu` marks its own press (`data-pressing`, while the pointer is down). Removed in 1.0.0-alpha.13, when the pill was redrawn to stay a pill while open.
+- Calendar View button (Deliveries): squarer while pressed again, 10 → 6 px, as v38’s View pill. Its own 10 px radius (`.cal-rows .sonar-button.cal-view`, outside the components layer) outranked Button’s press shape; the pattern now states its pressed radius.
 
     1.1.5 October 28, 2026  Four fixes from the usage rules (the system’s grammar of nouns, verbs and surfaces), and the documentation made readable by search engines and agents. Nothing else changes on screen. 1.1.4 and earlier are unchanged; their zips stay as they were.
 
@@ -692,7 +699,7 @@ Node 22.18 or later, React 19.2 or later. The components depend on the tokens an
  sh
 
 ```
-npm install @orbex/sonar-tokens@1.1.5 @orbex/sonar-components@1.1.5 react react-dom
+npm install @orbex/sonar-tokens@1.1.6 @orbex/sonar-components@1.1.6 react react-dom
 ```
 
 ### 2. Set the cascade layers
@@ -745,7 +752,7 @@ Both themes ship in the same file. Without an attribute, the system follows the 
 
 ### 4. Use a component
 
-Each component is its own entry point with its own stylesheet, so an app loads only what it uses. All 24 weigh 47.4 KB gzipped together, script and styles.
+Each component is its own entry point with its own stylesheet, so an app loads only what it uses. All 24 weigh 47.8 KB gzipped together, script and styles.
 
  tsx
 
@@ -2173,22 +2180,22 @@ Native HTML · 2.0 KB
 
 The unit of the overview: a title, a summary figure, content and a way to the full page.
 
-Native HTML · 4.5 KB with Card link, Card scroll, Unit menu
+Native HTML · 4.8 KB with Card link, Card scroll, Unit menu
 - #### [Card link](https://ds-sonardb.988.gal/components/card-link/)
 
 The link at the foot of a card to the page it summarizes.
 
-Native HTML · 4.5 KB with Card, Card scroll, Unit menu
+Native HTML · 4.8 KB with Card, Card scroll, Unit menu
 - #### [Card scroll](https://ds-sonardb.988.gal/components/card-scroll/)
 
 The list in a card that scrolls first when the card’s size leaves no room.
 
-Native HTML · 4.5 KB with Card, Card link, Unit menu
+Native HTML · 4.8 KB with Card, Card link, Unit menu
 - #### [Unit menu](https://ds-sonardb.988.gal/components/unit-menu/)
 
 The unit a card’s figures are shown in, as a pill that opens a menu.
 
-Native HTML · 4.5 KB with Card, Card link, Card scroll
+Native HTML · 4.8 KB with Card, Card link, Card scroll
 - #### [Tick bar](https://ds-sonardb.988.gal/components/tick-bar/)
 
 A share of a whole as a row of fine ticks.
@@ -2227,7 +2234,7 @@ How they come together in the overview, its cards, charts and search, is in [Pat
 - **Native HTML first.** Buttons, switches, checkboxes, radios, fields, selects and dialogs are the browser’s own elements. They work before any script loads, in forms, with every assistive technology, and they cost almost nothing to ship.
 - **Base UI for complex behavior.** Menus and tooltips need positioning, focus management and typeahead the platform does not offer everywhere yet. Base UI, maintained full-time by the MUI team, provides that behavior unstyled.
 - **Plain CSS on tokens.** Each component has one stylesheet in the `sonar.components` cascade layer. Variants are data attributes; values are tokens only. No CSS-in-JS, no utility framework, and an app’s own styles always win without `!important`.
-- **One entry point per component.** An app imports `@orbex/sonar-components/button` and its stylesheet and loads nothing else. All 24 weigh 47.4 KB gzipped together, script and styles.
+- **One entry point per component.** An app imports `@orbex/sonar-components/button` and its stylesheet and loads nothing else. All 24 weigh 47.8 KB gzipped together, script and styles.
 
 ### Install
 
@@ -4356,7 +4363,7 @@ URL: https://ds-sonardb.988.gal/components/card/
 The unit of the overview: a titled region with one figure that sums it up, its detail and a way to the full page. In the grid it takes one of four heights and scrolls what does not fit between its header and footer.
 
 - Native HTML
-- 4.5 KB gzipped · script and styles
+- 4.8 KB gzipped · script and styles
 - Shared with Card link, Card scroll, Unit menu
 - `@orbex/sonar-components/card`
 
@@ -4487,7 +4494,7 @@ URL: https://ds-sonardb.988.gal/components/card-link/
 The way out of a card: a link to the page the card sums up, with the arrow in a filled circle. It sits at the foot of the card, beside at most one action.
 
 - Native HTML
-- 4.5 KB gzipped · script and styles
+- 4.8 KB gzipped · script and styles
 - Shared with Card, Card scroll, Unit menu
 - `@orbex/sonar-components/card`
 
@@ -4585,7 +4592,7 @@ URL: https://ds-sonardb.988.gal/components/card-scroll/
 The part of a card’s content that gives way first when the card’s size leaves no room: it keeps its full height while it fits, and scrolls when it does not, while the rest of the card stays in place.
 
 - Native HTML
-- 4.5 KB gzipped · script and styles
+- 4.8 KB gzipped · script and styles
 - Shared with Card, Card link, Unit menu
 - `@orbex/sonar-components/card`
 
@@ -4697,7 +4704,7 @@ URL: https://ds-sonardb.988.gal/components/unit-menu/
 The unit a card’s figures are shown in, as a small pill that opens a menu: pallets, kilograms or items, dollars or euros. Changing it converts every figure in the card; it is the card’s only setting.
 
 - Native HTML
-- 4.5 KB gzipped · script and styles
+- 4.8 KB gzipped · script and styles
 - Shared with Card, Card link, Card scroll
 - `@orbex/sonar-components/card`
 
@@ -6878,6 +6885,12 @@ span.cal-date {
   border-radius: 10px;
   font: var(--sonar-font-weight-medium) 11px/1 var(--sonar-font-family-sans);
   letter-spacing: -0.22px;
+}
+
+/* Pressed (1.1.6, restored): squarer while pressed, 10 → 6 px, as v38's .vd and the approved videos. The pill's own
+   10 px radius above outranks the button's press shape, so the View button states its own. */
+.cal-rows .sonar-button.cal-view:active:not(:disabled, [aria-disabled='true']) {
+  border-radius: 6px;
 }
 
 .cal-rows .sonar-button.cal-view[data-variant='outlined'] {
@@ -9705,7 +9718,7 @@ URL: https://ds-sonardb.988.gal/resources/downloads/
 
 ## Downloads
 
-The files the packages publish, at version 1.1.5, to open or link to without installing anything. In an app, import them from the packages instead, so they update with the version.
+The files the packages publish, at version 1.1.6, to open or link to without installing anything. In an app, import them from the packages instead, so they update with the version.
 
 ### Files
 

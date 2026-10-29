@@ -4,7 +4,7 @@
 
 Packages: `@orbex/sonar-tokens` (CSS custom properties `--sonar-*`, W3C Design Tokens JSON) and `@orbex/sonar-components` (one entry point and one stylesheet per component; full API data in `@orbex/sonar-components/api.json`, also published at /api.json). Set the layer order once: `@layer reset, sonar, app;`, then import `@orbex/sonar-tokens/tokens.css`. Style with role tokens (`--sonar-color-text-default`, `--sonar-color-surface-card`), never palette tokens.
 
-Version 1.1.5 (October 28, 2026). © 2026 988©STUDIO. Code under the MIT licence; documentation (this site's text and images) under CC BY 4.0. Source: https://github.com/988studio/orbex-sonar-ds-public. Orbex and Sonar-DB are a fictional product made to show the system.
+Version 1.1.6 (October 29, 2026). © 2026 988©STUDIO. Code under the MIT licence; documentation (this site's text and images) under CC BY 4.0. Source: https://github.com/988studio/orbex-sonar-ds-public. Orbex and Sonar-DB are a fictional product made to show the system.
 
 ## Machine-readable files
 
