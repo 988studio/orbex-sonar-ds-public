@@ -14,6 +14,15 @@ export interface Release {
 
 export const releases: Release[] = [
   {
+    version: '1.1.6',
+    date: 'October 29, 2026',
+    summary: "Restaurado estado de clic cuadrado en botones: the press shape of the approved videos (v38) is back on the two pills that had lost it. Nothing else changes; 1.1.5 and earlier are unchanged and their zips stay as they were.",
+    fixed: [
+      "Unit menu: squarer while pressed again, 10 → 6 px on the 200 ms spatial spring, as v38’s pill and the videos; open, it is a pill again. The menu opens on press, which takes `:active` away from the trigger, so `UnitMenu` marks its own press (`data-pressing`, while the pointer is down). Removed in 1.0.0-alpha.13, when the pill was redrawn to stay a pill while open.",
+      "Calendar View button (Deliveries): squarer while pressed again, 10 → 6 px, as v38’s View pill. Its own 10 px radius (`.cal-rows .sonar-button.cal-view`, outside the components layer) outranked Button’s press shape; the pattern now states its pressed radius.",
+    ],
+  },
+  {
     version: '1.1.5',
     date: 'October 28, 2026',
     summary: "Four fixes from the usage rules (the system’s grammar of nouns, verbs and surfaces), and the documentation made readable by search engines and agents. Nothing else changes on screen. 1.1.4 and earlier are unchanged; their zips stay as they were.",

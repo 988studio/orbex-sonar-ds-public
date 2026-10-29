@@ -1,6 +1,6 @@
 {
   "name": "@orbex/sonar-patterns",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Patterns of the Orbex Sonar-DB Design System as source: the app shell, the overview cards, panels, Customize overview, the AI assistant, Edit layout, smart search and their sample data. Built on @orbex/sonar-components and the tokens.",
   "author": "988©STUDIO",
   "license": "MIT",
@@ -26,8 +26,8 @@
   },
   "dependencies": {
     "@material-symbols/svg-400": "0.47.6",
-    "@orbex/sonar-components": "1.1.5",
-    "@orbex/sonar-tokens": "1.1.5"
+    "@orbex/sonar-components": "1.1.6",
+    "@orbex/sonar-tokens": "1.1.6"
   },
   "devDependencies": {
     "@types/react": "19.3.0",

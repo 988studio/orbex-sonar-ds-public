@@ -818,6 +818,12 @@ span.cal-date {
   letter-spacing: -0.22px;
 }
 
+/* Pressed (1.1.6, restored): squarer while pressed, 10 → 6 px, as v38's .vd and the approved videos. The pill's own
+   10 px radius above outranks the button's press shape, so the View button states its own. */
+.cal-rows .sonar-button.cal-view:active:not(:disabled, [aria-disabled='true']) {
+  border-radius: 6px;
+}
+
 .cal-rows .sonar-button.cal-view[data-variant='outlined'] {
   --_edge: var(--sonar-color-accent);
   --_ink: var(--sonar-color-text-accent);

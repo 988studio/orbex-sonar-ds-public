@@ -1,4 +1,4 @@
-import { useId, useRef, type ComponentProps, type ReactNode } from 'react'
+import { useId, useRef, useState, type ComponentProps, type ReactNode } from 'react'
 import { cx } from '../internal/cx.ts'
 import { ArrowMark, ChevronDownMark } from '../internal/icons.tsx'
 import { useScrollArea } from '../internal/scroll-area.ts'
@@ -122,10 +122,24 @@ export interface UnitMenuProps {
  */
 export function UnitMenu({ label, value, options, onValueChange }: UnitMenuProps) {
   const current = options.find((option) => option.value === value) ?? options[0]
+  /* Pressed (1.1.6): the menu opens on press and takes the press away from :active, so the pill marks its own press
+     and turns squarer while the pointer is down, as v38's pill and the approved videos do. */
+  const [pressed, setPressed] = useState(false)
   return (
     <Menu.Root>
       {/* The name contains what the pill shows, so voice control can reach it by it: “Unit: plt, Pallets” */}
-      <Menu.Trigger className="sonar-unit-menu" aria-label={`${label}: ${current?.short ?? value}, ${current?.name ?? value}`}>
+      <Menu.Trigger
+        className="sonar-unit-menu"
+        aria-label={`${label}: ${current?.short ?? value}, ${current?.name ?? value}`}
+        data-pressing={pressed || undefined}
+        onPointerDown={(event) => {
+          if (event.button) return
+          setPressed(true)
+          const release = () => setPressed(false)
+          window.addEventListener('pointerup', release, { once: true })
+          window.addEventListener('pointercancel', release, { once: true })
+        }}
+      >
         {current?.short}
         <ChevronDownMark />
       </Menu.Trigger>

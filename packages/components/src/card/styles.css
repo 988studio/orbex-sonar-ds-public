@@ -283,9 +283,17 @@
     text-transform: uppercase;
     cursor: pointer;
     transition:
+      border-radius var(--sonar-motion-spatial-fast-duration) var(--sonar-motion-spatial-fast-easing),
       color var(--sonar-motion-duration-state) var(--sonar-motion-easing-decelerate),
       background-color var(--sonar-motion-duration-state) var(--sonar-motion-easing-decelerate),
       box-shadow var(--sonar-motion-duration-state) var(--sonar-motion-easing-decelerate);
+  }
+
+  /* Pressed (1.1.6, restored): squarer while pressed, 10 → 6 px, as v38's .pill and the approved videos. Open, it is a
+     pill again. */
+  .sonar-unit-menu:active,
+  .sonar-unit-menu[data-pressing] {
+    border-radius: 6px;
   }
 
   /* Optically centered: 0.25 px low (up: 0.25 px high), as the product nets it */

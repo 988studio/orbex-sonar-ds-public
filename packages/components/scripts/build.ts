@@ -26,8 +26,10 @@ const BUDGETS: Record<string, number> = {
   /* The card, its link and unit menu, and the content that scrolls between header and footer: fades, indicator and
      keyboard, shared with CardScroll. Raised in 1.0.0-alpha.13 for the unit menu's own compact popup. Raised in
      1.0.0-alpha.22 for the rows lying on the title's rule when they stop, the mirrored end of the list and the fades
-     that never cover a row that has stopped (internal/scroll-area.ts): about 0.25 KB */
-  card: 4608,
+     that never cover a row that has stopped (internal/scroll-area.ts): about 0.25 KB. Raised in 1.1.6 for the unit menu's
+     press shape, restored as in v38 and the approved videos (squarer while pressed; the menu opens on press, so the
+     pill marks its own press): about 0.3 KB */
+  card: 5120,
   /* Three placements, and since 1.0.0-alpha.13 the product's side panel that is not modal: below the top bar, no
      scrim, Escape and a press outside, and on phones a sheet that follows the finger down. Raised in 1.0.0-alpha.15
      for the fade at the foot of a panel's body, which now runs down to the actions' rule. Raised in 1.0.0-alpha.16 for
